@@ -309,7 +309,7 @@
   #navScreen {
     display: none; position: fixed; inset: 0; z-index: 200;
     background: var(--bg); align-items: center; justify-content: center;
-    flex-direction: column; gap: 40px; padding: 40px 20px;
+    flex-direction: column; gap: 40px; padding: 80px 20px 40px;
   }
   #navScreen.active { display: flex; }
   #chartScreen { display: none; }
@@ -542,14 +542,23 @@
 
 <!-- ── NAVIGATION SCREEN ─────────────────────────────────────────────────── -->
 <div id="navScreen">
-  <div>
-    <div class="nav-title">INV<span style="color:var(--muted)">//</span>CTRL</div>
+  <!-- top bar with user info and logout -->
+  <div style="position:absolute;top:0;left:0;right:0;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--surface);">
+    <div style="font-family:var(--font-mono);font-size:0.9rem;color:var(--accent);letter-spacing:2px;">INV<span style="color:var(--muted)">//</span>CTRL</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);">👤 <strong id="navUserName" style="color:var(--text)"></strong></span>
+      <button onclick="doLogout()" style="background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.25);color:var(--warn);padding:5px 12px;border-radius:6px;font-size:0.73rem;font-weight:600;cursor:pointer;font-family:var(--font-mono);transition:all 0.2s;">Sair</button>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:20px;">
     <div class="nav-subtitle">Selecione uma opção para continuar</div>
-    <div class="nav-sync-status" style="justify-content:center;margin-top:12px;">
+    <div class="nav-sync-status" style="justify-content:center;margin-top:10px;">
       <div class="dot" id="navSyncDot"></div>
       <span id="navSyncLabel">Carregando dados...</span>
     </div>
   </div>
+
   <div class="nav-cards">
     <div class="nav-card inv" onclick="goTo('inventory')">
       <span class="nav-card-icon">📦</span>
@@ -722,6 +731,7 @@ function doLogin() {
 function showApp(name, isAdmin) {
   document.getElementById('authOverlay').classList.add('hidden');
   document.getElementById('headerUser').textContent = name;
+  document.getElementById('navUserName').textContent = name;
   document.getElementById('btnAdminPanel').style.display = isAdmin ? '' : 'none';
   // Show nav screen, sync in background
   goTo('nav');
@@ -1257,13 +1267,37 @@ function updatePublishBtn() {
   btn.style.display = count > 0 ? 'flex' : 'none';
   document.getElementById('pendingCount').textContent = count > 0 ? count : '';
 }
+function getModeradoCol() {
+  return headers.find(h => h.trim().toLowerCase() === 'moderado') || null;
+}
+
 function lock(id) {
   const r = data.find(r=>r._id===id);
-  if (r) { r._locked=true; showToast(`✅ "${r[headers[0]]||'Item'}" consolidado`); render(); }
+  if (!r) return;
+  r._locked = true;
+  // Write "SIM" in Moderado column
+  const mCol = getModeradoCol();
+  if (mCol) {
+    r[mCol] = 'SIM';
+    if (r._sheetRow) pendingChanges.add(r._id);
+    updatePublishBtn();
+  }
+  showToast(`✅ "${r[headers[0]]||'Item'}" consolidado`);
+  render();
 }
 function unlock(id) {
   const r = data.find(r=>r._id===id);
-  if (r) { r._locked=false; showToast(`🔓 "${r[headers[0]]||'Item'}" desbloqueado`); render(); }
+  if (!r) return;
+  r._locked = false;
+  // Clear SIM from Moderado column on unlock
+  const mCol = getModeradoCol();
+  if (mCol && r[mCol] === 'SIM') {
+    r[mCol] = '';
+    if (r._sheetRow) pendingChanges.add(r._id);
+    updatePublishBtn();
+  }
+  showToast(`🔓 "${r[headers[0]]||'Item'}" desbloqueado`);
+  render();
 }
 function addRow() {
   if (!headers.length) { showToast('⚠️ Sincronize primeiro', true); return; }
@@ -1377,11 +1411,21 @@ function renderCharts() {
     return;
   }
 
-  // Find "Moderado" column — look for column WITH VALUE "Moderado" or column named "Moderado"
-  // Count rows where ANY cell value === 'Moderado' (case-insensitive)
+  // Find "Moderado" column by name, count rows with value "SIM"
+  const mCol = headers.find(h => h.trim().toLowerCase() === 'moderado') || null;
   const total = data.length;
+
+  if (!mCol) {
+    el.innerHTML = `
+      <div class="chart-empty">
+        <h3>Coluna "Moderado" não encontrada</h3>
+        <p>Verifique se sua planilha possui uma coluna chamada <strong style="color:var(--accent2)">Moderado</strong>.</p>
+      </div>`;
+    return;
+  }
+
   const moderadoCount = data.filter(row =>
-    headers.some(h => String(row[h] || '').trim().toLowerCase() === 'moderado')
+    String(row[mCol] || '').trim().toUpperCase() === 'SIM'
   ).length;
 
   const pct = total > 0 ? Math.round((moderadoCount / total) * 100) : 0;
@@ -1394,7 +1438,7 @@ function renderCharts() {
   const gap = circ - dash;
 
   el.innerHTML = `
-    <div class="chart-section-title">Análise · Itens Moderados</div>
+    <div class="chart-section-title">Análise · Consolidados na coluna Moderado</div>
 
     <div class="kpi-card">
       <div class="kpi-donut-wrap">
@@ -1409,20 +1453,20 @@ function renderCharts() {
         </svg>
         <div class="kpi-donut-center">
           <span class="kpi-pct">${pct}%</span>
-          <span class="kpi-pct-label">MODERADO</span>
+          <span class="kpi-pct-label">SIM</span>
         </div>
       </div>
 
       <div class="kpi-info">
-        <div class="kpi-title">Itens <span>Moderados</span></div>
+        <div class="kpi-title">Itens <span>Consolidados</span> (SIM)</div>
         <div class="kpi-desc">
-          Proporção de itens classificados como <strong style="color:var(--accent2)">Moderado</strong>
+          Proporção de itens consolidados (<strong style="color:var(--accent2)">SIM</strong> na coluna Moderado)
           em relação ao total de itens carregados da planilha.
         </div>
         <div class="kpi-numbers">
           <div class="kpi-num">
             <span class="kpi-num-val mod">${moderadoCount}</span>
-            <span class="kpi-num-lbl">Moderados</span>
+            <span class="kpi-num-lbl">SIM</span>
           </div>
           <div class="kpi-num">
             <span class="kpi-num-val" style="color:var(--muted)">${outros}</span>
@@ -1446,7 +1490,7 @@ function renderCharts() {
       <div class="bar-legend">
         <div class="bar-leg-item">
           <div class="bar-leg-dot" style="background:var(--accent2)"></div>
-          Moderado (${moderadoCount} itens · ${pct}%)
+          SIM na col. Moderado (${moderadoCount} itens · ${pct}%)
         </div>
         <div class="bar-leg-item">
           <div class="bar-leg-dot" style="background:var(--surface2);border:1px solid var(--border)"></div>
