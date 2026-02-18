@@ -502,6 +502,101 @@
     color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
     border-bottom: 1px solid var(--border); background: var(--surface2);
   }
+
+  /* ── ITEM DRAWER ─────────────────────────────────────────────────────────── */
+  #itemDrawer {
+    position: fixed; inset: 0; z-index: 800;
+    display: flex; justify-content: flex-end;
+    pointer-events: none;
+  }
+  #itemDrawer.open { pointer-events: all; }
+
+  .drawer-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(13,15,20,0); transition: background 0.3s;
+  }
+  #itemDrawer.open .drawer-backdrop { background: rgba(13,15,20,0.75); }
+
+  .drawer-panel {
+    position: relative; width: 100%; max-width: 420px;
+    background: var(--surface); border-left: 1px solid var(--border);
+    height: 100%; overflow-y: auto;
+    transform: translateX(100%); transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+    display: flex; flex-direction: column;
+  }
+  #itemDrawer.open .drawer-panel { transform: translateX(0); }
+
+  .drawer-top {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: var(--surface); z-index: 10;
+  }
+  .drawer-title {
+    font-family: var(--font-mono); font-size: 0.8rem;
+    color: var(--accent); letter-spacing: 2px;
+  }
+  .drawer-close {
+    background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.25);
+    color: var(--warn); width: 30px; height: 30px; border-radius: 7px;
+    cursor: pointer; font-size: 1rem; display: flex;
+    align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .drawer-close:hover { background: rgba(255,107,53,0.25); }
+
+  .drawer-body { padding: 20px; flex: 1; }
+
+  .drawer-badge-row { margin-bottom: 18px; }
+
+  .drawer-fields { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .drawer-field {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .drawer-field-label {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .drawer-field-value {
+    font-size: 0.9rem; color: var(--text); word-break: break-word; line-height: 1.5;
+  }
+  .drawer-field-value.empty { color: var(--muted); font-style: italic; font-size: 0.8rem; }
+
+  .drawer-actions {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 16px 20px; border-top: 1px solid var(--border);
+    position: sticky; bottom: 0; background: var(--surface);
+  }
+  .drawer-btn {
+    width: 100%; padding: 11px; border-radius: 9px;
+    font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;
+    cursor: pointer; border: none; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .drawer-btn-cons { background: var(--warn); color: #fff; }
+  .drawer-btn-cons:hover { filter: brightness(1.15); }
+  .drawer-btn-unlock { background: var(--accent2); color: #fff; }
+  .drawer-btn-unlock:hover { filter: brightness(1.15); }
+  .drawer-btn-save { background: rgba(0,229,160,0.12); color: var(--accent); border: 1px solid rgba(0,229,160,0.3) !important; }
+  .drawer-btn-save:hover { background: rgba(0,229,160,0.22); }
+
+  /* view button in table */
+  .btn-view {
+    background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2);
+    color: var(--accent); padding: 4px 9px; border-radius: 6px;
+    font-size: 0.75rem; cursor: pointer; font-family: var(--font-mono);
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-view:hover { background: rgba(0,229,160,0.18); }
+
+  @media(max-width:480px) {
+    .drawer-panel { max-width: 100%; border-left: none; border-top: 1px solid var(--border); }
+    #itemDrawer { align-items: flex-end; }
+    .drawer-panel { height: 90vh; border-radius: 16px 16px 0 0; }
+    .drawer-panel { transform: translateY(100%); }
+    #itemDrawer.open .drawer-panel { transform: translateY(0); }
+  }
 </style>
 </head>
 <body>
@@ -679,9 +774,7 @@
   </button>
 </div>
 
-<div id="colInfo" class="col-info" style="display:none">
-  Colunas detectadas: <span id="colInfoText"></span>
-</div>
+<div id="colInfo" style="display:none"><span id="colInfoText"></span></div>
 
 <div class="toolbar">
   <div class="search-wrap">
@@ -949,7 +1042,7 @@ function processRows(rows, filename) {
       return obj;
     });
   document.getElementById('colInfoText').textContent = headers.join(' · ');
-  document.getElementById('colInfo').style.display = '';
+  // colInfo hidden
   setSyncState('ok', `Arquivo local · ${data.length} itens`);
   document.getElementById('lastSync').textContent = `"${filename}" · ${new Date().toLocaleTimeString('pt-BR')}`;
   showToast(`✅ ${data.length} itens carregados de "${filename}"`);
@@ -1118,7 +1211,7 @@ async function syncSheet() {
     updatePublishBtn();
 
     document.getElementById('colInfoText').textContent = headers.join(' · ');
-    document.getElementById('colInfo').style.display = '';
+    // colInfo hidden
     setSyncState('ok', `Sincronizado · ${data.length} itens`);
     document.getElementById('lastSync').textContent =
       'Última sync: ' + new Date().toLocaleTimeString('pt-BR');
@@ -1243,6 +1336,43 @@ function setFilter(f, el) {
   render();
 }
 
+
+
+// ── ITEM DRAWER ───────────────────────────────────────────────────────────────
+function openDrawer(id) {
+  const row = data.find(r => r._id === id);
+  if (!row) return;
+
+  document.getElementById('drawerBadge').innerHTML = badge(row);
+
+  document.getElementById('drawerFields').innerHTML = headers.map(h => {
+    const val = row[h] || '';
+    return `<div class="drawer-field">
+      <div class="drawer-field-label">${esc(h)}</div>
+      <div class="drawer-field-value${!val ? ' empty' : ''}">${val ? esc(val) : 'Não informado'}</div>
+    </div>`;
+  }).join('');
+
+  const acts = document.getElementById('drawerActions');
+  acts.innerHTML = '';
+
+  if (row._locked) {
+    acts.innerHTML += `<button class="drawer-btn drawer-btn-unlock" onclick="unlock(${id});closeDrawer()">🔓 Desconsolidar item</button>`;
+  } else {
+    acts.innerHTML += `<button class="drawer-btn drawer-btn-cons" onclick="lock(${id});closeDrawer()">🔒 Consolidar item</button>`;
+  }
+  if (row._sheetRow && !row._locked) {
+    acts.innerHTML += `<button class="drawer-btn drawer-btn-save" onclick="saveRow(${id});closeDrawer()">💾 Salvar na planilha</button>`;
+  }
+
+  document.getElementById('itemDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('itemDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
 
 // ── DROPDOWN COLUMNS ──────────────────────────────────────────────────────────
 const DROPDOWN_COLS = ['equipamento','modelo','fabricante','situação','situacao'];
@@ -1397,6 +1527,7 @@ function render() {
       `).join('')}
       <td>${badge(row)}</td>
       <td><div class="action-btns">
+        <button class="btn-view" onclick="openDrawer(${row._id})">👁 Ver</button>
         ${row._locked
           ?`<button class="btn-unlock" onclick="unlock(${row._id})">🔓 Editar</button>`
           :`<button class="btn-cons"   onclick="lock(${row._id})">🔒 Consolidar</button>`}
@@ -1671,5 +1802,21 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 </script>
+
+<!-- ── ITEM DRAWER ───────────────────────────────────────────────────────── -->
+<div id="itemDrawer">
+  <div class="drawer-backdrop" onclick="closeDrawer()"></div>
+  <div class="drawer-panel">
+    <div class="drawer-top">
+      <span class="drawer-title">DETALHES DO ITEM</span>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-badge-row" id="drawerBadge"></div>
+      <div class="drawer-fields" id="drawerFields"></div>
+    </div>
+    <div class="drawer-actions" id="drawerActions"></div>
+  </div>
+</div>
 </body>
 </html>
