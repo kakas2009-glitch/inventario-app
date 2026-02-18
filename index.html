@@ -85,6 +85,8 @@
   }
   .btn-add { background: var(--accent); color: #0d0f14; }
   .btn-add:hover { background: #00ffb3; }
+  .btn-search { background: var(--accent2); color: #fff; }
+  .btn-search:hover { background: #1a8aff; }
 
   .col-info {
     margin: 12px 28px 0;
@@ -465,6 +467,41 @@
   }
   .chart-empty h3 { font-size: 1rem; color: var(--text); margin-bottom: 8px; }
   .chart-empty p { font-size: 0.82rem; line-height: 1.6; }
+
+  /* ── DROPDOWN CELL ───────────────────────────────────────────────────────── */
+  .cell-wrap { position: relative; display: flex; align-items: center; gap: 3px; }
+  .btn-dropdown {
+    background: rgba(0,119,255,0.1); border: 1px solid rgba(0,119,255,0.25);
+    color: var(--accent2); width: 22px; height: 22px; border-radius: 4px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.15s; padding: 0;
+  }
+  .btn-dropdown:hover { background: rgba(0,119,255,0.25); }
+  .dropdown-list {
+    position: absolute; top: 100%; left: 0; min-width: 180px; max-width: 280px;
+    background: var(--surface); border: 1px solid var(--accent2);
+    border-radius: 8px; z-index: 500; overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    margin-top: 3px;
+  }
+  .dropdown-list-inner { max-height: 200px; overflow-y: auto; }
+  .dropdown-item {
+    padding: 8px 13px; font-size: 0.82rem; cursor: pointer;
+    color: var(--text); transition: background 0.12s;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .dropdown-item:last-child { border-bottom: none; }
+  .dropdown-item:hover { background: var(--surface2); color: var(--accent); }
+  .dropdown-empty {
+    padding: 10px 13px; font-size: 0.78rem;
+    color: var(--muted); font-family: var(--font-mono);
+  }
+  .dropdown-header {
+    padding: 7px 13px; font-size: 0.68rem; font-family: var(--font-mono);
+    color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border); background: var(--surface2);
+  }
 </style>
 </head>
 <body>
@@ -651,8 +688,14 @@
     <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
     </svg>
-    <input class="search-input" id="searchInput" type="text" placeholder="Buscar em qualquer coluna...">
+    <input class="search-input" id="searchInput" type="text" placeholder="Buscar em qualquer coluna..." onkeydown="if(event.key==='Enter') doSearch()">
   </div>
+  <button class="btn btn-search" onclick="doSearch()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    Buscar
+  </button>
   <button class="btn btn-add" onclick="addRow()">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -1200,6 +1243,101 @@ function setFilter(f, el) {
   render();
 }
 
+
+// ── DROPDOWN COLUMNS ──────────────────────────────────────────────────────────
+const DROPDOWN_COLS = ['equipamento','modelo','fabricante','situação','situacao'];
+
+function isDropdownCol(h) {
+  return DROPDOWN_COLS.includes(h.trim().toLowerCase());
+}
+
+function getUniqueValues(col) {
+  const vals = data
+    .map(r => String(r[col] || '').trim())
+    .filter(v => v.length > 0);
+  return [...new Set(vals)].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+}
+
+function renderCell(row, h) {
+  const minW = h.length > 10 ? 130 : 85;
+  const val = esc(row[h] || '');
+  const disabled = row._locked ? 'disabled' : '';
+  const id = row._id;
+  const hEsc = escA(h);
+
+  if (!row._locked && isDropdownCol(h)) {
+    return `<div class="cell-wrap">
+      <input class="cell-input" style="min-width:${minW}px"
+        id="ci_${id}_${escA(h)}"
+        value="${val}"
+        onchange="upd(${id},'${hEsc}',this.value)">
+      <button class="btn-dropdown" onclick="showDropdown(event,${id},'${hEsc}')" title="Ver opções">
+        <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+    </div>`;
+  }
+
+  return `<input class="cell-input" style="min-width:${minW}px"
+    value="${val}" ${disabled}
+    onchange="upd(${id},'${hEsc}',this.value)">`;
+}
+
+let activeDropdown = null;
+
+function showDropdown(e, id, col) {
+  e.stopPropagation();
+  closeDropdown();
+
+  // Find the actual header key (un-escaped)
+  const h = headers.find(hh => escA(hh) === col) || col;
+  const values = getUniqueValues(h);
+  const btn = e.currentTarget;
+  const wrap = btn.closest('.cell-wrap');
+
+  const dl = document.createElement('div');
+  dl.className = 'dropdown-list';
+  dl.innerHTML = `
+    <div class="dropdown-header">Valores cadastrados</div>
+    <div class="dropdown-list-inner">
+      ${values.length
+        ? values.map(v => `<div class="dropdown-item" onclick="selectDropdown(${id},'${col}',this)">${esc(v)}</div>`).join('')
+        : `<div class="dropdown-empty">Nenhum valor encontrado</div>`
+      }
+    </div>`;
+
+  wrap.style.position = 'relative';
+  wrap.appendChild(dl);
+  activeDropdown = dl;
+
+  // Close on outside click
+  setTimeout(() => document.addEventListener('click', closeDropdown, { once: true }), 10);
+}
+
+function selectDropdown(id, col, el) {
+  const val = el.textContent.trim();
+  const h = headers.find(hh => escA(hh) === col) || col;
+  const inputId = `ci_${id}_${col}`;
+  const input = document.getElementById(inputId);
+  if (input) { input.value = val; }
+  upd(id, h, val);
+  closeDropdown();
+}
+
+function closeDropdown() {
+  if (activeDropdown) { activeDropdown.remove(); activeDropdown = null; }
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q && filterState === 'all') {
+    showToast('⚠️ Digite algo para buscar.', true);
+    return;
+  }
+  render();
+}
+
 function render() {
   const q = document.getElementById('searchInput').value.trim().toLowerCase();
   const emptyState   = document.getElementById('emptyState');
@@ -1255,10 +1393,7 @@ function render() {
     <tr class="${row._locked?'locked-row':''}${pendingChanges.has(row._id)?' pending-row':''}">
       <td style="color:var(--muted);font-family:var(--font-mono);font-size:0.72rem">${i+1}</td>
       ${headers.map(h=>`
-        <td><input class="cell-input" style="min-width:${h.length>10?130:85}px"
-          value="${esc(row[h]||'')}"
-          ${row._locked?'disabled':''}
-          onchange="upd(${row._id},'${escA(h)}',this.value)"></td>
+        <td>${renderCell(row, h)}</td>
       `).join('')}
       <td>${badge(row)}</td>
       <td><div class="action-btns">
@@ -1390,7 +1525,7 @@ function showToast(msg, err=false) {
   tTimer = setTimeout(()=>t.classList.remove('show'), 3500);
 }
 
-document.getElementById('searchInput').addEventListener('input', render);
+// Search triggered by button or Enter key only
 
 // Enter key support for login
 ['loginUser','loginPass'].forEach(id =>
