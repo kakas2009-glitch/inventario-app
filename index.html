@@ -675,8 +675,16 @@
     <tbody id="tBody"></tbody>
   </table>
   <div class="empty" id="emptyState">
-    <h3>Pronto para conectar!</h3>
-    <p>Clique em <strong style="color:var(--accent)">Sincronizar Planilha</strong> para carregar<br>seus dados do Google Sheets automaticamente.</p>
+    <h3 id="emptyTitle">Pronto para conectar!</h3>
+    <p id="emptyMsg">Clique em <strong style="color:var(--accent)">Sincronizar Planilha</strong> para carregar<br>seus dados do Google Sheets automaticamente.</p>
+  </div>
+  <div class="empty" id="searchPrompt" style="display:none;">
+    <div style="font-size:2.5rem;margin-bottom:16px;">🔍</div>
+    <h3>Digite para buscar</h3>
+    <p>Use a barra de pesquisa acima para localizar itens.<br>
+    <span style="color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;">
+      <strong id="searchPromptCount" style="color:var(--accent)">0</strong> itens carregados
+    </span></p>
   </div>
 </div>
 
@@ -1193,28 +1201,50 @@ function setFilter(f, el) {
 }
 
 function render() {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const empty = document.getElementById('emptyState');
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const emptyState   = document.getElementById('emptyState');
+  const searchPrompt = document.getElementById('searchPrompt');
 
-  if (!data.length) { empty.style.display=''; document.getElementById('tHead').innerHTML=''; document.getElementById('tBody').innerHTML=''; updateStats(); return; }
+  updateStats();
 
+  // No data loaded yet
+  if (!data.length) {
+    emptyState.style.display = '';
+    searchPrompt.style.display = 'none';
+    document.getElementById('tHead').innerHTML = '';
+    document.getElementById('tBody').innerHTML = '';
+    return;
+  }
+
+  // Data loaded but no search query — show prompt
+  if (!q && filterState === 'all') {
+    emptyState.style.display = 'none';
+    searchPrompt.style.display = '';
+    document.getElementById('searchPromptCount').textContent = data.length;
+    document.getElementById('tHead').innerHTML = '';
+    document.getElementById('tBody').innerHTML = '';
+    return;
+  }
+
+  // Has query or active filter — show results
   const filtered = data.filter(row => {
     const ms = !q || headers.some(h => (row[h]||'').toLowerCase().includes(q));
     const mf = filterState==='all' || (filterState==='locked'&&row._locked) || (!row._locked&&filterState===status(row));
     return ms && mf;
   });
 
-  updateStats();
+  searchPrompt.style.display = 'none';
 
   if (!filtered.length) {
-    empty.style.display='';
-    empty.querySelector('h3').textContent='Nenhum resultado';
-    empty.querySelector('p').textContent='Tente outros termos ou filtros.';
-    document.getElementById('tHead').innerHTML='';
-    document.getElementById('tBody').innerHTML='';
+    emptyState.style.display = '';
+    document.getElementById('emptyTitle').textContent = 'Nenhum resultado';
+    document.getElementById('emptyMsg').innerHTML = 'Tente outros termos ou filtros.';
+    document.getElementById('tHead').innerHTML = '';
+    document.getElementById('tBody').innerHTML = '';
     return;
   }
-  empty.style.display='none';
+
+  emptyState.style.display = 'none';
 
   document.getElementById('tHead').innerHTML =
     `<th style="width:34px">#</th>` +
