@@ -597,6 +597,59 @@
     .drawer-panel { transform: translateY(100%); }
     #itemDrawer.open .drawer-panel { transform: translateY(0); }
   }
+
+  /* ── DRAWER EDIT FIELDS ──────────────────────────────────────────────────── */
+  .drawer-field.editable { border-color: rgba(0,229,160,0.25); background: rgba(0,229,160,0.03); }
+  .drawer-field.readonly { opacity: 0.75; }
+  .drawer-field-label-row {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+  }
+  .drawer-edit-tag {
+    font-size: 0.58rem; font-family: var(--font-mono); color: var(--accent);
+    background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.2);
+    padding: 1px 6px; border-radius: 10px; letter-spacing: 1px;
+  }
+  .drawer-date-tag {
+    font-size: 0.58rem; font-family: var(--font-mono); color: var(--accent2);
+    background: rgba(0,119,255,0.1); border: 1px solid rgba(0,119,255,0.2);
+    padding: 1px 6px; border-radius: 10px; letter-spacing: 1px;
+  }
+  .drawer-field-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font-main); font-size: 0.88rem;
+    padding: 8px 11px; border-radius: 7px; outline: none; transition: all 0.2s;
+  }
+  .drawer-field-input:focus { border-color: var(--accent); background: var(--bg); }
+  .drawer-field-input::placeholder { color: var(--muted); }
+  .drawer-field-input[type="date"] {
+    color-scheme: dark; cursor: pointer;
+    border-color: rgba(0,119,255,0.3);
+  }
+  .drawer-field-input[type="date"]:focus { border-color: var(--accent2); }
+  .drawer-field-textarea {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font-main); font-size: 0.88rem;
+    padding: 8px 11px; border-radius: 7px; outline: none; transition: all 0.2s;
+    resize: vertical; min-height: 70px; line-height: 1.5;
+  }
+  .drawer-field-textarea:focus { border-color: var(--accent); background: var(--bg); }
+  .drawer-dropdown-wrap { position: relative; }
+  .drawer-dropdown-btn {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: rgba(0,119,255,0.12); border: 1px solid rgba(0,119,255,0.25);
+    color: var(--accent2); border-radius: 5px; width: 22px; height: 22px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .drawer-dropdown-btn:hover { background: rgba(0,119,255,0.25); }
+  .drawer-field-input.has-dropdown { padding-right: 36px; }
+  .btn-drawer-save-all {
+    background: var(--accent); color: #0d0f14; width: 100%; padding: 12px;
+    border-radius: 9px; font-family: var(--font-mono); font-size: 0.82rem;
+    font-weight: 700; cursor: pointer; border: none; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    letter-spacing: 1px;
+  }
+  .btn-drawer-save-all:hover { background: #00ffb3; }
 </style>
 </head>
 <body>
@@ -1034,11 +1087,17 @@ function processRows(rows, filename) {
   headers = rows[0].map(h => String(h).trim()).filter(Boolean);
   const qIdx = headers.findIndex(h => /qtd|quant|quantidade|qty|estoque|stock/i.test(h));
   const qCol = qIdx >= 0 ? headers[qIdx] : null;
+  const mColIdx = headers.findIndex(h => h.trim().toLowerCase() === 'moderado');
+  const mColName = mColIdx >= 0 ? headers[mColIdx] : null;
   data = rows.slice(1)
     .filter(r => r.some(c => c && String(c).trim()))
     .map(row => {
       const obj = { _id: nextId++, _locked: false, _qCol: qCol };
       headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? String(row[i]) : ''; });
+      // Auto-lock if Moderado === 'SIM'
+      if (mColName && String(obj[mColName] || '').trim().toUpperCase() === 'SIM') {
+        obj._locked = true;
+      }
       return obj;
     });
   document.getElementById('colInfoText').textContent = headers.join(' · ');
@@ -1199,11 +1258,17 @@ async function syncSheet() {
     const qIdx = headers.findIndex(h => /qtd|quant|quantidade|qty|estoque|stock/i.test(h));
     const qCol = qIdx >= 0 ? headers[qIdx] : null;
 
+    const mColIdx = headers.findIndex(h => h.trim().toLowerCase() === 'moderado');
+    const mColName = mColIdx >= 0 ? headers[mColIdx] : null;
     data = rows.slice(1)
       .filter(r => r.some(c => c && String(c).trim()))
       .map((row, idx) => {
-        const obj = { _id: nextId++, _locked: false, _qCol: qCol, _sheetRow: idx + 2 }; // +2: 1 for header, 1 for 1-based
+        const obj = { _id: nextId++, _locked: false, _qCol: qCol, _sheetRow: idx + 2 };
         headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? String(row[i]) : ''; });
+        // Auto-lock if Moderado === 'SIM'
+        if (mColName && String(obj[mColName] || '').trim().toUpperCase() === 'SIM') {
+          obj._locked = true;
+        }
         return obj;
       });
 
@@ -1339,35 +1404,200 @@ function setFilter(f, el) {
 
 
 // ── ITEM DRAWER ───────────────────────────────────────────────────────────────
+// Columns editable via dropdown
+const DRAWER_DROPDOWN_COLS = ['equipamento','modelo','fabricante','setor','situação','situacao'];
+// Columns that are dates
+function isDateCol(h) {
+  return /data|date|vencimento|validade|prazo|instalação|instalacao|aquisição|aquisicao/i.test(h);
+}
+// Columns editable freely (dropdown + date + textarea)
+const DRAWER_EDIT_COLS = ['equipamento','modelo','fabricante','setor','situação','situacao'];
+
+function isDrawerDropdown(h) {
+  return DRAWER_DROPDOWN_COLS.includes(h.trim().toLowerCase());
+}
+function isDrawerEdit(h) {
+  return DRAWER_EDIT_COLS.includes(h.trim().toLowerCase()) || isDateCol(h);
+}
+
 function openDrawer(id) {
   const row = data.find(r => r._id === id);
   if (!row) return;
 
   document.getElementById('drawerBadge').innerHTML = badge(row);
-
-  document.getElementById('drawerFields').innerHTML = headers.map(h => {
-    const val = row[h] || '';
-    return `<div class="drawer-field">
-      <div class="drawer-field-label">${esc(h)}</div>
-      <div class="drawer-field-value${!val ? ' empty' : ''}">${val ? esc(val) : 'Não informado'}</div>
-    </div>`;
-  }).join('');
+  document.getElementById('drawerFields').innerHTML = headers.map(h => buildDrawerField(row, h)).join('');
 
   const acts = document.getElementById('drawerActions');
   acts.innerHTML = '';
 
+  // Save changes button (always shown when not locked)
+  if (!row._locked) {
+    acts.innerHTML += `<button class="btn-drawer-save-all" onclick="saveDrawerChanges(${id})">✅ Salvar alterações</button>`;
+  }
   if (row._locked) {
-    acts.innerHTML += `<button class="drawer-btn drawer-btn-unlock" onclick="unlock(${id});closeDrawer()">🔓 Desconsolidar item</button>`;
+    acts.innerHTML += `<button class="drawer-btn drawer-btn-unlock" onclick="unlock(${id});openDrawer(${id})">🔓 Desconsolidar</button>`;
   } else {
-    acts.innerHTML += `<button class="drawer-btn drawer-btn-cons" onclick="lock(${id});closeDrawer()">🔒 Consolidar item</button>`;
+    acts.innerHTML += `<button class="drawer-btn drawer-btn-cons" onclick="lock(${id});openDrawer(${id})">🔒 Consolidar</button>`;
   }
   if (row._sheetRow && !row._locked) {
-    acts.innerHTML += `<button class="drawer-btn drawer-btn-save" onclick="saveRow(${id});closeDrawer()">💾 Salvar na planilha</button>`;
+    acts.innerHTML += `<button class="drawer-btn drawer-btn-save" onclick="saveRow(${id})">💾 Salvar na planilha</button>`;
   }
 
   document.getElementById('itemDrawer').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
+
+function buildDrawerField(row, h) {
+  const val = row[h] || '';
+  const locked = row._locked;
+  const isEdit = isDrawerEdit(h) || true; // all fields editable
+  const isDD = isDrawerDropdown(h);
+  const isDate = isDateCol(h);
+
+  if (locked) {
+    // Read-only when locked
+    return `<div class="drawer-field readonly">
+      <div class="drawer-field-label-row">
+        <div class="drawer-field-label">${esc(h)}</div>
+      </div>
+      <div class="drawer-field-value${!val ? ' empty' : ''}">${val ? esc(val) : 'Não informado'}</div>
+    </div>`;
+  }
+
+  if (isDate) {
+    // Format value to YYYY-MM-DD for date input if possible
+    let dateVal = '';
+    if (val) {
+      // Try DD/MM/YYYY → YYYY-MM-DD
+      const dmyMatch = val.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (dmyMatch) dateVal = `${dmyMatch[3]}-${dmyMatch[2].padStart(2,'0')}-${dmyMatch[1].padStart(2,'0')}`;
+      else dateVal = val; // assume already ISO
+    }
+    return `<div class="drawer-field editable">
+      <div class="drawer-field-label-row">
+        <div class="drawer-field-label">${esc(h)}</div>
+        <span class="drawer-date-tag">📅 DATA</span>
+      </div>
+      <input type="date" class="drawer-field-input"
+        id="dfield_${row._id}_${escA(h)}"
+        value="${dateVal}"
+        onchange="drawerFieldChange(${row._id},'${escA(h)}',this.value)">
+    </div>`;
+  }
+
+  if (isDD) {
+    const opts = getUniqueValues(h);
+    return `<div class="drawer-field editable">
+      <div class="drawer-field-label-row">
+        <div class="drawer-field-label">${esc(h)}</div>
+        <span class="drawer-edit-tag">EDITÁVEL</span>
+      </div>
+      <div class="drawer-dropdown-wrap">
+        <input type="text" class="drawer-field-input has-dropdown"
+          id="dfield_${row._id}_${escA(h)}"
+          value="${esc(val)}" placeholder="Digite ou selecione..."
+          onchange="drawerFieldChange(${row._id},'${escA(h)}',this.value)">
+        <button class="drawer-dropdown-btn" onclick="showDrawerDropdown(event,${row._id},'${escA(h)}')"
+          title="Ver opções">
+          <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+      </div>
+    </div>`;
+  }
+
+  // Default: textarea for long text, input for short
+  const isLong = val.length > 60;
+  return `<div class="drawer-field editable">
+    <div class="drawer-field-label-row">
+      <div class="drawer-field-label">${esc(h)}</div>
+      <span class="drawer-edit-tag">EDITÁVEL</span>
+    </div>
+    ${isLong
+      ? `<textarea class="drawer-field-textarea"
+          id="dfield_${row._id}_${escA(h)}"
+          onchange="drawerFieldChange(${row._id},'${escA(h)}',this.value)">${esc(val)}</textarea>`
+      : `<input type="text" class="drawer-field-input"
+          id="dfield_${row._id}_${escA(h)}"
+          value="${esc(val)}" placeholder="Não informado"
+          onchange="drawerFieldChange(${row._id},'${escA(h)}',this.value)">`
+    }
+  </div>`;
+}
+
+// Track drawer changes separately before committing
+let drawerChanges = {};
+
+function drawerFieldChange(id, col, val) {
+  if (!drawerChanges[id]) drawerChanges[id] = {};
+  drawerChanges[id][col] = val;
+}
+
+function saveDrawerChanges(id) {
+  const row = data.find(r => r._id === id);
+  if (!row) return;
+  const changes = drawerChanges[id] || {};
+  let changed = false;
+
+  for (const [col, val] of Object.entries(changes)) {
+    const h = headers.find(hh => escA(hh) === col) || col;
+    // Convert date back to DD/MM/YYYY for consistency
+    let finalVal = val;
+    if (isDateCol(h) && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+      const [y,m,d] = val.split('-');
+      finalVal = `${d}/${m}/${y}`;
+    }
+    row[h] = finalVal;
+    changed = true;
+  }
+
+  if (changed) {
+    if (row._sheetRow) pendingChanges.add(id);
+    updatePublishBtn();
+    drawerChanges[id] = {};
+    render();
+    // Refresh badge in drawer
+    document.getElementById('drawerBadge').innerHTML = badge(row);
+    showToast('✅ Alterações aplicadas! Clique em Salvar na planilha para publicar.');
+  } else {
+    showToast('⚠️ Nenhuma alteração detectada.', true);
+  }
+}
+
+function showDrawerDropdown(e, id, col) {
+  e.stopPropagation();
+  closeDropdown();
+  const h = headers.find(hh => escA(hh) === col) || col;
+  const values = getUniqueValues(h);
+  const btn = e.currentTarget;
+  const wrap = btn.closest('.drawer-dropdown-wrap');
+
+  const dl = document.createElement('div');
+  dl.className = 'dropdown-list';
+  dl.style.cssText = 'position:absolute;top:100%;left:0;right:0;z-index:900;margin-top:3px;';
+  dl.innerHTML = `
+    <div class="dropdown-header">Valores cadastrados</div>
+    <div class="dropdown-list-inner">
+      ${values.length
+        ? values.map(v => `<div class="dropdown-item" onclick="pickDrawerDropdown(${id},'${col}',this)">${esc(v)}</div>`).join('')
+        : `<div class="dropdown-empty">Nenhum valor encontrado</div>`}
+    </div>`;
+
+  wrap.style.position = 'relative';
+  wrap.appendChild(dl);
+  activeDropdown = dl;
+  setTimeout(() => document.addEventListener('click', closeDropdown, { once: true }), 10);
+}
+
+function pickDrawerDropdown(id, col, el) {
+  const val = el.textContent.trim();
+  const inputEl = document.getElementById(`dfield_${id}_${col}`);
+  if (inputEl) inputEl.value = val;
+  drawerFieldChange(id, col, val);
+  closeDropdown();
+}
+
 
 function closeDrawer() {
   document.getElementById('itemDrawer').classList.remove('open');
