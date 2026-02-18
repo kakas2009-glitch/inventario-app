@@ -917,22 +917,15 @@
 
 <script>
 // ── AUTH ──────────────────────────────────────────────────────────────────────
-const USERS_KEY = 'invctr_users';
 const SESSION_KEY = 'invctr_session';
+const USERS_SHEET_NAME = 'Usuários';
+const DEFAULT_ADMIN = { user: 'ericson', name: 'Ericson Cardoso', hash: btoa('123456'), admin: true };
 
-function getUsers() { try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); } catch { return {}; } }
-function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+// In-memory users cache loaded from Sheets
+let usersCache = null;
+
 function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; } }
 function saveSession(s) { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
-
-// Create default admin on first load
-(function initAdmin() {
-  const users = getUsers();
-  if (!users['ericson']) {
-    users['ericson'] = { name: 'Ericson Cardoso', hash: btoa('123456'), admin: true };
-    saveUsers(users);
-  }
-})();
 
 function authErr(msg) {
   const el = document.getElementById('authErr');
@@ -943,15 +936,123 @@ function adminErr(id, msg) {
   el.textContent = msg; el.classList.toggle('show', !!msg);
 }
 
-function doLogin() {
+// ── USERS SHEET HELPERS ───────────────────────────────────────────────────────
+// Sheet columns: usuario | nome | hash | admin
+async function loadUsersFromSheet() {
+  try {
+    const token = await getToken();
+    const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`,
+      { headers: { Authorization: `Bearer ${token}` } });
+    const meta = await metaRes.json();
+
+    // Check if Usuários tab exists
+    const userSheet = meta.sheets?.find(s => s.properties.title === USERS_SHEET_NAME);
+
+    if (!userSheet) {
+      // Create the tab with header + default admin
+      await createUsersSheet(token);
+      usersCache = buildDefaultUsers();
+      return usersCache;
+    }
+
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(USERS_SHEET_NAME)}!A1:D200`,
+      { headers: { Authorization: `Bearer ${token}` } });
+    const json = await res.json();
+    const rows = json.values || [];
+
+    if (rows.length < 2) {
+      // Empty sheet — seed default admin
+      await writeUsersToSheet(token, buildDefaultUsers());
+      usersCache = buildDefaultUsers();
+      return usersCache;
+    }
+
+    // Parse rows (skip header row 0)
+    const users = {};
+    rows.slice(1).forEach(r => {
+      if (!r[0]) return;
+      users[r[0]] = { name: r[1] || '', hash: r[2] || '', admin: r[3] === 'true' };
+    });
+
+    // Ensure default admin always exists
+    if (!users[DEFAULT_ADMIN.user]) {
+      users[DEFAULT_ADMIN.user] = { name: DEFAULT_ADMIN.name, hash: DEFAULT_ADMIN.hash, admin: true };
+      await writeUsersToSheet(token, users);
+    }
+
+    usersCache = users;
+    return users;
+  } catch(e) {
+    console.error('Erro ao carregar usuários:', e);
+    // Fallback to default admin only
+    usersCache = buildDefaultUsers();
+    return usersCache;
+  }
+}
+
+function buildDefaultUsers() {
+  return { [DEFAULT_ADMIN.user]: { name: DEFAULT_ADMIN.name, hash: DEFAULT_ADMIN.hash, admin: true } };
+}
+
+async function createUsersSheet(token) {
+  // Add new sheet tab
+  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ requests: [{ addSheet: { properties: { title: USERS_SHEET_NAME } } }] })
+  });
+  // Write header + default admin
+  await writeUsersToSheet(token, buildDefaultUsers());
+}
+
+async function writeUsersToSheet(token, users) {
+  const rows = [['usuario','nome','hash','admin']];
+  Object.entries(users).forEach(([k, u]) => {
+    rows.push([k, u.name, u.hash, String(u.admin)]);
+  });
+  await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(USERS_SHEET_NAME)}!A1:D${rows.length}?valueInputOption=RAW`,
+    {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ range: `${USERS_SHEET_NAME}!A1:D${rows.length}`, majorDimension: 'ROWS', values: rows })
+    }
+  );
+  usersCache = users;
+}
+
+async function saveUsersToSheet(users) {
+  try {
+    const token = await getToken();
+    await writeUsersToSheet(token, users);
+  } catch(e) {
+    showToast('⚠️ Erro ao salvar usuários na planilha.', true);
+    console.error(e);
+  }
+}
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+async function doLogin() {
   const user = document.getElementById('loginUser').value.trim().toLowerCase();
   const pass = document.getElementById('loginPass').value;
   if (!user || !pass) return authErr('Preencha usuário e senha.');
-  const users = getUsers();
-  if (!users[user]) return authErr('Usuário não encontrado.');
-  if (users[user].hash !== btoa(pass)) return authErr('Senha incorreta.');
-  saveSession({ user, name: users[user].name, admin: !!users[user].admin });
-  showApp(users[user].name, !!users[user].admin);
+
+  authErr('');
+  const btn = document.querySelector('.btn-auth');
+  btn.textContent = 'Aguarde...'; btn.disabled = true;
+
+  try {
+    const users = await loadUsersFromSheet();
+    if (!users[user]) return authErr('Usuário não encontrado.');
+    if (users[user].hash !== btoa(pass)) return authErr('Senha incorreta.');
+    saveSession({ user, name: users[user].name, admin: !!users[user].admin });
+    showApp(users[user].name, !!users[user].admin);
+  } catch(e) {
+    authErr('Erro ao conectar. Tente novamente.');
+  } finally {
+    btn.textContent = 'ENTRAR →'; btn.disabled = false;
+  }
 }
 
 function showApp(name, isAdmin) {
@@ -959,16 +1060,13 @@ function showApp(name, isAdmin) {
   document.getElementById('headerUser').textContent = name;
   document.getElementById('navUserName').textContent = name;
   document.getElementById('btnAdminPanel').style.display = isAdmin ? '' : 'none';
-  // Show nav screen, sync in background
   goTo('nav');
-  setTimeout(() => {
-    syncSheet().then(() => updateNavSync());
-  }, 300);
+  setTimeout(() => { syncSheet().then(() => updateNavSync()); }, 300);
 }
 
 function doLogout() {
   localStorage.removeItem(SESSION_KEY);
-  // Hide all screens
+  usersCache = null;
   document.getElementById('navScreen').classList.remove('active');
   document.getElementById('inventoryScreen').style.display = 'none';
   document.getElementById('chartScreen').classList.remove('active');
@@ -979,15 +1077,19 @@ function doLogout() {
 }
 
 // ── ADMIN PANEL ───────────────────────────────────────────────────────────────
-function openAdmin() {
+async function openAdmin() {
   const s = getSession();
   if (!s || !s.admin) return showToast('❌ Acesso negado', true);
   document.getElementById('adminOverlay').style.display = 'flex';
+  setLoad(true, 'Carregando usuários...');
+  await loadUsersFromSheet();
+  setLoad(false);
   renderAdminUsers();
   refreshChgSelect();
   adminErr('adminErr', '');
   adminErr('adminPassErr', '');
 }
+
 function closeAdmin() {
   document.getElementById('adminOverlay').style.display = 'none';
   ['regName','regUser','regPass','regPass2','chgPass','chgPass2'].forEach(id => {
@@ -996,7 +1098,7 @@ function closeAdmin() {
 }
 
 function renderAdminUsers() {
-  const users = getUsers();
+  const users = usersCache || {};
   const session = getSession();
   const list = document.getElementById('adminUserList');
   const entries = Object.entries(users);
@@ -1013,24 +1115,24 @@ function renderAdminUsers() {
 }
 
 function refreshChgSelect() {
-  const users = getUsers();
+  const users = usersCache || {};
   const sel = document.getElementById('chgUser');
   sel.innerHTML = Object.entries(users).map(([k,u]) => `<option value="${k}">${u.name} (@${k})</option>`).join('');
 }
 
-function deleteUser(key) {
+async function deleteUser(key) {
   const session = getSession();
   if (key === session?.user) return showToast('❌ Não é possível remover a si mesmo.', true);
-  const users = getUsers();
+  const users = usersCache || {};
   const name = users[key]?.name || key;
   delete users[key];
-  saveUsers(users);
+  await saveUsersToSheet(users);
   showToast(`🗑 Usuário "${name}" removido.`);
   renderAdminUsers();
   refreshChgSelect();
 }
 
-function doRegister() {
+async function doRegister() {
   const name = document.getElementById('regName').value.trim();
   const user = document.getElementById('regUser').value.trim().toLowerCase();
   const pass = document.getElementById('regPass').value;
@@ -1040,33 +1142,33 @@ function doRegister() {
   if (!/^[a-z0-9_]+$/.test(user)) return adminErr('adminErr', 'Usuário: apenas letras, números e _');
   if (pass.length < 6) return adminErr('adminErr', 'Senha mínima: 6 caracteres.');
   if (pass !== pass2) return adminErr('adminErr', 'As senhas não coincidem.');
-  const users = getUsers();
+  const users = usersCache || {};
   if (users[user]) return adminErr('adminErr', 'Usuário já cadastrado.');
   users[user] = { name, hash: btoa(pass), admin: isAdmin };
-  saveUsers(users);
+  await saveUsersToSheet(users);
   adminErr('adminErr', '');
   ['regName','regUser','regPass','regPass2'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('regIsAdmin').checked = false;
-  showToast(`✅ Usuário "${name}" adicionado!`);
+  showToast(`✅ Usuário "${name}" salvo na planilha!`);
   renderAdminUsers();
   refreshChgSelect();
 }
 
-function doChangePass() {
+async function doChangePass() {
   const user = document.getElementById('chgUser').value;
   const pass = document.getElementById('chgPass').value;
   const pass2 = document.getElementById('chgPass2').value;
   if (!user || !pass) return adminErr('adminPassErr', 'Selecione o usuário e informe a nova senha.');
   if (pass.length < 6) return adminErr('adminPassErr', 'Senha mínima: 6 caracteres.');
   if (pass !== pass2) return adminErr('adminPassErr', 'As senhas não coincidem.');
-  const users = getUsers();
+  const users = usersCache || {};
   if (!users[user]) return adminErr('adminPassErr', 'Usuário não encontrado.');
   users[user].hash = btoa(pass);
-  saveUsers(users);
+  await saveUsersToSheet(users);
   adminErr('adminPassErr', '');
   document.getElementById('chgPass').value = '';
   document.getElementById('chgPass2').value = '';
-  showToast(`✅ Senha de "${users[user].name}" alterada!`);
+  showToast(`✅ Senha de "${users[user].name}" alterada na planilha!`);
 }
 
 // Check existing session on load
