@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Inventário</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00e5a0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Inventário">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a24;
+    --surface2: #1e2436;
+    --border: #2a3050;
+    --accent: #00e5a0;
+    --accent2: #0077ff;
+    --warn: #ff6b35;
+    --text: #e8eaf0;
+    --muted: #6b748c;
+    --locked: #2a1a0a;
+    --font-mono: 'Space Mono', monospace;
+    --font-main: 'Sora', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-main); min-height: 100vh; }
+
+  header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 16px 28px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: var(--font-mono); font-size: 1.05rem; color: var(--accent); letter-spacing: 2px; }
+  .logo span { color: var(--muted); }
+  .stats { display: flex; gap: 20px; font-size: 0.76rem; color: var(--muted); font-family: var(--font-mono); }
+  .stats strong { color: var(--text); }
+
+  .sync-bar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 10px 28px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .sync-status { display: flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 0.78rem; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+  .dot.green { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+  .dot.yellow { background: #ffc107; animation: pulse 1s infinite; }
+  .dot.red { background: var(--warn); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .btn-sync {
+    margin-left: auto; background: rgba(0,229,160,0.1);
+    border: 1px solid rgba(0,229,160,0.3); color: var(--accent);
+    padding: 7px 14px; border-radius: 7px; font-size: 0.78rem;
+    font-family: var(--font-mono); cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-sync:hover { background: rgba(0,229,160,0.2); }
+  .btn-sync:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .toolbar {
+    padding: 16px 28px; display: flex; gap: 10px; align-items: center;
+    flex-wrap: wrap; background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 220px; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+  .search-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font-main); font-size: 0.88rem;
+    padding: 9px 12px 9px 38px; border-radius: 8px; outline: none; transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+
+  .btn {
+    padding: 9px 16px; border-radius: 8px; font-family: var(--font-main);
+    font-size: 0.83rem; font-weight: 600; cursor: pointer; border: none;
+    transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-add { background: var(--accent); color: #0d0f14; }
+  .btn-add:hover { background: #00ffb3; }
+
+  .col-info {
+    margin: 12px 28px 0;
+    background: rgba(0,119,255,0.07); border: 1px solid rgba(0,119,255,0.2);
+    border-radius: 8px; padding: 9px 15px;
+    font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono);
+  }
+  .col-info span { color: var(--accent2); }
+
+  .filter-tabs { display: flex; gap: 7px; padding: 14px 28px 0; flex-wrap: wrap; }
+  .filter-tab {
+    padding: 5px 13px; border-radius: 6px; font-size: 0.76rem;
+    font-family: var(--font-mono); cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.2s;
+  }
+  .filter-tab.active { background: var(--surface2); color: var(--text); border-color: var(--accent); }
+
+  .table-wrap { padding: 20px 28px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  thead tr { border-bottom: 2px solid var(--border); }
+  th {
+    text-align: left; padding: 9px 12px; color: var(--muted);
+    font-size: 0.72rem; font-family: var(--font-mono); letter-spacing: 1px;
+    text-transform: uppercase; white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover:not(.locked-row) { background: var(--surface2); }
+  tbody tr.locked-row { background: var(--locked); }
+  td { padding: 9px 12px; vertical-align: middle; }
+
+  .cell-input {
+    background: transparent; border: 1px solid transparent; color: var(--text);
+    font-family: var(--font-main); font-size: 0.86rem;
+    padding: 4px 7px; border-radius: 5px; width: 100%; outline: none; transition: all 0.2s;
+  }
+  .cell-input:not([disabled]):hover { border-color: var(--border); }
+  .cell-input:not([disabled]):focus { border-color: var(--accent); background: var(--surface2); }
+  .cell-input[disabled] { cursor: not-allowed; color: var(--muted); opacity: 0.65; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px;
+    border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+    font-family: var(--font-mono); white-space: nowrap;
+  }
+  .badge-ok { background: rgba(0,229,160,0.1); color: var(--accent); }
+  .badge-low { background: rgba(255,193,7,0.1); color: #ffc107; }
+  .badge-out { background: rgba(255,107,53,0.1); color: var(--warn); }
+  .badge-locked { background: rgba(255,107,53,0.12); color: var(--warn); }
+
+  .action-btns { display: flex; gap: 5px; }
+  .btn-cons {
+    background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.25);
+    color: var(--warn); padding: 4px 10px; border-radius: 6px;
+    font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: var(--font-mono);
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-cons:hover { background: rgba(255,107,53,0.22); }
+  .btn-unlock {
+    background: rgba(0,119,255,0.1); border: 1px solid rgba(0,119,255,0.25);
+    color: var(--accent2); padding: 4px 10px; border-radius: 6px;
+    font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: var(--font-mono);
+    transition: all 0.2s;
+  }
+  .btn-unlock:hover { background: rgba(0,119,255,0.22); }
+
+  .empty { text-align: center; padding: 60px 28px; color: var(--muted); }
+  .empty h3 { font-size: 1.05rem; margin-bottom: 8px; color: var(--text); }
+  .empty p { font-size: 0.83rem; line-height: 1.6; }
+
+  #toast {
+    position: fixed; bottom: 22px; right: 22px;
+    background: var(--surface2); border: 1px solid var(--accent);
+    color: var(--text); padding: 11px 18px; border-radius: 9px;
+    font-size: 0.83rem; font-family: var(--font-mono);
+    opacity: 0; transform: translateY(10px); transition: all 0.3s;
+    pointer-events: none; z-index: 999; max-width: 340px;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+  #toast.err { border-color: var(--warn); }
+
+  .loading-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(13,15,20,0.82);
+    z-index: 500; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: var(--font-mono); color: var(--muted); font-size: 0.85rem; }
+
+  @media(max-width:600px){
+    header,.toolbar,.table-wrap,.sync-bar,.filter-tabs{padding-left:14px;padding-right:14px;}
+    .stats{display:none;}
+  }
+
+  /* ── AUTH OVERLAY ─────────────────────────────────────── */
+  #authOverlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  #authOverlay.hidden { display: none; }
+
+  .auth-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 40px 36px; width: 100%; max-width: 420px;
+    position: relative; overflow: hidden;
+  }
+  .auth-card::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .auth-logo {
+    font-family: var(--font-mono); font-size: 1.15rem;
+    color: var(--accent); letter-spacing: 3px; margin-bottom: 6px;
+  }
+  .auth-logo span { color: var(--muted); }
+  .auth-subtitle {
+    color: var(--muted); font-size: 0.8rem;
+    font-family: var(--font-mono); margin-bottom: 32px;
+  }
+
+  .auth-tabs {
+    display: flex; gap: 0; margin-bottom: 28px;
+    border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+  .auth-tab {
+    flex: 1; padding: 9px; font-family: var(--font-mono); font-size: 0.78rem;
+    background: transparent; border: none; color: var(--muted); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .auth-tab.active { background: var(--surface2); color: var(--accent); }
+
+  .auth-field { margin-bottom: 16px; }
+  .auth-field label {
+    display: block; font-size: 0.72rem; font-family: var(--font-mono);
+    color: var(--muted); margin-bottom: 6px; letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .auth-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font-main); font-size: 0.9rem;
+    padding: 10px 14px; border-radius: 8px; outline: none; transition: all 0.2s;
+  }
+  .auth-input:focus { border-color: var(--accent); }
+  .auth-input::placeholder { color: var(--muted); }
+
+  .btn-auth {
+    width: 100%; background: var(--accent); color: #0d0f14;
+    border: none; border-radius: 8px; padding: 12px;
+    font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
+    margin-top: 6px;
+  }
+  .btn-auth:hover { background: #00ffb3; }
+
+  .auth-err {
+    background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.3);
+    color: var(--warn); font-size: 0.78rem; font-family: var(--font-mono);
+    padding: 9px 13px; border-radius: 7px; margin-bottom: 14px; display: none;
+  }
+  .auth-err.show { display: block; }
+
+  /* user badge in header */
+  .user-badge {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);
+  }
+  .user-badge strong { color: var(--accent); }
+  .btn-logout {
+    background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.25);
+    color: var(--warn); padding: 4px 10px; border-radius: 6px;
+    font-size: 0.72rem; font-weight: 600; cursor: pointer;
+    font-family: var(--font-mono); transition: all 0.2s;
+  }
+  .btn-logout:hover { background: rgba(255,107,53,0.22); }
+
+  /* local file button */
+  .btn-file {
+    background: rgba(0,119,255,0.1); border: 1px solid rgba(0,119,255,0.3);
+    color: var(--accent2); padding: 7px 14px; border-radius: 7px;
+    font-size: 0.78rem; font-family: var(--font-mono); cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-file:hover { background: rgba(0,119,255,0.2); }
+  #fileInput { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ── AUTH OVERLAY ──────────────────────────────────────────────────────── -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-logo">INV<span>//</span>CTRL</div>
+    <div class="auth-subtitle">Sistema de controle de inventário</div>
+
+    <div id="authErr" class="auth-err"></div>
+
+    <div class="auth-field">
+      <label>Usuário</label>
+      <input class="auth-input" id="loginUser" type="text" placeholder="seu usuário" autocomplete="username">
+    </div>
+    <div class="auth-field">
+      <label>Senha</label>
+      <input class="auth-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-auth" onclick="doLogin()">ENTRAR →</button>
+  </div>
+</div>
+
+<!-- ── ADMIN PANEL ──────────────────────────────────────────────────────────── -->
+<div id="adminOverlay" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(13,15,20,0.92);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:32px 30px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <div>
+        <div style="font-family:var(--font-mono);color:var(--accent);font-size:0.9rem;letter-spacing:2px;">PAINEL ADMIN</div>
+        <div style="font-size:0.74rem;color:var(--muted);font-family:var(--font-mono);margin-top:2px;">Gerenciamento de usuários</div>
+      </div>
+      <button onclick="closeAdmin()" style="background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.25);color:var(--warn);padding:6px 13px;border-radius:7px;font-family:var(--font-mono);font-size:0.75rem;cursor:pointer;">✕ Fechar</button>
+    </div>
+
+    <!-- User list -->
+    <div style="margin-bottom:24px;">
+      <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Usuários cadastrados</div>
+      <div id="adminUserList"></div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin-bottom:22px;">
+
+    <!-- Add user -->
+    <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">Adicionar usuário</div>
+    <div id="adminErr" class="auth-err"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="auth-field"><label>Nome completo</label><input class="auth-input" id="regName" type="text" placeholder="João Silva"></div>
+      <div class="auth-field"><label>Usuário</label><input class="auth-input" id="regUser" type="text" placeholder="joaosilva"></div>
+      <div class="auth-field"><label>Senha</label><input class="auth-input" id="regPass" type="password" placeholder="mín. 6 caracteres"></div>
+      <div class="auth-field"><label>Confirmar senha</label><input class="auth-input" id="regPass2" type="password" placeholder="repita a senha"></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <label style="display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:0.75rem;color:var(--muted);cursor:pointer;">
+        <input type="checkbox" id="regIsAdmin" style="accent-color:var(--accent)"> Admin
+      </label>
+      <button class="btn-auth" style="flex:1" onclick="doRegister()">ADICIONAR USUÁRIO →</button>
+    </div>
+
+    <!-- Change password -->
+    <hr style="border:none;border-top:1px solid var(--border);margin:22px 0;">
+    <div style="font-size:0.72rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">Alterar senha de usuário</div>
+    <div id="adminPassErr" class="auth-err"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div class="auth-field"><label>Usuário</label>
+        <select class="auth-input" id="chgUser" style="cursor:pointer;"></select>
+      </div>
+      <div class="auth-field"><label>Nova senha</label><input class="auth-input" id="chgPass" type="password" placeholder="mín. 6 caracteres"></div>
+      <div class="auth-field"><label>Confirmar</label><input class="auth-input" id="chgPass2" type="password" placeholder="repita"></div>
+    </div>
+    <button class="btn-auth" onclick="doChangePass()" style="background:rgba(0,119,255,0.15);color:var(--accent2);border:1px solid rgba(0,119,255,0.3);">ALTERAR SENHA →</button>
+  </div>
+</div>
+
+<header>
+  <div class="logo">INV<span>//</span>CTRL</div>
+  <div class="stats">
+    <span>Total: <strong id="statTotal">0</strong></span>
+    <span>Consolidados: <strong id="statLocked">0</strong></span>
+    <span>Baixo estoque: <strong id="statLow">0</strong></span>
+  </div>
+  <div class="user-badge">
+    <span>👤 <strong id="headerUser"></strong></span>
+    <button id="btnAdminPanel" onclick="openAdmin()" style="display:none;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);color:var(--accent);padding:4px 10px;border-radius:6px;font-size:0.72rem;font-weight:600;cursor:pointer;font-family:var(--font-mono);">⚙ Admin</button>
+    <button class="btn-logout" onclick="doLogout()">Sair</button>
+  </div>
+</header>
+
+<div class="sync-bar">
+  <div class="sync-status">
+    <div class="dot" id="syncDot"></div>
+    <span id="syncLabel">Não sincronizado</span>
+  </div>
+  <span id="lastSync" style="color:var(--muted);font-size:0.74rem;font-family:var(--font-mono)"></span>
+  <button class="btn-file" onclick="document.getElementById('fileInput').click()">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+    Carregar Arquivo
+  </button>
+  <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="loadLocalFile(event)">
+  <button class="btn-sync" id="btnSync" onclick="syncSheet()">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+    </svg>
+    Sincronizar Planilha
+  </button>
+</div>
+
+<div id="colInfo" class="col-info" style="display:none">
+  Colunas detectadas: <span id="colInfoText"></span>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input class="search-input" id="searchInput" type="text" placeholder="Buscar em qualquer coluna...">
+  </div>
+  <button class="btn btn-add" onclick="addRow()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    Novo Item
+  </button>
+</div>
+
+<div class="filter-tabs">
+  <button class="filter-tab active" onclick="setFilter('all',this)">Todos</button>
+  <button class="filter-tab" onclick="setFilter('ok',this)">Em estoque</button>
+  <button class="filter-tab" onclick="setFilter('low',this)">Baixo estoque</button>
+  <button class="filter-tab" onclick="setFilter('out',this)">Sem estoque</button>
+  <button class="filter-tab" onclick="setFilter('locked',this)">Consolidados</button>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr id="tHead"></tr></thead>
+    <tbody id="tBody"></tbody>
+  </table>
+  <div class="empty" id="emptyState">
+    <h3>Pronto para conectar!</h3>
+    <p>Clique em <strong style="color:var(--accent)">Sincronizar Planilha</strong> para carregar<br>seus dados do Google Sheets automaticamente.</p>
+  </div>
+</div>
+
+<div class="loading-overlay" id="loadOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadText">Conectando...</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+const USERS_KEY = 'invctr_users';
+const SESSION_KEY = 'invctr_session';
+
+function getUsers() { try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); } catch { return {}; } }
+function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; } }
+function saveSession(s) { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+
+// Create default admin on first load
+(function initAdmin() {
+  const users = getUsers();
+  if (!users['ericson']) {
+    users['ericson'] = { name: 'Ericson Cardoso', hash: btoa('123456'), admin: true };
+    saveUsers(users);
+  }
+})();
+
+function authErr(msg) {
+  const el = document.getElementById('authErr');
+  el.textContent = msg; el.classList.toggle('show', !!msg);
+}
+function adminErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.classList.toggle('show', !!msg);
+}
+
+function doLogin() {
+  const user = document.getElementById('loginUser').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  if (!user || !pass) return authErr('Preencha usuário e senha.');
+  const users = getUsers();
+  if (!users[user]) return authErr('Usuário não encontrado.');
+  if (users[user].hash !== btoa(pass)) return authErr('Senha incorreta.');
+  saveSession({ user, name: users[user].name, admin: !!users[user].admin });
+  showApp(users[user].name, !!users[user].admin);
+}
+
+function showApp(name, isAdmin) {
+  document.getElementById('authOverlay').classList.add('hidden');
+  document.getElementById('headerUser').textContent = name;
+  document.getElementById('btnAdminPanel').style.display = isAdmin ? '' : 'none';
+}
+
+function doLogout() {
+  localStorage.removeItem(SESSION_KEY);
+  document.getElementById('authOverlay').classList.remove('hidden');
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  authErr('');
+}
+
+// ── ADMIN PANEL ───────────────────────────────────────────────────────────────
+function openAdmin() {
+  const s = getSession();
+  if (!s || !s.admin) return showToast('❌ Acesso negado', true);
+  document.getElementById('adminOverlay').style.display = 'flex';
+  renderAdminUsers();
+  refreshChgSelect();
+  adminErr('adminErr', '');
+  adminErr('adminPassErr', '');
+}
+function closeAdmin() {
+  document.getElementById('adminOverlay').style.display = 'none';
+  ['regName','regUser','regPass','regPass2','chgPass','chgPass2'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+}
+
+function renderAdminUsers() {
+  const users = getUsers();
+  const session = getSession();
+  const list = document.getElementById('adminUserList');
+  const entries = Object.entries(users);
+  if (!entries.length) { list.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;font-family:var(--font-mono);">Nenhum usuário.</div>'; return; }
+  list.innerHTML = entries.map(([key, u]) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">
+      <div>
+        <span style="font-weight:600;color:var(--text);font-size:0.86rem;">${u.name}</span>
+        <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);margin-left:9px;">@${key}</span>
+        ${u.admin ? '<span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--accent);margin-left:7px;background:rgba(0,229,160,0.1);padding:2px 7px;border-radius:10px;">ADMIN</span>' : ''}
+      </div>
+      ${key !== session?.user ? `<button onclick="deleteUser('${key}')" style="background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.2);color:var(--warn);padding:3px 9px;border-radius:5px;font-size:0.72rem;cursor:pointer;font-family:var(--font-mono);">Remover</button>` : '<span style="font-size:0.7rem;color:var(--muted);font-family:var(--font-mono);">(você)</span>'}
+    </div>`).join('');
+}
+
+function refreshChgSelect() {
+  const users = getUsers();
+  const sel = document.getElementById('chgUser');
+  sel.innerHTML = Object.entries(users).map(([k,u]) => `<option value="${k}">${u.name} (@${k})</option>`).join('');
+}
+
+function deleteUser(key) {
+  const session = getSession();
+  if (key === session?.user) return showToast('❌ Não é possível remover a si mesmo.', true);
+  const users = getUsers();
+  const name = users[key]?.name || key;
+  delete users[key];
+  saveUsers(users);
+  showToast(`🗑 Usuário "${name}" removido.`);
+  renderAdminUsers();
+  refreshChgSelect();
+}
+
+function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const user = document.getElementById('regUser').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const isAdmin = document.getElementById('regIsAdmin').checked;
+  if (!name || !user || !pass) return adminErr('adminErr', 'Preencha todos os campos.');
+  if (!/^[a-z0-9_]+$/.test(user)) return adminErr('adminErr', 'Usuário: apenas letras, números e _');
+  if (pass.length < 6) return adminErr('adminErr', 'Senha mínima: 6 caracteres.');
+  if (pass !== pass2) return adminErr('adminErr', 'As senhas não coincidem.');
+  const users = getUsers();
+  if (users[user]) return adminErr('adminErr', 'Usuário já cadastrado.');
+  users[user] = { name, hash: btoa(pass), admin: isAdmin };
+  saveUsers(users);
+  adminErr('adminErr', '');
+  ['regName','regUser','regPass','regPass2'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('regIsAdmin').checked = false;
+  showToast(`✅ Usuário "${name}" adicionado!`);
+  renderAdminUsers();
+  refreshChgSelect();
+}
+
+function doChangePass() {
+  const user = document.getElementById('chgUser').value;
+  const pass = document.getElementById('chgPass').value;
+  const pass2 = document.getElementById('chgPass2').value;
+  if (!user || !pass) return adminErr('adminPassErr', 'Selecione o usuário e informe a nova senha.');
+  if (pass.length < 6) return adminErr('adminPassErr', 'Senha mínima: 6 caracteres.');
+  if (pass !== pass2) return adminErr('adminPassErr', 'As senhas não coincidem.');
+  const users = getUsers();
+  if (!users[user]) return adminErr('adminPassErr', 'Usuário não encontrado.');
+  users[user].hash = btoa(pass);
+  saveUsers(users);
+  adminErr('adminPassErr', '');
+  document.getElementById('chgPass').value = '';
+  document.getElementById('chgPass2').value = '';
+  showToast(`✅ Senha de "${users[user].name}" alterada!`);
+}
+
+// Check existing session on load
+(function checkSession() {
+  const s = getSession();
+  if (s) { showApp(s.name, s.admin); }
+})();
+
+// ── LOCAL FILE LOADING ────────────────────────────────────────────────────────
+function loadLocalFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = ''; // reset so same file can be re-loaded
+  const ext = file.name.split('.').pop().toLowerCase();
+  setLoad(true, `Carregando "${file.name}"...`);
+  const reader = new FileReader();
+
+  if (ext === 'csv') {
+    reader.onload = e => {
+      try {
+        processRows(parseCSV(e.target.result), file.name);
+      } catch(err) {
+        showToast('❌ Erro ao ler CSV: ' + err.message, true);
+      } finally { setLoad(false); }
+    };
+    reader.readAsText(file, 'UTF-8');
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        processRows(rows.map(r => r.map(c => String(c ?? ''))), file.name);
+      } catch(err) {
+        showToast('❌ Erro ao ler Excel: ' + err.message, true);
+      } finally { setLoad(false); }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    setLoad(false);
+    showToast('❌ Formato não suportado. Use CSV ou Excel.', true);
+  }
+}
+
+function processRows(rows, filename) {
+  if (!rows || rows.length < 2) throw new Error('Arquivo vazio ou sem dados.');
+  headers = rows[0].map(h => String(h).trim()).filter(Boolean);
+  const qIdx = headers.findIndex(h => /qtd|quant|quantidade|qty|estoque|stock/i.test(h));
+  const qCol = qIdx >= 0 ? headers[qIdx] : null;
+  data = rows.slice(1)
+    .filter(r => r.some(c => c && String(c).trim()))
+    .map(row => {
+      const obj = { _id: nextId++, _locked: false, _qCol: qCol };
+      headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? String(row[i]) : ''; });
+      return obj;
+    });
+  document.getElementById('colInfoText').textContent = headers.join(' · ');
+  document.getElementById('colInfo').style.display = '';
+  setSyncState('ok', `Arquivo local · ${data.length} itens`);
+  document.getElementById('lastSync').textContent = `"${filename}" · ${new Date().toLocaleTimeString('pt-BR')}`;
+  showToast(`✅ ${data.length} itens carregados de "${filename}"`);
+  render();
+}
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const SHEET_ID = '1QqVifQ8aQ0bs7UiL8FKXKfqM8cEOrt09';
+
+const SA = {
+  email: 'inventario@invetario2.iam.gserviceaccount.com',
+  key: `MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCuE+JyaPridKbP
+O0mFVX5xwakOzj46wEMhT0IxhdDT4CekI2EnjuUeiAoR+DmB5oWA9AHmiyy1RM6Q
+Owm+BxFZR4BVPVAQk2zEi20hUvlwnlIZN85DnvDpdupn+yrQoFyxSVOXWqUnZcf7
+i1A1UU0LfrEAtLd4EfE5SvTxoDMQ4egHDps3PqCU9nZD3fkUtt+Z/CBqihon9Voa
+02+rlZfVrEhnlvJoetCPQvtYUfmdIpsCht6yJTeIa0hoheGLQvQDdIi1gO6FLb67
+OGL1JvLOagVz0ZPjRlMF8hcvaWZrnwSRwvT+mQLj9+5kkDD1B4k/DHlF1997X21S
+A5cJylZZAgMBAAECggEAHO1w/qeItC5uX0Ga621USyhuJOe2Wk0DhXrbpR8iShNA
+gyYzSZTqvjLHzvSmRHqU9OOXl+1zddaup4koCqFiC1QLyh5w5PrwDY6d3qEgknZn
+bjQNMsTW2Up0PuieKiJ773of9KbmNbB+6xjbhgCyAkGraFKfqnRQ1xR9tSl0qE6b
+60X2dQIYHmqJMeMW5H7fmVOTYJ+RmRF7QzCmGXRUzLNVs22CWQaL6N7OkqizjJr/
+HgF7jfm1JnnORlbrmD0h6Amuexx9YQ2+MLN13ntCmI14cf5DxDVlV1jMmY9X7a+w
+YR9pme+e1vVXtvStbdwaRB0mrHRPv2bFhtMFkj5pgQKBgQDa3q+9UzggvHn/QmMC
+Si6sb0dliGI5AVN/C2Qec5BmG2Zd0kYq+GQl/JmwU1y6gT1Tu2i611iq9aUfKy04
+5X46hJzG3SmihjH24VCeN7BYAl2J2xISeggFSK2QLEylBOrb9tpnjINW/l+eG+Kr
+hEJmV8U1idPOkxo+o5IsLNSGpwKBgQDLm+o8CM7HSwJt0AwvBzMaxzcQaRtqec3C
+AJy7iyT0Bc3CDlhKax2SI9Xfy76w8W4nmVg2C7GlpHmzZBaLdOu54BstTCxY11tU
+DGO6Sfk2ScpkCkxoh740XcgR/TCnZQUw/FLc1Yjtr3ae+egXDsJwH+U5erEphHMz
+oJO6OOLa/wKBgBjggMcbI2ENKyypRgmnluCAkXPn6YojLXNePxX6+qmwaZU2ZkVS
+EEgFCw7wmrSUJf1Tatb5zRk5bHg7dxtlclCCbDNqReY0LI+sEna5S7DlK+6UWNyC
+xFCdbyTY9Ck5gtxXlYF5hiAoL4QQFVZ7ZPSu+zpXnRx4ud3ux5l/yvQ3AoGBAK0U
+8k5sclLqCbuN0v2bUi8eUEnL/7lIp8eWO6YVx6kE0f93sEg6vF2BxwrCqWzDH4/c
+BCeVU0NrCOWdXKjaEJTm1FNyYHR5RbKyAYjX31jt63WVZ5SoZ+EeI7hfEiAKeRpG
+NK5zez4KHX1RFaGcM1+bTYHKMZYIeOHXTB1OxFHDAoGAEGwrlF2gYH6fwGFrjhjK
+RwO5/YQEyCNvHn3KjwOcFW7e5CTnMh4baOtR2wLQWuvJYnPh0NblrQBdyX+IFk7c
+JkwVQ9B2+GtSripk8pREQgJm3Zt8OwwJP0MkEM+Xm1hf3f1AlIICGxpmALsN+QoP
+Uvx2ldx0l6Pznan3XUum4TI=`
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let data = [], headers = [], nextId = 1, filterState = 'all';
+let cachedToken = null, tokenExpiry = 0;
+
+// ── JWT AUTH ──────────────────────────────────────────────────────────────────
+function b64u(str) { return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,''); }
+function b64uBuf(buf) {
+  let s = ''; new Uint8Array(buf).forEach(b => s += String.fromCharCode(b));
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function getToken() {
+  if (cachedToken && Date.now() < tokenExpiry - 60000) return cachedToken;
+  const now = Math.floor(Date.now() / 1000);
+  const hdr = b64u(JSON.stringify({alg:'RS256',typ:'JWT'}));
+  const pay = b64u(JSON.stringify({
+    iss: SA.email,
+    scope: 'https://www.googleapis.com/auth/spreadsheets',
+    aud: 'https://oauth2.googleapis.com/token',
+    exp: now + 3600, iat: now
+  }));
+  const msg = `${hdr}.${pay}`;
+
+  // Strip PEM headers/footers and all whitespace to get clean base64 DER
+  const pemClean = SA.key
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\s+/g, '');
+  const der = Uint8Array.from(atob(pemClean), c => c.charCodeAt(0));
+  const ck = await crypto.subtle.importKey('pkcs8', der.buffer,
+    {name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', ck, new TextEncoder().encode(msg));
+  const jwt = `${msg}.${b64uBuf(sig)}`;
+
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:`grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Falha auth (${res.status}): ${errText}`);
+  }
+  const j = await res.json();
+  cachedToken = j.access_token;
+  tokenExpiry = Date.now() + j.expires_in * 1000;
+  return cachedToken;
+}
+
+
+// ── CSV PARSER ────────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const rows = [];
+  let row = [], cell = '', inQuote = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuote) {
+      if (c === '"' && text[i+1] === '"') { cell += '"'; i++; }
+      else if (c === '"') { inQuote = false; }
+      else { cell += c; }
+    } else {
+      if (c === '"') { inQuote = true; }
+      else if (c === ',') { row.push(cell.trim()); cell = ''; }
+      else if (c === '\n') { row.push(cell.trim()); rows.push(row); row = []; cell = ''; }
+      else if (c === '\r') { /* skip */ }
+      else { cell += c; }
+    }
+  }
+  if (cell || row.length) { row.push(cell.trim()); rows.push(row); }
+  return rows.filter(r => r.length > 0);
+}
+
+// ── SYNC ──────────────────────────────────────────────────────────────────────
+async function syncSheet() {
+  const btn = document.getElementById('btnSync');
+  btn.disabled = true;
+  setSyncState('loading', 'Conectando...');
+  setLoad(true, 'Autenticando com Google...');
+  try {
+    setLoad(true, 'Autenticando...');
+    const token = await getToken();
+
+    // Get sheet metadata to find actual sheet name
+    setLoad(true, 'Lendo estrutura da planilha...');
+    const metaRes = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`,
+      { headers:{ Authorization:`Bearer ${token}` } }
+    );
+    if (!metaRes.ok) {
+      let errBody = '';
+      try { const e = await metaRes.json(); errBody = JSON.stringify(e.error || e); } catch(_) { errBody = metaRes.status; }
+      throw new Error(`Erro ao acessar planilha (${metaRes.status}): ${errBody}`);
+    }
+    const meta = await metaRes.json();
+    const sheetName = meta.sheets?.[0]?.properties?.title || 'Sheet1';
+    setLoad(true, `Carregando aba "${sheetName}"...`);
+
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}!A1:ZZ5000`,
+      { headers:{ Authorization:`Bearer ${token}` } }
+    );
+    if (!res.ok) {
+      const e = await res.json();
+      throw new Error(`Erro API (${res.status}): ${e.error?.message || 'desconhecido'}`);
+    }
+    const json = await res.json();
+    const rows = json.values || [];
+    if (rows.length < 2) throw new Error(`Aba "${sheetName}" está vazia ou tem apenas cabeçalho`);
+
+    headers = rows[0].map(h => String(h).trim());
+
+    // Detect qty column
+    const qIdx = headers.findIndex(h => /qtd|quant|quantidade|qty|estoque|stock/i.test(h));
+    const qCol = qIdx >= 0 ? headers[qIdx] : null;
+
+    data = rows.slice(1)
+      .filter(r => r.some(c => c && String(c).trim()))
+      .map(row => {
+        const obj = { _id: nextId++, _locked: false, _qCol: qCol };
+        headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? String(row[i]) : ''; });
+        return obj;
+      });
+
+    document.getElementById('colInfoText').textContent = headers.join(' · ');
+    document.getElementById('colInfo').style.display = '';
+    setSyncState('ok', `Sincronizado · ${data.length} itens`);
+    document.getElementById('lastSync').textContent =
+      'Última sync: ' + new Date().toLocaleTimeString('pt-BR');
+    showToast(`✅ ${data.length} itens carregados`);
+    render();
+  } catch(e) {
+    setSyncState('error', 'Erro na sync');
+    showToast('❌ ' + e.message, true);
+    console.error('Full error:', e);
+  } finally {
+    setLoad(false);
+    btn.disabled = false;
+  }
+}
+
+function setSyncState(s, lbl) {
+  const d = document.getElementById('syncDot');
+  d.className = 'dot' + (s==='ok'?' green':s==='loading'?' yellow':s==='error'?' red':'');
+  document.getElementById('syncLabel').textContent = lbl;
+}
+function setLoad(show, txt='') {
+  document.getElementById('loadOverlay').classList.toggle('show', show);
+  if (txt) document.getElementById('loadText').textContent = txt;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function qty(row) {
+  if (!row._qCol) return null;
+  const v = parseFloat(row[row._qCol]);
+  return isNaN(v) ? null : v;
+}
+function status(row) {
+  const q = qty(row);
+  if (q === null) return 'ok';
+  if (q <= 0) return 'out';
+  if (q <= 10) return 'low';
+  return 'ok';
+}
+function badge(row) {
+  if (row._locked) return `<span class="badge badge-locked">🔒 Consolidado</span>`;
+  const s = status(row);
+  if (s==='out') return `<span class="badge badge-out">● Sem estoque</span>`;
+  if (s==='low') return `<span class="badge badge-low">● Baixo estoque</span>`;
+  return `<span class="badge badge-ok">● Em estoque</span>`;
+}
+
+function setFilter(f, el) {
+  filterState = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function render() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const empty = document.getElementById('emptyState');
+
+  if (!data.length) { empty.style.display=''; document.getElementById('tHead').innerHTML=''; document.getElementById('tBody').innerHTML=''; updateStats(); return; }
+
+  const filtered = data.filter(row => {
+    const ms = !q || headers.some(h => (row[h]||'').toLowerCase().includes(q));
+    const mf = filterState==='all' || (filterState==='locked'&&row._locked) || (!row._locked&&filterState===status(row));
+    return ms && mf;
+  });
+
+  updateStats();
+
+  if (!filtered.length) {
+    empty.style.display='';
+    empty.querySelector('h3').textContent='Nenhum resultado';
+    empty.querySelector('p').textContent='Tente outros termos ou filtros.';
+    document.getElementById('tHead').innerHTML='';
+    document.getElementById('tBody').innerHTML='';
+    return;
+  }
+  empty.style.display='none';
+
+  document.getElementById('tHead').innerHTML =
+    `<th style="width:34px">#</th>` +
+    headers.map(h=>`<th>${esc(h)}</th>`).join('') +
+    `<th>Status</th><th>Ações</th>`;
+
+  document.getElementById('tBody').innerHTML = filtered.map((row,i)=>`
+    <tr class="${row._locked?'locked-row':''}">
+      <td style="color:var(--muted);font-family:var(--font-mono);font-size:0.72rem">${i+1}</td>
+      ${headers.map(h=>`
+        <td><input class="cell-input" style="min-width:${h.length>10?130:85}px"
+          value="${esc(row[h]||'')}"
+          ${row._locked?'disabled':''}
+          onchange="upd(${row._id},'${escA(h)}',this.value)"></td>
+      `).join('')}
+      <td>${badge(row)}</td>
+      <td><div class="action-btns">
+        ${row._locked
+          ?`<button class="btn-unlock" onclick="unlock(${row._id})">🔓 Editar</button>`
+          :`<button class="btn-cons"   onclick="lock(${row._id})">🔒 Consolidar</button>`}
+      </div></td>
+    </tr>`).join('');
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = data.length;
+  document.getElementById('statLocked').textContent = data.filter(r=>r._locked).length;
+  document.getElementById('statLow').textContent = data.filter(r=>!r._locked&&status(r)==='low').length;
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+function upd(id, col, val) {
+  const r = data.find(r=>r._id===id);
+  if (r && !r._locked) { r[col]=val; render(); }
+}
+function lock(id) {
+  const r = data.find(r=>r._id===id);
+  if (r) { r._locked=true; showToast(`✅ "${r[headers[0]]||'Item'}" consolidado`); render(); }
+}
+function unlock(id) {
+  const r = data.find(r=>r._id===id);
+  if (r) { r._locked=false; showToast(`🔓 "${r[headers[0]]||'Item'}" desbloqueado`); render(); }
+}
+function addRow() {
+  if (!headers.length) { showToast('⚠️ Sincronize primeiro', true); return; }
+  const obj = { _id: nextId++, _locked: false, _qCol: data[0]?._qCol||null };
+  headers.forEach(h => { obj[h]=''; });
+  data.unshift(obj);
+  setFilter('all', document.querySelector('.filter-tab'));
+  render();
+  showToast('➕ Novo item adicionado');
+}
+
+let tTimer;
+function showToast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = (err?'err ':'') + 'show';
+  clearTimeout(tTimer);
+  tTimer = setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+document.getElementById('searchInput').addEventListener('input', render);
+
+// Enter key support for login
+['loginUser','loginPass'].forEach(id =>
+  document.getElementById(id).addEventListener('keydown', e => e.key==='Enter' && doLogin()));
+
+render();
+
+// Register PWA service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
