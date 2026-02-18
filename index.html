@@ -304,6 +304,166 @@
     0%,100% { box-shadow: 0 0 0 0 rgba(0,229,160,0.3); }
     50% { box-shadow: 0 0 0 5px rgba(0,229,160,0); }
   }
+
+  /* ── NAVIGATION SCREEN ───────────────────────────────────────────────────── */
+  #navScreen {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: var(--bg); align-items: center; justify-content: center;
+    flex-direction: column; gap: 40px; padding: 40px 20px;
+  }
+  #navScreen.active { display: flex; }
+
+  .nav-title {
+    font-family: var(--font-mono); font-size: 1.1rem;
+    color: var(--accent); letter-spacing: 3px; text-align: center;
+  }
+  .nav-subtitle {
+    font-size: 0.78rem; color: var(--muted);
+    font-family: var(--font-mono); text-align: center; margin-top: 6px;
+  }
+  .nav-sync-status {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);
+  }
+
+  .nav-cards {
+    display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
+    max-width: 700px; width: 100%;
+  }
+  .nav-card {
+    flex: 1; min-width: 260px; max-width: 300px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 36px 28px; cursor: pointer;
+    transition: all 0.25s; text-align: center; position: relative; overflow: hidden;
+  }
+  .nav-card::before {
+    content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.25s;
+  }
+  .nav-card.inv::before { background: radial-gradient(circle at 50% 0%, rgba(0,229,160,0.08), transparent 70%); }
+  .nav-card.chart::before { background: radial-gradient(circle at 50% 0%, rgba(0,119,255,0.08), transparent 70%); }
+  .nav-card:hover { transform: translateY(-4px); }
+  .nav-card.inv:hover { border-color: var(--accent); box-shadow: 0 8px 32px rgba(0,229,160,0.12); }
+  .nav-card.chart:hover { border-color: var(--accent2); box-shadow: 0 8px 32px rgba(0,119,255,0.12); }
+  .nav-card:hover::before { opacity: 1; }
+
+  .nav-card-icon {
+    font-size: 2.8rem; margin-bottom: 16px; display: block;
+  }
+  .nav-card-title {
+    font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .nav-card.inv .nav-card-title { color: var(--accent); }
+  .nav-card.chart .nav-card-title { color: var(--accent2); }
+  .nav-card-desc {
+    font-size: 0.78rem; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ── CHARTS SCREEN ───────────────────────────────────────────────────────── */
+  #chartScreen {
+    display: none; min-height: 100vh;
+    background: var(--bg); padding-bottom: 60px;
+  }
+  #chartScreen.active { display: block; }
+
+  .chart-header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 16px 28px; display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .btn-back {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    color: var(--muted); padding: 6px 13px; border-radius: 7px;
+    font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 5px;
+  }
+  .btn-back:hover { color: var(--text); border-color: var(--text); }
+
+  .chart-body { padding: 36px 28px; max-width: 900px; margin: 0 auto; }
+  .chart-section-title {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  /* big KPI card */
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 36px 32px; margin-bottom: 28px;
+    display: flex; align-items: center; gap: 36px; flex-wrap: wrap;
+  }
+  .kpi-donut-wrap { position: relative; width: 160px; height: 160px; flex-shrink: 0; }
+  .kpi-donut-wrap svg { width: 160px; height: 160px; transform: rotate(-90deg); }
+  .kpi-donut-center {
+    position: absolute; inset: 0; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+  }
+  .kpi-pct {
+    font-family: var(--font-mono); font-size: 2rem; font-weight: 700;
+    color: var(--accent2); line-height: 1;
+  }
+  .kpi-pct-label {
+    font-size: 0.65rem; color: var(--muted); font-family: var(--font-mono);
+    margin-top: 4px; letter-spacing: 1px;
+  }
+  .kpi-info { flex: 1; min-width: 200px; }
+  .kpi-title {
+    font-family: var(--font-mono); font-size: 1.1rem;
+    color: var(--text); margin-bottom: 10px; letter-spacing: 1px;
+  }
+  .kpi-title span { color: var(--accent2); }
+  .kpi-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+  .kpi-numbers {
+    display: flex; gap: 28px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .kpi-num { text-align: center; }
+  .kpi-num-val {
+    font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700;
+    display: block;
+  }
+  .kpi-num-val.mod { color: var(--accent2); }
+  .kpi-num-val.total { color: var(--text); }
+  .kpi-num-lbl { font-size: 0.7rem; color: var(--muted); font-family: var(--font-mono); }
+
+  /* bar visualization */
+  .bar-visual {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px 32px; margin-bottom: 28px;
+  }
+  .bar-visual-title {
+    font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted);
+    margin-bottom: 18px; letter-spacing: 1px;
+  }
+  .bar-track {
+    background: var(--surface2); border-radius: 100px;
+    height: 28px; width: 100%; overflow: hidden; position: relative;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 100px;
+    background: linear-gradient(90deg, var(--accent2), rgba(0,119,255,0.6));
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 12px;
+  }
+  .bar-fill-label {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: #fff; font-weight: 700; white-space: nowrap;
+  }
+  .bar-legend {
+    display: flex; gap: 20px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .bar-leg-item {
+    display: flex; align-items: center; gap: 7px;
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
+  }
+  .bar-leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* no data */
+  .chart-empty {
+    text-align: center; padding: 80px 28px; color: var(--muted);
+  }
+  .chart-empty h3 { font-size: 1rem; color: var(--text); margin-bottom: 8px; }
+  .chart-empty p { font-size: 0.82rem; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -378,7 +538,57 @@
   </div>
 </div>
 
+
+<!-- ── NAVIGATION SCREEN ─────────────────────────────────────────────────── -->
+<div id="navScreen">
+  <div>
+    <div class="nav-title">INV<span style="color:var(--muted)">//</span>CTRL</div>
+    <div class="nav-subtitle">Selecione uma opção para continuar</div>
+    <div class="nav-sync-status" style="justify-content:center;margin-top:12px;">
+      <div class="dot" id="navSyncDot"></div>
+      <span id="navSyncLabel">Carregando dados...</span>
+    </div>
+  </div>
+  <div class="nav-cards">
+    <div class="nav-card inv" onclick="goTo('inventory')">
+      <span class="nav-card-icon">📦</span>
+      <div class="nav-card-title">INVENTÁRIO</div>
+      <div class="nav-card-desc">Consulte, edite e gerencie todos os itens carregados da planilha.</div>
+    </div>
+    <div class="nav-card chart" onclick="goTo('charts')">
+      <span class="nav-card-icon">📊</span>
+      <div class="nav-card-title">GRÁFICOS</div>
+      <div class="nav-card-desc">Visualize o percentual de itens Moderados em relação ao total.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CHART SCREEN ───────────────────────────────────────────────────────── -->
+<div id="chartScreen">
+  <div class="chart-header">
+    <button class="btn-back" onclick="goTo('nav')">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Voltar
+    </button>
+    <div style="font-family:var(--font-mono);font-size:0.85rem;color:var(--accent);letter-spacing:2px;">GRÁFICOS</div>
+    <div style="margin-left:auto;font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)" id="chartLastSync"></div>
+  </div>
+  <div class="chart-body">
+    <div id="chartContent"></div>
+  </div>
+</div>
+
+<!-- ── INVENTORY SCREEN ────────────────────────────────────────────────────── -->
+<div id="inventoryScreen" style="display:none;">
 <header>
+  <button class="btn-back" onclick="goTo('nav')" style="margin-right:8px;">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    Menu
+  </button>
   <div class="logo">INV<span>//</span>CTRL</div>
   <div class="stats">
     <span>Total: <strong id="statTotal">0</strong></span>
@@ -460,6 +670,8 @@
   </div>
 </div>
 
+</div><!-- /inventoryScreen -->
+
 <div class="loading-overlay" id="loadOverlay">
   <div class="spinner"></div>
   <div class="loading-text" id="loadText">Conectando...</div>
@@ -510,12 +722,19 @@ function showApp(name, isAdmin) {
   document.getElementById('authOverlay').classList.add('hidden');
   document.getElementById('headerUser').textContent = name;
   document.getElementById('btnAdminPanel').style.display = isAdmin ? '' : 'none';
-  // Auto-sync on login
-  setTimeout(() => syncSheet(), 300);
+  // Show nav screen, sync in background
+  goTo('nav');
+  setTimeout(() => {
+    syncSheet().then(() => updateNavSync());
+  }, 300);
 }
 
 function doLogout() {
   localStorage.removeItem(SESSION_KEY);
+  // Hide all screens
+  document.getElementById('navScreen').classList.remove('active');
+  document.getElementById('inventoryScreen').style.display = 'none';
+  document.getElementById('chartScreen').classList.remove('active');
   document.getElementById('authOverlay').classList.remove('hidden');
   document.getElementById('loginUser').value = '';
   document.getElementById('loginPass').value = '';
@@ -843,10 +1062,12 @@ async function syncSheet() {
       'Última sync: ' + new Date().toLocaleTimeString('pt-BR');
     showToast(`✅ ${data.length} itens carregados`);
     render();
+    updateNavSync();
   } catch(e) {
     setSyncState('error', 'Erro na sync');
     showToast('❌ ' + e.message, true);
     console.error('Full error:', e);
+    updateNavSync();
   } finally {
     setLoad(false);
     btn.disabled = false;
@@ -1111,6 +1332,129 @@ document.getElementById('searchInput').addEventListener('input', render);
   document.getElementById(id).addEventListener('keydown', e => e.key==='Enter' && doLogin()));
 
 render();
+
+
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function goTo(screen) {
+  document.getElementById('navScreen').classList.remove('active');
+  document.getElementById('inventoryScreen').style.display = 'none';
+  document.getElementById('chartScreen').classList.remove('active');
+
+  if (screen === 'nav') {
+    document.getElementById('navScreen').classList.add('active');
+    updateNavSync();
+  } else if (screen === 'inventory') {
+    document.getElementById('inventoryScreen').style.display = 'block';
+  } else if (screen === 'charts') {
+    document.getElementById('chartScreen').classList.add('active');
+    renderCharts();
+  }
+}
+
+function updateNavSync() {
+  const dot = document.getElementById('navSyncDot');
+  const lbl = document.getElementById('navSyncLabel');
+  const srcDot = document.getElementById('syncDot');
+  const srcLbl = document.getElementById('syncLabel');
+  dot.className = srcDot.className;
+  lbl.textContent = srcLbl.textContent;
+}
+
+// ── CHARTS ────────────────────────────────────────────────────────────────────
+function renderCharts() {
+  const el = document.getElementById('chartContent');
+  const lastSync = document.getElementById('lastSync').textContent;
+  document.getElementById('chartLastSync').textContent = lastSync;
+
+  if (!data.length) {
+    el.innerHTML = `
+      <div class="chart-empty">
+        <h3>Sem dados carregados</h3>
+        <p>Volte ao menu e sincronize a planilha primeiro.</p>
+      </div>`;
+    return;
+  }
+
+  // Find "Moderado" column — look for column WITH VALUE "Moderado" or column named "Moderado"
+  // Count rows where ANY cell value === 'Moderado' (case-insensitive)
+  const total = data.length;
+  const moderadoCount = data.filter(row =>
+    headers.some(h => String(row[h] || '').trim().toLowerCase() === 'moderado')
+  ).length;
+
+  const pct = total > 0 ? Math.round((moderadoCount / total) * 100) : 0;
+  const outros = total - moderadoCount;
+
+  // SVG donut
+  const r = 60, stroke = 18;
+  const circ = 2 * Math.PI * r;
+  const dash = (pct / 100) * circ;
+  const gap = circ - dash;
+
+  el.innerHTML = `
+    <div class="chart-section-title">Análise · Itens Moderados</div>
+
+    <div class="kpi-card">
+      <div class="kpi-donut-wrap">
+        <svg viewBox="0 0 160 160">
+          <circle cx="80" cy="80" r="${r}" fill="none"
+            stroke="var(--surface2)" stroke-width="${stroke}"/>
+          <circle cx="80" cy="80" r="${r}" fill="none"
+            stroke="var(--accent2)" stroke-width="${stroke}"
+            stroke-dasharray="${dash.toFixed(2)} ${gap.toFixed(2)}"
+            stroke-linecap="round"
+            style="transition: stroke-dasharray 1s cubic-bezier(0.4,0,0.2,1)"/>
+        </svg>
+        <div class="kpi-donut-center">
+          <span class="kpi-pct">${pct}%</span>
+          <span class="kpi-pct-label">MODERADO</span>
+        </div>
+      </div>
+
+      <div class="kpi-info">
+        <div class="kpi-title">Itens <span>Moderados</span></div>
+        <div class="kpi-desc">
+          Proporção de itens classificados como <strong style="color:var(--accent2)">Moderado</strong>
+          em relação ao total de itens carregados da planilha.
+        </div>
+        <div class="kpi-numbers">
+          <div class="kpi-num">
+            <span class="kpi-num-val mod">${moderadoCount}</span>
+            <span class="kpi-num-lbl">Moderados</span>
+          </div>
+          <div class="kpi-num">
+            <span class="kpi-num-val" style="color:var(--muted)">${outros}</span>
+            <span class="kpi-num-lbl">Outros</span>
+          </div>
+          <div class="kpi-num">
+            <span class="kpi-num-val total">${total}</span>
+            <span class="kpi-num-lbl">Total</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bar-visual">
+      <div class="bar-visual-title">Distribuição visual</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%">
+          ${pct >= 10 ? `<span class="bar-fill-label">${pct}%</span>` : ''}
+        </div>
+      </div>
+      <div class="bar-legend">
+        <div class="bar-leg-item">
+          <div class="bar-leg-dot" style="background:var(--accent2)"></div>
+          Moderado (${moderadoCount} itens · ${pct}%)
+        </div>
+        <div class="bar-leg-item">
+          <div class="bar-leg-dot" style="background:var(--surface2);border:1px solid var(--border)"></div>
+          Outros (${outros} itens · ${100 - pct}%)
+        </div>
+      </div>
+    </div>
+  `;
+}
 
 // Register PWA service worker
 if ('serviceWorker' in navigator) {
