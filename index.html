@@ -150,6 +150,13 @@
     transition: all 0.2s;
   }
   .btn-unlock:hover { background: rgba(0,119,255,0.22); }
+  .btn-save-row {
+    background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.25);
+    color: var(--accent); padding: 4px 10px; border-radius: 6px;
+    font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: var(--font-mono);
+    transition: all 0.2s;
+  }
+  .btn-save-row:hover { background: rgba(0,229,160,0.2); }
 
   .empty { text-align: center; padding: 60px 28px; color: var(--muted); }
   .empty h3 { font-size: 1.05rem; margin-bottom: 8px; color: var(--text); }
@@ -503,6 +510,8 @@ function showApp(name, isAdmin) {
   document.getElementById('authOverlay').classList.add('hidden');
   document.getElementById('headerUser').textContent = name;
   document.getElementById('btnAdminPanel').style.display = isAdmin ? '' : 'none';
+  // Auto-sync on login
+  setTimeout(() => syncSheet(), 300);
 }
 
 function doLogout() {
@@ -994,6 +1003,9 @@ function render() {
         ${row._locked
           ?`<button class="btn-unlock" onclick="unlock(${row._id})">🔓 Editar</button>`
           :`<button class="btn-cons"   onclick="lock(${row._id})">🔒 Consolidar</button>`}
+        ${row._sheetRow && !row._locked
+          ?`<button class="btn-save-row" onclick="saveRow(${row._id})" title="Salvar esta linha na planilha">💾 Salvar</button>`
+          :''}
       </div></td>
     </tr>`).join('');
 }
@@ -1039,6 +1051,48 @@ function addRow() {
   setFilter('all', document.querySelector('.filter-tab'));
   render();
   showToast('➕ Novo item adicionado');
+}
+
+async function saveRow(id) {
+  const row = data.find(r => r._id === id);
+  if (!row || !row._sheetRow) return showToast('⚠️ Linha sem referência na planilha.', true);
+
+  setLoad(true, 'Salvando linha...');
+  try {
+    const token = await getToken();
+    const metaRes = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (!metaRes.ok) throw new Error('Erro ao acessar planilha');
+    const meta = await metaRes.json();
+    const sheetName = meta.sheets?.[0]?.properties?.title || 'Sheet1';
+
+    const rowValues = headers.map(h => row[h] || '');
+    const range = `${sheetName}!A${row._sheetRow}:${colLetter(headers.length)}${row._sheetRow}`;
+
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ range, majorDimension: 'ROWS', values: [rowValues] })
+      }
+    );
+    if (!res.ok) {
+      const e = await res.json();
+      throw new Error(`Erro (${res.status}): ${e.error?.message || 'desconhecido'}`);
+    }
+    pendingChanges.delete(id);
+    updatePublishBtn();
+    render();
+    showToast(`✅ Linha salva na planilha!`);
+  } catch(e) {
+    showToast('❌ ' + e.message, true);
+    console.error(e);
+  } finally {
+    setLoad(false);
+  }
 }
 
 let tTimer;
