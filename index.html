@@ -680,212 +680,77 @@
   }
   .btn-admin-block-ok:hover { filter: brightness(1.15); }
 
-  /* ── CONFIRM MODAL ───────────────────────────────────────────────────────── */
-  #confirmModal {
-    display: none; position: fixed; inset: 0; z-index: 1200;
-    background: rgba(13,15,20,0.88); align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  #confirmModal.open { display: flex; }
-  .confirm-card {
-    background: var(--surface); border: 1px solid rgba(255,107,53,0.35);
-    border-radius: 16px; padding: 36px 32px; max-width: 400px; width: 100%;
-    text-align: center; box-shadow: 0 0 40px rgba(255,107,53,0.08);
-  }
-  .confirm-icon { font-size: 2.8rem; margin-bottom: 14px; display: block; }
-  .confirm-title {
-    font-family: var(--font-mono); font-size: 0.95rem; color: var(--warn);
-    letter-spacing: 2px; margin-bottom: 10px;
-  }
-  .confirm-msg { font-size: 0.84rem; color: var(--muted); line-height: 1.75; margin-bottom: 28px; }
-  .confirm-msg strong { color: var(--text); }
-  .confirm-btns { display: flex; gap: 12px; justify-content: center; }
-  .btn-confirm-yes {
-    background: var(--warn); color: #fff; border: none; border-radius: 9px;
-    padding: 11px 32px; font-family: var(--font-mono); font-size: 0.82rem;
-    font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
-  }
-  .btn-confirm-yes:hover { filter: brightness(1.15); }
-  .btn-confirm-no {
-    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-    color: var(--muted); border-radius: 9px; padding: 11px 32px;
-    font-family: var(--font-mono); font-size: 0.82rem; cursor: pointer;
-    transition: all 0.2s; letter-spacing: 1px;
-  }
-  .btn-confirm-no:hover { color: var(--text); border-color: var(--text); }
+  /* ── CONFIRM MODAL ─────────────────────────────────── */
+  #confirmModal{display:none;position:fixed;inset:0;z-index:1200;background:rgba(13,15,20,.88);align-items:center;justify-content:center;padding:20px}
+  #confirmModal.open{display:flex}
+  .confirm-card{background:var(--surface);border:1px solid rgba(255,107,53,.35);border-radius:16px;padding:36px 32px;max-width:400px;width:100%;text-align:center;box-shadow:0 0 40px rgba(255,107,53,.08)}
+  .confirm-icon{font-size:2.8rem;margin-bottom:14px;display:block}
+  .confirm-title{font-family:var(--font-mono);font-size:.95rem;color:var(--warn);letter-spacing:2px;margin-bottom:10px}
+  .confirm-msg{font-size:.84rem;color:var(--muted);line-height:1.75;margin-bottom:28px}
+  .confirm-msg strong{color:var(--text)}
+  .confirm-btns{display:flex;gap:12px;justify-content:center}
+  .btn-confirm-yes{background:var(--warn);color:#fff;border:none;border-radius:9px;padding:11px 32px;font-family:var(--font-mono);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:1px}
+  .btn-confirm-yes:hover{filter:brightness(1.15)}
+  .btn-confirm-no{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);border-radius:9px;padding:11px 32px;font-family:var(--font-mono);font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:1px}
+  .btn-confirm-no:hover{color:var(--text);border-color:var(--text)}
 
-  /* ── BARCODE SCANNER MODAL ───────────────────────────────────────────────── */
-  #scannerModal {
-    display: none; position: fixed; inset: 0; z-index: 1200;
-    background: rgba(13,15,20,0.95); align-items: center; justify-content: center;
-    flex-direction: column; gap: 20px; padding: 20px;
-  }
-  #scannerModal.open { display: flex; }
-  .scanner-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 20px; width: 100%; max-width: 480px; overflow: hidden;
-  }
-  .scanner-header {
-    padding: 16px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .scanner-title { font-family: var(--font-mono); color: var(--accent); font-size: 0.85rem; letter-spacing: 2px; }
-  .scanner-close {
-    background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.25);
-    color: var(--warn); width: 30px; height: 30px; border-radius: 7px;
-    cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;
-  }
-  .scanner-video-wrap {
-    position: relative; background: #000; width: 100%; aspect-ratio: 4/3; overflow: hidden;
-  }
-  #scannerVideo { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .scanner-crosshair {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    pointer-events: none;
-  }
-  .scanner-crosshair::before {
-    content: ''; display: block; width: 70%; height: 38%;
-    border: 2px solid var(--accent); border-radius: 8px;
-    box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
-  }
-  .scanner-crosshair-line {
-    position: absolute; left: 15%; right: 15%; height: 2px;
-    background: var(--accent); opacity: 0.7;
-    animation: scanLine 1.8s ease-in-out infinite;
-  }
-  @keyframes scanLine {
-    0%,100% { top: 31%; } 50% { top: 63%; }
-  }
-  .scanner-result {
-    padding: 14px 20px; border-top: 1px solid var(--border);
-    font-family: var(--font-mono); font-size: 0.82rem;
-  }
-  .scanner-result-label { color: var(--muted); font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 5px; }
-  .scanner-result-value { color: var(--accent); font-size: 0.95rem; font-weight: 700; word-break: break-all; }
-  .scanner-actions { display: flex; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--border); }
-  .btn-scanner-use {
-    flex: 1; background: var(--accent); color: #0d0f14; border: none;
-    border-radius: 9px; padding: 11px; font-family: var(--font-mono);
-    font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-  }
-  .btn-scanner-use:hover { background: #00ffb3; }
-  .btn-scanner-use:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-scanner-retry {
-    background: rgba(0,119,255,0.1); border: 1px solid rgba(0,119,255,0.25);
-    color: var(--accent2); border-radius: 9px; padding: 11px 18px;
-    font-family: var(--font-mono); font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
-  }
-  .btn-scanner-retry:hover { background: rgba(0,119,255,0.2); }
-  .scanner-status {
-    padding: 10px 20px; text-align: center;
-    font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);
-  }
+  /* ── SCANNER MODAL ─────────────────────────────────── */
+  #scannerModal{display:none;position:fixed;inset:0;z-index:1200;background:rgba(13,15,20,.95);align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:20px}
+  #scannerModal.open{display:flex}
+  .scanner-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:480px;overflow:hidden}
+  .scanner-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .scanner-title{font-family:var(--font-mono);color:var(--accent);font-size:.85rem;letter-spacing:2px}
+  .scanner-close{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);color:var(--warn);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+  .scanner-video-wrap{position:relative;background:#000;width:100%;aspect-ratio:4/3;overflow:hidden}
+  #scannerVideo{width:100%;height:100%;object-fit:cover;display:block}
+  .scanner-crosshair{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+  .scanner-crosshair::before{content:'';display:block;width:70%;height:38%;border:2px solid var(--accent);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.45)}
+  .scanner-line{position:absolute;left:15%;right:15%;height:2px;background:var(--accent);opacity:.7;animation:scanLine 1.8s ease-in-out infinite}
+  @keyframes scanLine{0%,100%{top:31%}50%{top:63%}}
+  .scanner-status{padding:10px 20px;text-align:center;font-family:var(--font-mono);font-size:.75rem;color:var(--muted)}
+  .scanner-result{padding:14px 20px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:.82rem}
+  .scanner-result-lbl{color:var(--muted);font-size:.7rem;letter-spacing:1px;margin-bottom:5px}
+  .scanner-result-val{color:var(--accent);font-size:.95rem;font-weight:700;word-break:break-all}
+  .scanner-actions{display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--border)}
+  .btn-scan-use{flex:1;background:var(--accent);color:#0d0f14;border:none;border-radius:9px;padding:11px;font-family:var(--font-mono);font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px}
+  .btn-scan-use:hover{background:#00ffb3}
+  .btn-scan-use:disabled{opacity:.4;cursor:not-allowed}
+  .btn-scan-retry{background:rgba(0,119,255,.1);border:1px solid rgba(0,119,255,.25);color:var(--accent2);border-radius:9px;padding:11px 18px;font-family:var(--font-mono);font-size:.8rem;cursor:pointer}
 
-  /* ── REPORTS SCREEN ──────────────────────────────────────────────────────── */
-  #reportsScreen { display: none; min-height: 100vh; background: var(--bg); padding-bottom: 60px; }
-  #reportsScreen.active { display: block; }
-  .reports-header {
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 16px 28px; display: flex; align-items: center; gap: 14px;
-    position: sticky; top: 0; z-index: 100;
-  }
-  .reports-body { padding: 28px; max-width: 960px; margin: 0 auto; }
-  .reports-filters {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 14px; padding: 22px 24px; margin-bottom: 24px;
-  }
-  .reports-filter-title {
-    font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
-    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
-  }
-  .reports-filter-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 12px;
-  }
-  .reports-filter-item label {
-    display: block; font-size: 0.7rem; font-family: var(--font-mono);
-    color: var(--muted); margin-bottom: 5px; letter-spacing: 1px; text-transform: uppercase;
-  }
-  .reports-filter-select, .reports-filter-input {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border);
-    color: var(--text); font-family: var(--font-main); font-size: 0.85rem;
-    padding: 8px 11px; border-radius: 8px; outline: none; transition: border-color 0.2s;
-    cursor: pointer;
-  }
-  .reports-filter-select:focus, .reports-filter-input:focus { border-color: var(--accent); }
-  .reports-filter-select option { background: var(--surface2); }
-  .reports-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-  .btn-reports-apply {
-    background: var(--accent); color: #0d0f14; border: none; border-radius: 8px;
-    padding: 9px 20px; font-family: var(--font-mono); font-size: 0.8rem;
-    font-weight: 700; cursor: pointer; transition: all 0.2s;
-    display: flex; align-items: center; gap: 7px;
-  }
-  .btn-reports-apply:hover { background: #00ffb3; }
-  .btn-reports-print {
-    background: rgba(0,119,255,0.1); border: 1px solid rgba(0,119,255,0.3);
-    color: var(--accent2); border-radius: 8px; padding: 9px 20px;
-    font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;
-    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 7px;
-  }
-  .btn-reports-print:hover { background: rgba(0,119,255,0.2); }
-  .btn-reports-clear {
-    background: transparent; border: 1px solid var(--border); color: var(--muted);
-    border-radius: 8px; padding: 9px 20px; font-family: var(--font-mono); font-size: 0.8rem;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .btn-reports-clear:hover { color: var(--text); border-color: var(--text); }
+  /* ── REPORTS ───────────────────────────────────────── */
+  #reportsScreen{display:none;min-height:100vh;background:var(--bg);padding-bottom:60px}
+  #reportsScreen.active{display:block}
+  .rpt-header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100}
+  .rpt-body{padding:28px;max-width:960px;margin:0 auto}
+  .rpt-filters{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:24px}
+  .rpt-filter-title{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+  .rpt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+  .rpt-grid label{display:block;font-size:.7rem;font-family:var(--font-mono);color:var(--muted);margin-bottom:5px;letter-spacing:1px;text-transform:uppercase}
+  .rpt-sel,.rpt-inp{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:.85rem;padding:8px 11px;border-radius:8px;outline:none;transition:border-color .2s;cursor:pointer}
+  .rpt-sel:focus,.rpt-inp:focus{border-color:var(--accent)}
+  .rpt-sel option{background:var(--surface2)}
+  .rpt-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .btn-rpt-apply{background:var(--accent);color:#0d0f14;border:none;border-radius:8px;padding:9px 20px;font-family:var(--font-mono);font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px}
+  .btn-rpt-apply:hover{background:#00ffb3}
+  .btn-rpt-print{background:rgba(0,119,255,.1);border:1px solid rgba(0,119,255,.3);color:var(--accent2);border-radius:8px;padding:9px 20px;font-family:var(--font-mono);font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px}
+  .btn-rpt-print:hover{background:rgba(0,119,255,.2)}
+  .btn-rpt-clear{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:9px 20px;font-family:var(--font-mono);font-size:.8rem;cursor:pointer}
+  .rpt-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:24px}
+  .rpt-kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 16px;text-align:center}
+  .rpt-kpi-val{font-family:var(--font-mono);font-size:1.5rem;font-weight:700;color:var(--accent);display:block;margin-bottom:4px}
+  .rpt-kpi-lbl{font-size:.68rem;color:var(--muted);font-family:var(--font-mono)}
+  .rpt-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .rpt-table-hdr{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-family:var(--font-mono);font-size:.75rem;color:var(--muted)}
+  .rpt-table-hdr span{color:var(--accent);font-weight:700}
+  .rpt-table{width:100%;border-collapse:collapse;font-size:.82rem}
+  .rpt-table th{text-align:left;padding:9px 12px;color:var(--muted);font-size:.68rem;font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2)}
+  .rpt-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+  .rpt-table tr:last-child td{border-bottom:none}
+  .rpt-table tr:hover td{background:var(--surface2)}
 
-  .reports-summary {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 12px;
-    margin-bottom: 24px;
-  }
-  .reports-kpi {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 18px 16px; text-align: center;
-  }
-  .reports-kpi-val {
-    font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700;
-    color: var(--accent); display: block; margin-bottom: 4px;
-  }
-  .reports-kpi-lbl { font-size: 0.7rem; color: var(--muted); font-family: var(--font-mono); }
-
-  .reports-table-wrap {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 14px; overflow: hidden;
-  }
-  .reports-table-header {
-    padding: 16px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);
-  }
-  .reports-table-header span { color: var(--accent); font-weight: 700; }
-  .reports-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-  .reports-table th {
-    text-align: left; padding: 9px 12px; color: var(--muted);
-    font-size: 0.68rem; font-family: var(--font-mono); letter-spacing: 1px;
-    text-transform: uppercase; border-bottom: 1px solid var(--border);
-    background: var(--surface2);
-  }
-  .reports-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  .reports-table tr:last-child td { border-bottom: none; }
-  .reports-table tr:hover td { background: var(--surface2); }
-
-  /* Print styles */
-  @media print {
-    body > *:not(#printArea) { display: none !important; }
-    #printArea {
-      display: block !important; position: fixed; inset: 0;
-      background: #fff; color: #000; padding: 20px; font-size: 12px;
-    }
-    #printArea table { width: 100%; border-collapse: collapse; }
-    #printArea th, #printArea td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
-    #printArea th { background: #f0f0f0; font-weight: bold; }
-    #printArea .print-header { margin-bottom: 16px; }
-    #printArea .print-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
-    #printArea .print-sub { font-size: 11px; color: #555; }
-  }
-  #printArea { display: none; }
+  /* ── PRINT ─────────────────────────────────────────── */
+  @media print{body>*:not(#printArea){display:none!important}#printArea{display:block!important;position:fixed;inset:0;background:#fff;color:#000;padding:20px;font-size:12px}#printArea table{width:100%;border-collapse:collapse}#printArea th,#printArea td{border:1px solid #ccc;padding:6px 10px;text-align:left}#printArea th{background:#f0f0f0;font-weight:bold}.print-title{font-size:18px;font-weight:bold;margin-bottom:4px}.print-sub{font-size:11px;color:#555;margin-bottom:16px}}
+  #printArea{display:none}
 </style>
 </head>
 <body>
@@ -907,7 +772,6 @@
       <input class="auth-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
     </div>
     <button class="btn-auth" onclick="doLogin()">ENTRAR →</button>
-    <div id="authConnStatus" style="margin-top:14px;text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);display:none;"></div>
   </div>
 </div>
 
@@ -1037,24 +901,13 @@
   <div class="user-badge">
     <span>👤 <strong id="headerUser"></strong></span>
     <button id="btnAdminPanel" onclick="openAdmin()" style="display:none;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);color:var(--accent);padding:4px 10px;border-radius:6px;font-size:0.72rem;font-weight:600;cursor:pointer;font-family:var(--font-mono);">⚙ Admin</button>
-    <!-- Notification bell — shown for admins only -->
     <div id="notifWrap" style="display:none;position:relative;">
-      <button id="btnNotif" onclick="toggleNotifPanel()"
-        style="background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.25);color:var(--accent);
-               width:30px;height:30px;border-radius:6px;font-size:0.9rem;cursor:pointer;
-               display:flex;align-items:center;justify-content:center;position:relative;transition:all 0.2s;"
-        title="Notificações">
-        🔔
-        <span id="notifBadge"
-          style="display:none;position:absolute;top:-5px;right:-5px;background:var(--warn);color:#fff;
-                 border-radius:50%;width:16px;height:16px;font-size:0.6rem;font-weight:700;
-                 align-items:center;justify-content:center;font-family:var(--font-mono);">0</span>
+      <button onclick="toggleNotifPanel()"
+        style="background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.25);color:var(--accent);width:30px;height:30px;border-radius:6px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;"
+        title="Notificações">🔔
+        <span id="notifBadge" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--warn);color:#fff;border-radius:50%;width:16px;height:16px;font-size:.6rem;font-weight:700;align-items:center;justify-content:center;font-family:var(--font-mono);">0</span>
       </button>
-      <div id="notifPanel"
-        style="display:none;position:absolute;right:0;top:38px;width:300px;
-               background:var(--surface);border:1px solid var(--border);border-radius:12px;
-               z-index:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;">
-      </div>
+      <div id="notifPanel" style="display:none;position:absolute;right:0;top:38px;width:300px;background:var(--surface);border:1px solid var(--border);border-radius:12px;z-index:500;box-shadow:0 8px 32px rgba(0,0,0,.4);overflow:hidden;"></div>
     </div>
     <button class="btn-logout" onclick="doLogout()">Sair</button>
   </div>
@@ -1105,7 +958,7 @@
     </svg>
     Buscar
   </button>
-  <button class="btn" style="background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);color:var(--accent)" onclick="openScanner()" title="Ler código de barras">
+  <button class="btn" style="background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent)" onclick="openScanner()" title="Ler código de barras">
     <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
       <circle cx="12" cy="13" r="4"/>
@@ -1149,85 +1002,57 @@
 
 </div><!-- /inventoryScreen -->
 
-<!-- ── REPORTS SCREEN ─────────────────────────────────────────────────────── -->
+<!-- ── REPORTS SCREEN ── -->
 <div id="reportsScreen">
-  <div class="reports-header">
+  <div class="rpt-header">
     <button class="btn-back" onclick="goTo('nav')">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
       Menu
     </button>
-    <div style="font-family:var(--font-mono);font-size:0.85rem;color:#a855f7;letter-spacing:2px;">RELATÓRIOS</div>
-    <div style="margin-left:auto;font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)" id="reportsSyncLabel"></div>
+    <div style="font-family:var(--font-mono);font-size:.85rem;color:#a855f7;letter-spacing:2px;">RELATÓRIOS</div>
+    <div style="margin-left:auto;font-family:var(--font-mono);font-size:.72rem;color:var(--muted)" id="rptSyncLbl"></div>
   </div>
-  <div class="reports-body">
-    <div class="reports-filters">
-      <div class="reports-filter-title">⚙ Filtros do relatório</div>
-      <div class="reports-filter-grid" id="reportsFilterGrid">
-        <div class="reports-filter-item">
-          <label>Status</label>
-          <select class="reports-filter-select" id="rFilterStatus">
-            <option value="all">Todos</option>
-            <option value="ok">ATIVO</option>
-            <option value="low">Baixo estoque</option>
-            <option value="out">Sem estoque</option>
+  <div class="rpt-body">
+    <div class="rpt-filters">
+      <div class="rpt-filter-title">⚙ Filtros</div>
+      <div class="rpt-grid" id="rptFilterGrid">
+        <div><label>Status</label>
+          <select class="rpt-sel" id="rFilterStatus">
+            <option value="all">Todos</option><option value="ok">ATIVO</option>
+            <option value="low">Baixo estoque</option><option value="out">Sem estoque</option>
             <option value="locked">Consolidados</option>
           </select>
         </div>
-        <div class="reports-filter-item">
-          <label>Busca geral</label>
-          <input class="reports-filter-input" id="rFilterSearch" type="text" placeholder="Qualquer campo...">
+        <div><label>Busca geral</label>
+          <input class="rpt-inp" id="rFilterSearch" type="text" placeholder="Qualquer campo...">
         </div>
       </div>
-      <div class="reports-actions">
-        <button class="btn-reports-apply" onclick="applyReportFilter()">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          Aplicar filtros
-        </button>
-        <button class="btn-reports-print" onclick="printReport()">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-            <rect x="6" y="14" width="12" height="8"/>
-          </svg>
-          Imprimir relatório
-        </button>
-        <button class="btn-reports-clear" onclick="clearReportFilter()">Limpar filtros</button>
+      <div class="rpt-actions">
+        <button class="btn-rpt-apply" onclick="applyRptFilter()">🔍 Aplicar filtros</button>
+        <button class="btn-rpt-print" onclick="printRpt()">🖨️ Imprimir</button>
+        <button class="btn-rpt-clear" onclick="clearRptFilter()">Limpar</button>
       </div>
     </div>
-
-    <div class="reports-summary" id="reportsSummary"></div>
-
-    <div class="reports-table-wrap">
-      <div class="reports-table-header">
-        <div>Resultados: <span id="reportsCount">0</span> itens</div>
-        <div id="reportsActiveFilters" style="color:var(--muted);font-size:0.7rem;"></div>
-      </div>
+    <div class="rpt-kpis" id="rptKpis"></div>
+    <div class="rpt-table-wrap">
+      <div class="rpt-table-hdr">Resultados: <span id="rptCount">0</span> itens</div>
       <div style="overflow-x:auto">
-        <table class="reports-table" id="reportsTable">
-          <thead><tr id="reportsHead"></tr></thead>
-          <tbody id="reportsBody"></tbody>
-        </table>
+        <table class="rpt-table"><thead><tr id="rptHead"></tr></thead><tbody id="rptBody"></tbody></table>
       </div>
-      <div id="reportsEmpty" style="display:none;text-align:center;padding:50px 20px;color:var(--muted);">
+      <div id="rptEmpty" style="display:none;text-align:center;padding:50px;color:var(--muted);">
         <div style="font-size:2rem;margin-bottom:12px;">🗂️</div>
-        <div style="font-family:var(--font-mono);font-size:0.85rem;">Nenhum resultado encontrado</div>
+        <div style="font-family:var(--font-mono);font-size:.85rem;">Nenhum resultado</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── CONFIRM MODAL ─────────────────────────────────────────────────────── -->
+<!-- ── CONFIRM MODAL ── -->
 <div id="confirmModal">
   <div class="confirm-card">
-    <span class="confirm-icon">🔒</span>
-    <div class="confirm-title">CONSOLIDAR ITEM</div>
-    <div class="confirm-msg" id="confirmMsg">
-      Tem certeza que deseja consolidar este item?<br>
-      <strong>Esta ação não pode ser desfeita por usuários comuns.</strong>
-    </div>
+    <span class="confirm-icon" id="confirmIcon">🔒</span>
+    <div class="confirm-title" id="confirmTitle">CONSOLIDAR ITEM</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
     <div class="confirm-btns">
       <button class="btn-confirm-yes" id="confirmYesBtn">Sim, consolidar</button>
       <button class="btn-confirm-no" onclick="closeConfirm()">Cancelar</button>
@@ -1235,7 +1060,7 @@
   </div>
 </div>
 
-<!-- ── SCANNER MODAL ─────────────────────────────────────────────────────── -->
+<!-- ── SCANNER MODAL ── -->
 <div id="scannerModal">
   <div class="scanner-card">
     <div class="scanner-header">
@@ -1244,29 +1069,24 @@
     </div>
     <div class="scanner-video-wrap">
       <video id="scannerVideo" playsinline autoplay muted></video>
-      <div class="scanner-crosshair">
-        <div class="scanner-crosshair-line"></div>
-      </div>
+      <div class="scanner-crosshair"><div class="scanner-line"></div></div>
     </div>
     <div class="scanner-status" id="scannerStatus">Aponte a câmera para o código de barras</div>
     <div class="scanner-result" id="scannerResultBox" style="display:none">
-      <div class="scanner-result-label">CÓDIGO DETECTADO</div>
-      <div class="scanner-result-value" id="scannerResultVal"></div>
+      <div class="scanner-result-lbl">CÓDIGO DETECTADO</div>
+      <div class="scanner-result-val" id="scannerResultVal"></div>
     </div>
     <div class="scanner-actions">
-      <button class="btn-scanner-use" id="btnUseCode" disabled onclick="useScannedCode()">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        Usar código para buscar
-      </button>
-      <button class="btn-scanner-retry" onclick="restartScanner()">↺ Novo scan</button>
+      <button class="btn-scan-use" id="btnScanUse" disabled onclick="useScannedCode()">✅ Usar código na busca</button>
+      <button class="btn-scan-retry" onclick="restartScanner()">↺ Novo scan</button>
     </div>
   </div>
 </div>
 
-<!-- ── PRINT AREA ─────────────────────────────────────────────────────────── -->
+<!-- ── PRINT AREA ── -->
 <div id="printArea"></div>
+
+<div class="loading-overlay" id="loadOverlay">
   <div class="spinner"></div>
   <div class="loading-text" id="loadText">Conectando...</div>
 </div>
@@ -1287,9 +1107,7 @@ function saveSession(s) { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); 
 
 function authErr(msg) {
   const el = document.getElementById('authErr');
-  el.innerHTML = msg ? msg.replace(/
-/g,'<br>') : '';
-  el.classList.toggle('show', !!msg);
+  el.textContent = msg; el.classList.toggle('show', !!msg);
 }
 function adminErr(id, msg) {
   const el = document.getElementById(id);
@@ -1297,54 +1115,56 @@ function adminErr(id, msg) {
 }
 
 // ── USERS SHEET HELPERS ───────────────────────────────────────────────────────
-// Colunas: usuario | nome | hash | admin
+// Sheet columns: usuario | nome | hash | admin
 async function loadUsersFromSheet() {
-  // Tenta carregar da planilha; em caso de falha retorna fallback sem travar o login
   try {
-    const meta = await sheetsAPI('');
-    const allSheets = meta.sheets?.map(s => s.properties.title) || [];
-    const userSheet = allSheets.find(t => t === USERS_SHEET_NAME);
+    const token = await getToken();
+    const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`,
+      { headers: { Authorization: `Bearer ${token}` } });
+    const meta = await metaRes.json();
+
+    // Check if Usuários tab exists
+    const userSheet = meta.sheets?.find(s => s.properties.title === USERS_SHEET_NAME);
 
     if (!userSheet) {
-      // Aba não existe — cria silenciosamente e retorna admin padrão
-      try { await createUsersSheet(); } catch(e2) { console.warn('createUsersSheet:', e2.message); }
+      // Create the tab with header + default admin
+      await createUsersSheet(token);
       usersCache = buildDefaultUsers();
       return usersCache;
     }
 
-    const json = await sheetsAPI(`/values/${encodeURIComponent(USERS_SHEET_NAME)}!A1:D200`);
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(USERS_SHEET_NAME)}!A1:D200`,
+      { headers: { Authorization: `Bearer ${token}` } });
+    const json = await res.json();
     const rows = json.values || [];
 
     if (rows.length < 2) {
-      try { await writeUsersToSheet(buildDefaultUsers()); } catch(e2) {}
+      // Empty sheet — seed default admin
+      await writeUsersToSheet(token, buildDefaultUsers());
       usersCache = buildDefaultUsers();
       return usersCache;
     }
 
+    // Parse rows (skip header row 0)
     const users = {};
     rows.slice(1).forEach(r => {
-      if (r[0] && String(r[0]).trim()) {
-        users[r[0].trim()] = {
-          name:  r[1] || '',
-          hash:  r[2] || '',
-          admin: r[3] === 'true'
-        };
-      }
+      if (!r[0]) return;
+      users[r[0]] = { name: r[1] || '', hash: r[2] || '', admin: r[3] === 'true' };
     });
 
-    // Garante que o admin padrão sempre existe localmente
+    // Ensure default admin always exists
     if (!users[DEFAULT_ADMIN.user]) {
       users[DEFAULT_ADMIN.user] = { name: DEFAULT_ADMIN.name, hash: DEFAULT_ADMIN.hash, admin: true };
-      try { await writeUsersToSheet(users); } catch(e2) {}
+      await writeUsersToSheet(token, users);
     }
 
     usersCache = users;
     return users;
-
   } catch(e) {
-    console.error('loadUsersFromSheet error:', e.message);
-    // Fallback: devolve cache em memória ou admin padrão — nunca trava o login
-    if (!usersCache) usersCache = buildDefaultUsers();
+    console.error('Erro ao carregar usuários:', e);
+    // Fallback to default admin only
+    usersCache = buildDefaultUsers();
     return usersCache;
   }
 }
@@ -1353,26 +1173,28 @@ function buildDefaultUsers() {
   return { [DEFAULT_ADMIN.user]: { name: DEFAULT_ADMIN.name, hash: DEFAULT_ADMIN.hash, admin: true } };
 }
 
-async function createUsersSheet() {
-  // Cria a aba Usuários via batchUpdate
-  await sheetsAPI(':batchUpdate', {
+async function createUsersSheet(token) {
+  // Add new sheet tab
+  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {
     method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ requests: [{ addSheet: { properties: { title: USERS_SHEET_NAME } } }] })
   });
-  await writeUsersToSheet(buildDefaultUsers());
+  // Write header + default admin
+  await writeUsersToSheet(token, buildDefaultUsers());
 }
 
-async function writeUsersToSheet(users) {
+async function writeUsersToSheet(token, users) {
   const rows = [['usuario','nome','hash','admin']];
   Object.entries(users).forEach(([k, u]) => {
-    rows.push([k, u.name || '', u.hash || '', String(!!u.admin)]);
+    rows.push([k, u.name, u.hash, String(u.admin)]);
   });
-  const range = `${USERS_SHEET_NAME}!A1:D${rows.length}`;
-  await sheetsAPI(
-    `/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
+  await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(USERS_SHEET_NAME)}!A1:D${rows.length}?valueInputOption=RAW`,
     {
       method: 'PUT',
-      body: JSON.stringify({ range, majorDimension: 'ROWS', values: rows })
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ range: `${USERS_SHEET_NAME}!A1:D${rows.length}`, majorDimension: 'ROWS', values: rows })
     }
   );
   usersCache = users;
@@ -1380,9 +1202,10 @@ async function writeUsersToSheet(users) {
 
 async function saveUsersToSheet(users) {
   try {
-    await writeUsersToSheet(users);
+    const token = await getToken();
+    await writeUsersToSheet(token, users);
   } catch(e) {
-    showToast('⚠️ Erro ao salvar usuários na planilha: ' + e.message, true);
+    showToast('⚠️ Erro ao salvar usuários na planilha.', true);
     console.error(e);
   }
 }
@@ -1395,44 +1218,19 @@ async function doLogin() {
 
   authErr('');
   const btn = document.querySelector('.btn-auth');
-  btn.textContent = 'Aguardando...'; btn.disabled = true;
+  btn.textContent = 'Aguarde...'; btn.disabled = true;
 
-  const statusEl = document.getElementById('authConnStatus');
-  const showStatus = (msg, color='var(--muted)') => {
-    if (statusEl) { statusEl.style.display=''; statusEl.style.color=color; statusEl.textContent=msg; }
-  };
-
-  // 1. Tenta carregar usuários da planilha
-  let users = null;
-  let sheetOk = false;
-  showStatus('🔄 Conectando ao Google Sheets...');
   try {
-    users = await loadUsersFromSheet();
-    sheetOk = true;
-    showStatus('✅ Conectado', 'var(--accent)');
+    const users = await loadUsersFromSheet();
+    if (!users[user]) return authErr('Usuário não encontrado.');
+    if (users[user].hash !== btoa(pass)) return authErr('Senha incorreta.');
+    saveSession({ user, name: users[user].name, admin: !!users[user].admin });
+    showApp(users[user].name, !!users[user].admin);
   } catch(e) {
-    console.warn('loadUsersFromSheet falhou, usando fallback:', e.message);
-    showStatus('⚠️ Sem acesso à planilha — usando dados locais', '#ffc107');
-    users = usersCache || buildDefaultUsers();
-  }
-
-  // 2. Valida as credenciais
-  if (!users[user]) {
+    authErr('Erro ao conectar. Tente novamente.');
+  } finally {
     btn.textContent = 'ENTRAR →'; btn.disabled = false;
-    statusEl.style.display = 'none';
-    return authErr('Usuário não encontrado.' + (!sheetOk ? ' (planilha inacessível — verifique conexão)' : ''));
   }
-  if (users[user].hash !== btoa(pass)) {
-    btn.textContent = 'ENTRAR →'; btn.disabled = false;
-    statusEl.style.display = 'none';
-    return authErr('Senha incorreta.');
-  }
-
-  // 3. Login OK
-  statusEl.style.display = 'none';
-  saveSession({ user, name: users[user].name, admin: !!users[user].admin });
-  showApp(users[user].name, !!users[user].admin);
-  btn.textContent = 'ENTRAR →'; btn.disabled = false;
 }
 
 function showApp(name, isAdmin) {
@@ -1440,9 +1238,8 @@ function showApp(name, isAdmin) {
   document.getElementById('headerUser').textContent = name;
   document.getElementById('navUserName').textContent = name;
   document.getElementById('btnAdminPanel').style.display = isAdmin ? '' : 'none';
-  // Show notification bell only for admins
-  const notifWrap = document.getElementById('notifWrap');
-  if (notifWrap) notifWrap.style.display = isAdmin ? '' : 'none';
+  const nw = document.getElementById('notifWrap');
+  if (nw) nw.style.display = isAdmin ? '' : 'none';
   if (isAdmin) updateNotifBadge();
   goTo('nav');
   setTimeout(() => { syncSheet().then(() => updateNavSync()); }, 300);
@@ -1659,71 +1456,11 @@ Uvx2ldx0l6Pznan3XUum4TI=`
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let data = [], headers = [], nextId = 1, filterState = 'all';
 let cachedToken = null, tokenExpiry = 0;
-let cachedSheetName = null;          // ← cache do nome da aba principal
-let pendingChanges = new Set();
-let sheetRowMap = [];
-
-// ── SHEETS API LAYER ──────────────────────────────────────────────────────────
-// Centraliza todas as chamadas à API. Lança erro com mensagem legível.
-async function sheetsAPI(path, options = {}) {
-  const token = await getToken();
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}${path}`;
-
-  let res;
-  try {
-    res = await fetch(url, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        ...(options.headers || {})
-      }
-    });
-  } catch(netErr) {
-    throw new Error('Sem conexão com a internet: ' + netErr.message);
-  }
-
-  if (!res.ok) {
-    let msg = `HTTP ${res.status}`;
-    try {
-      const clone = res.clone();
-      const e = await clone.json();
-      msg = e.error?.message || e.error?.status || msg;
-      // Enriquece mensagens comuns
-      if (res.status === 401) msg = 'Não autorizado (401) — verifique a Service Account e a chave privada';
-      if (res.status === 403) msg = 'Sem permissão (403) — compartilhe a planilha com ' + SA.email;
-      if (res.status === 404) msg = 'Planilha não encontrada (404) — verifique o SHEET_ID';
-    } catch(_) {}
-    throw new Error(msg);
-  }
-
-  try {
-    return await res.json();
-  } catch(e) {
-    throw new Error('Resposta inválida da API Google Sheets (não é JSON)');
-  }
-}
-
-// Retorna o nome da primeira aba, usando cache para evitar chamadas repetidas.
-async function getMainSheetName(forceRefresh = false) {
-  if (cachedSheetName && !forceRefresh) return cachedSheetName;
-  const meta = await sheetsAPI('');
-  // Primeira aba que NÃO seja a aba de usuários
-  const sheet = meta.sheets?.find(s => s.properties.title !== USERS_SHEET_NAME)
-             || meta.sheets?.[0];
-  cachedSheetName = sheet?.properties?.title || 'Sheet1';
-  return cachedSheetName;
-}
-
-// Retorna letra(s) de coluna: 1→A, 27→AA
-function colLetter(n) {
-  let s = '';
-  while (n > 0) { s = String.fromCharCode(64 + (n % 26 || 26)) + s; n = Math.floor((n - 1) / 26); }
-  return s;
-}
+let pendingChanges = new Set(); // tracks row indices (1-based in sheet) with changes
+let sheetRowMap = []; // maps data._id to sheet row index (1-based, excluding header)
 
 // ── JWT AUTH ──────────────────────────────────────────────────────────────────
-function b64u(str) { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,''); }
+function b64u(str) { return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,''); }
 function b64uBuf(buf) {
   let s = ''; new Uint8Array(buf).forEach(b => s += String.fromCharCode(b));
   return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
@@ -1731,72 +1468,39 @@ function b64uBuf(buf) {
 
 async function getToken() {
   if (cachedToken && Date.now() < tokenExpiry - 60000) return cachedToken;
-
   const now = Math.floor(Date.now() / 1000);
-  const hdr = b64u(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+  const hdr = b64u(JSON.stringify({alg:'RS256',typ:'JWT'}));
   const pay = b64u(JSON.stringify({
     iss: SA.email,
     scope: 'https://www.googleapis.com/auth/spreadsheets',
     aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600,
-    iat: now
+    exp: now + 3600, iat: now
   }));
   const msg = `${hdr}.${pay}`;
 
-  // Remove PEM headers/footers e qualquer whitespace — funciona com ou sem eles
+  // Strip PEM headers/footers and all whitespace to get clean base64 DER
   const pemClean = SA.key
-    .replace(/-----BEGIN[^-]+-----/g, '')
-    .replace(/-----END[^-]+-----/g, '')
-    .replace(/[\s\r\n]+/g, '');
-
-  let der;
-  try {
-    der = Uint8Array.from(atob(pemClean), c => c.charCodeAt(0));
-  } catch(e) {
-    throw new Error('Chave privada inválida (base64 corrompido). Verifique a SA.key.');
-  }
-
-  let ck;
-  try {
-    ck = await crypto.subtle.importKey(
-      'pkcs8', der.buffer,
-      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-      false, ['sign']
-    );
-  } catch(e) {
-    throw new Error('Falha ao importar chave privada: ' + e.message + '. Verifique se a chave é PKCS8 (formato JSON da Service Account do Google).');
-  }
-
-  const sig = await crypto.subtle.sign(
-    'RSASSA-PKCS1-v1_5', ck,
-    new TextEncoder().encode(msg)
-  );
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\s+/g, '');
+  const der = Uint8Array.from(atob(pemClean), c => c.charCodeAt(0));
+  const ck = await crypto.subtle.importKey('pkcs8', der.buffer,
+    {name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', ck, new TextEncoder().encode(msg));
   const jwt = `${msg}.${b64uBuf(sig)}`;
 
-  let res;
-  try {
-    res = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
-    });
-  } catch(e) {
-    throw new Error('Sem conexão com o servidor Google. Verifique sua internet: ' + e.message);
-  }
-
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:`grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
+  });
   if (!res.ok) {
-    let detail = '';
-    try {
-      const j = await res.json();
-      detail = j.error_description || j.error || JSON.stringify(j);
-    } catch(_) { detail = await res.text().catch(() => res.status); }
-    throw new Error(`Autenticação Google falhou (${res.status}): ${detail}`);
+    const errText = await res.text();
+    throw new Error(`Falha auth (${res.status}): ${errText}`);
   }
-
   const j = await res.json();
-  if (!j.access_token) throw new Error('Resposta de auth inválida — sem access_token.');
   cachedToken = j.access_token;
-  tokenExpiry = Date.now() + (j.expires_in || 3600) * 1000;
+  tokenExpiry = Date.now() + j.expires_in * 1000;
   return cachedToken;
 }
 
@@ -1830,29 +1534,50 @@ async function syncSheet() {
   setSyncState('loading', 'Conectando...');
   setLoad(true, 'Autenticando com Google...');
   try {
-    // Força refresh do nome da aba (pode ter mudado)
+    setLoad(true, 'Autenticando...');
+    const token = await getToken();
+
+    // Get sheet metadata to find actual sheet name
     setLoad(true, 'Lendo estrutura da planilha...');
-    const sheetName = await getMainSheetName(true);
+    const metaRes = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`,
+      { headers:{ Authorization:`Bearer ${token}` } }
+    );
+    if (!metaRes.ok) {
+      let errBody = '';
+      try { const e = await metaRes.json(); errBody = JSON.stringify(e.error || e); } catch(_) { errBody = metaRes.status; }
+      throw new Error(`Erro ao acessar planilha (${metaRes.status}): ${errBody}`);
+    }
+    const meta = await metaRes.json();
+    const sheetName = meta.sheets?.[0]?.properties?.title || 'Sheet1';
     setLoad(true, `Carregando aba "${sheetName}"...`);
 
-    const json = await sheetsAPI(
-      `/values/${encodeURIComponent(sheetName)}!A1:ZZ10000`
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}!A1:ZZ5000`,
+      { headers:{ Authorization:`Bearer ${token}` } }
     );
+    if (!res.ok) {
+      const e = await res.json();
+      throw new Error(`Erro API (${res.status}): ${e.error?.message || 'desconhecido'}`);
+    }
+    const json = await res.json();
     const rows = json.values || [];
-    if (rows.length < 2) throw new Error(`Aba "${sheetName}" está vazia ou sem dados além do cabeçalho.`);
+    if (rows.length < 2) throw new Error(`Aba "${sheetName}" está vazia ou tem apenas cabeçalho`);
 
     headers = rows[0].map(h => String(h).trim());
 
+    // Detect qty column
     const qIdx = headers.findIndex(h => /qtd|quant|quantidade|qty|estoque|stock/i.test(h));
     const qCol = qIdx >= 0 ? headers[qIdx] : null;
+
     const mColIdx = headers.findIndex(h => h.trim().toLowerCase() === 'moderado');
     const mColName = mColIdx >= 0 ? headers[mColIdx] : null;
-
     data = rows.slice(1)
       .filter(r => r.some(c => c && String(c).trim()))
       .map((row, idx) => {
         const obj = { _id: nextId++, _locked: false, _qCol: qCol, _sheetRow: idx + 2 };
         headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? String(row[i]) : ''; });
+        // Auto-lock if Moderado === 'SIM'
         if (mColName && String(obj[mColName] || '').trim().toUpperCase() === 'SIM') {
           obj._locked = true;
         }
@@ -1863,20 +1588,17 @@ async function syncSheet() {
     updatePublishBtn();
 
     document.getElementById('colInfoText').textContent = headers.join(' · ');
-    document.getElementById('syncDiagPanel')?.remove(); // limpa diagnóstico anterior
+    // colInfo hidden
     setSyncState('ok', `Sincronizado · ${data.length} itens`);
     document.getElementById('lastSync').textContent =
       'Última sync: ' + new Date().toLocaleTimeString('pt-BR');
-    showToast(`✅ ${data.length} itens carregados da aba "${sheetName}"`);
+    showToast(`✅ ${data.length} itens carregados`);
     render();
     updateNavSync();
   } catch(e) {
     setSyncState('error', 'Erro na sync');
-    const msg = e.message || String(e);
-    showToast('❌ ' + msg, true);
-    console.error('syncSheet error:', e);
-    // Painel de diagnóstico visual
-    showSyncDiag(msg);
+    showToast('❌ ' + e.message, true);
+    console.error('Full error:', e);
     updateNavSync();
   } finally {
     setLoad(false);
@@ -1884,82 +1606,7 @@ async function syncSheet() {
   }
 }
 
-// ── DIAGNÓSTICO DE SYNC ───────────────────────────────────────────────────────
-function showSyncDiag(errorMsg) {
-  // Remove painel anterior se existir
-  document.getElementById('syncDiagPanel')?.remove();
-
-  // Classifica o tipo de erro para mostrar solução específica
-  let cause = '', solution = '';
-  const m = errorMsg.toLowerCase();
-
-  if (m.includes('chave privada') || m.includes('pkcs8') || m.includes('base64') || m.includes('importkey')) {
-    cause = '🔑 Problema com a chave privada da Service Account';
-    solution = `A chave no arquivo HTML pode estar truncada, corrompida ou no formato errado.<br><br>
-      <strong>Como corrigir:</strong><br>
-      1. Acesse o <a href="https://console.cloud.google.com/iam-admin/serviceaccounts" target="_blank" style="color:var(--accent2)">Google Cloud Console</a><br>
-      2. Abra a Service Account → Chaves → Adicionar Chave → JSON<br>
-      3. No JSON baixado, copie o valor de <code style="color:var(--accent)">private_key</code><br>
-      4. Cole no arquivo HTML substituindo o conteúdo de <code style="color:var(--accent)">SA.key</code>`;
-  } else if (m.includes('autenticação google') || m.includes('auth') || m.includes('401') || m.includes('403')) {
-    cause = '🔐 Falha de autenticação com o Google';
-    solution = `O token JWT foi gerado mas o Google rejeitou.<br><br>
-      <strong>Verifique:</strong><br>
-      1. O email da Service Account (<code style="color:var(--accent)">SA.email</code>) está correto<br>
-      2. A planilha foi compartilhada com este email (Editor)<br>
-      3. A Google Sheets API está ativada no projeto do Google Cloud<br>
-      4. A chave não foi revogada no console`;
-  } else if (m.includes('sem conexão') || m.includes('failed to fetch') || m.includes('network')) {
-    cause = '🌐 Sem conexão com a internet ou CORS bloqueado';
-    solution = `O navegador bloqueou a requisição.<br><br>
-      <strong>Verifique:</strong><br>
-      1. Sua conexão com a internet está ativa<br>
-      2. Se estiver testando localmente via <code>file://</code>, hospede em um servidor (GitHub Pages, Live Server)<br>
-      3. Extensões do navegador não estão bloqueando requisições externas`;
-  } else if (m.includes('http 404') || m.includes('not found') || m.includes('sheet_id')) {
-    cause = '📄 Planilha não encontrada';
-    solution = `O SHEET_ID no código não corresponde a nenhuma planilha acessível.<br><br>
-      <strong>Verifique:</strong><br>
-      1. O <code style="color:var(--accent)">SHEET_ID</code> no HTML está correto<br>
-      2. A planilha existe e não foi excluída<br>
-      3. A Service Account tem acesso a ela (compartilhe como Editor)`;
-  } else if (m.includes('vazia') || m.includes('cabeçalho')) {
-    cause = '📋 Planilha sem dados';
-    solution = `A aba principal da planilha está vazia ou só tem cabeçalho.<br><br>
-      Adicione ao menos uma linha de dados abaixo do cabeçalho e tente novamente.`;
-  } else {
-    cause = '⚠️ Erro inesperado';
-    solution = `Mensagem original: <code style="color:var(--warn)">${errorMsg}</code><br><br>
-      Abra o Console do navegador (F12 → Console) para mais detalhes.`;
-  }
-
-  const panel = document.createElement('div');
-  panel.id = 'syncDiagPanel';
-  panel.style.cssText = `
-    margin: 16px 28px; background: rgba(255,107,53,0.06);
-    border: 1px solid rgba(255,107,53,0.3); border-radius: 12px;
-    padding: 18px 22px; font-size: 0.82rem; line-height: 1.7;
-    font-family: var(--font-main);
-  `;
-  panel.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <strong style="color:var(--warn);font-family:var(--font-mono);font-size:0.78rem;letter-spacing:1px;">DIAGNÓSTICO DE ERRO</strong>
-      <button onclick="this.closest('#syncDiagPanel').remove()"
-        style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;">✕</button>
-    </div>
-    <div style="color:var(--text);margin-bottom:10px;"><strong>${cause}</strong></div>
-    <div style="color:var(--muted);">${solution}</div>
-    <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,107,53,0.2);">
-      <span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);">ERRO TÉCNICO:</span>
-      <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--warn);margin-left:8px;">${errorMsg}</span>
-    </div>`;
-
-  // Insere após a sync-bar
-  const syncBar = document.querySelector('.sync-bar');
-  if (syncBar) syncBar.after(panel);
-}
-
-
+function setSyncState(s, lbl) {
   const d = document.getElementById('syncDot');
   d.className = 'dot' + (s==='ok'?' green':s==='loading'?' yellow':s==='error'?' red':'');
   document.getElementById('syncLabel').textContent = lbl;
@@ -1978,42 +1625,66 @@ async function publishChanges() {
   setLoad(true, 'Publicando alterações...');
 
   try {
-    const sheetName = await getMainSheetName();
+    const token = await getToken();
 
-    // Monta o batchUpdate com todas as linhas modificadas
+    // Get sheet name
+    const metaRes = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (!metaRes.ok) throw new Error('Erro ao acessar planilha');
+    const meta = await metaRes.json();
+    const sheetName = meta.sheets?.[0]?.properties?.title || 'Sheet1';
+
+    // Build batch update data
     const valueRanges = [];
     for (const id of pendingChanges) {
       const row = data.find(r => r._id === id);
       if (!row || !row._sheetRow) continue;
-      const rowValues = headers.map(h => row[h] ?? '');
+      const rowValues = headers.map(h => row[h] || '');
       const range = `${sheetName}!A${row._sheetRow}:${colLetter(headers.length)}${row._sheetRow}`;
       valueRanges.push({ range, values: [rowValues] });
     }
 
-    if (!valueRanges.length) {
-      showToast('⚠️ Nenhuma linha com referência na planilha para publicar.', true);
-      return;
-    }
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values:batchUpdate`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          valueInputOption: 'USER_ENTERED',
+          data: valueRanges
+        })
+      }
+    );
 
-    await sheetsAPI('/values:batchUpdate', {
-      method: 'POST',
-      body: JSON.stringify({ valueInputOption: 'USER_ENTERED', data: valueRanges })
-    });
+    if (!res.ok) {
+      const e = await res.json();
+      throw new Error(`Erro ao publicar (${res.status}): ${e.error?.message || 'desconhecido'}`);
+    }
 
     const count = pendingChanges.size;
     pendingChanges.clear();
     updatePublishBtn();
-    const session = getSession();
-    notifyAdminPublish(count, session?.name || 'Usuário');
+    const _ses = getSession();
+    notifyAdminPublish(count, _ses ? _ses.name : 'Usuário');
     showToast(`✅ ${count} linha(s) publicada(s) na planilha!`);
-    render();
   } catch(e) {
-    showToast('❌ Erro ao publicar: ' + e.message, true);
-    console.error('publishChanges error:', e);
+    showToast('❌ ' + e.message, true);
+    console.error(e);
   } finally {
     setLoad(false);
     btn.disabled = false;
   }
+}
+
+function colLetter(n) {
+  let s = '';
+  while (n > 0) { s = String.fromCharCode(64 + (n % 26 || 26)) + s; n = Math.floor((n - 1) / 26); }
+  return s;
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
@@ -2073,13 +1744,16 @@ function openDrawer(id) {
   const acts = document.getElementById('drawerActions');
   acts.innerHTML = '';
 
+  // Save changes button (always shown when not locked)
   if (!row._locked) {
     acts.innerHTML += `<button class="btn-drawer-save-all" onclick="saveDrawerChanges(${id})">✅ Salvar alterações</button>`;
   }
   if (row._locked) {
     acts.innerHTML += `<button class="drawer-btn drawer-btn-unlock" onclick="unlock(${id});openDrawer(${id})">🔓 Desconsolidar</button>`;
   } else {
-    acts.innerHTML += `<button class="drawer-btn drawer-btn-cons" onclick="lock(${id})">🔒 Consolidar</button>`;
+    acts.innerHTML += `<button class="drawer-btn drawer-btn-cons" onclick="lock(${id});openDrawer(${id})">🔒 Consolidar</button>`;
+  }
+  if (row._sheetRow && !row._locked) {
     acts.innerHTML += `<button class="drawer-btn drawer-btn-save" onclick="saveRow(${id})">💾 Salvar na planilha</button>`;
   }
 
@@ -2402,8 +2076,8 @@ function render() {
           ${row._locked
             ?`<button class="btn-unlock" onclick="unlock(${row._id})">🔓</button>`
             :`<button class="btn-cons"   onclick="lock(${row._id})">🔒</button>`}
-          ${!row._locked
-            ?`<button class="btn-save-row" onclick="saveRow(${row._id})" title="Salvar na planilha">💾</button>`
+          ${row._sheetRow && !row._locked
+            ?`<button class="btn-save-row" onclick="saveRow(${row._id})" title="Salvar">💾</button>`
             :''}
         </div>
       </td>
@@ -2443,35 +2117,15 @@ function getModeradoCol() {
   return headers.find(h => h.trim().toLowerCase() === 'moderado') || null;
 }
 
-// ── CONFIRM MODAL ─────────────────────────────────────────────────────────────
-let confirmCallback = null;
-
-function openConfirm(msg, icon, title, yesLabel, cb) {
-  document.getElementById('confirmMsg').innerHTML = msg;
-  document.querySelector('.confirm-icon').textContent = icon;
-  document.querySelector('.confirm-title').textContent = title;
-  document.getElementById('confirmYesBtn').textContent = yesLabel;
-  confirmCallback = cb;
-  document.getElementById('confirmModal').classList.add('open');
-}
-function closeConfirm() {
-  document.getElementById('confirmModal').classList.remove('open');
-  confirmCallback = null;
-}
-document.getElementById('confirmYesBtn').addEventListener('click', () => {
-  if (confirmCallback) confirmCallback();
-  closeConfirm();
-});
-
 function lock(id) {
-  const r = data.find(r => r._id === id);
+  const r = data.find(r=>r._id===id);
   if (!r) return;
   const itemName = r[headers[0]] || 'este item';
   openConfirm(
-    `Tem certeza que deseja consolidar <strong>"${esc(itemName)}"</strong>?<br><br>
-     Após consolidado, somente um <strong>Administrador</strong> poderá desfazer esta ação.`,
+    'Tem certeza que deseja consolidar <strong>"' + esc(itemName) + '"</strong>?<br><br>' +
+    'Após consolidado, somente um <strong>Administrador</strong> poderá desfazer esta ação.',
     '🔒', 'CONSOLIDAR ITEM', 'Sim, consolidar',
-    () => {
+    function() {
       r._locked = true;
       const mCol = getModeradoCol();
       if (mCol) {
@@ -2479,307 +2133,32 @@ function lock(id) {
         if (r._sheetRow) pendingChanges.add(r._id);
         updatePublishBtn();
       }
-      showToast(`✅ "${itemName}" consolidado`);
+      showToast('✅ "' + itemName + '" consolidado');
       render();
       if (document.getElementById('itemDrawer').classList.contains('open')) openDrawer(id);
     }
   );
 }
-
 function unlock(id) {
+  // Only admins can unlock
   const session = getSession();
-  if (!session || !session.admin) { openAdminBlock(); return; }
-  const r = data.find(r => r._id === id);
+  if (!session || !session.admin) {
+    openAdminBlock();
+    return;
+  }
+  const r = data.find(r=>r._id===id);
   if (!r) return;
   r._locked = false;
+  // Clear SIM from Moderado column on unlock
   const mCol = getModeradoCol();
   if (mCol && r[mCol] === 'SIM') {
     r[mCol] = '';
     if (r._sheetRow) pendingChanges.add(r._id);
     updatePublishBtn();
   }
-  showToast(`🔓 "${r[headers[0]] || 'Item'}" desbloqueado`);
+  showToast(`🔓 "${r[headers[0]]||'Item'}" desbloqueado`);
   render();
 }
-
-// ── BARCODE SCANNER ───────────────────────────────────────────────────────────
-let scannerStream = null;
-let barcodeDetector = null;
-let scannerAnimFrame = null;
-let lastScannedCode = '';
-
-async function openScanner() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    showToast('❌ Câmera não suportada neste dispositivo.', true); return;
-  }
-  document.getElementById('scannerModal').classList.add('open');
-  lastScannedCode = '';
-  document.getElementById('scannerResultBox').style.display = 'none';
-  document.getElementById('btnUseCode').disabled = true;
-  document.getElementById('scannerStatus').textContent = 'Solicitando permissão de câmera...';
-  await startCamera();
-}
-
-async function startCamera() {
-  try {
-    stopCamera();
-    const constraints = {
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
-    };
-    scannerStream = await navigator.mediaDevices.getUserMedia(constraints);
-    const video = document.getElementById('scannerVideo');
-    video.srcObject = scannerStream;
-    await video.play();
-    document.getElementById('scannerStatus').textContent = 'Aponte para um código de barras ou QR Code';
-    if ('BarcodeDetector' in window) {
-      barcodeDetector = new BarcodeDetector({ formats: [
-        'code_128','code_39','ean_13','ean_8','qr_code','upc_a','upc_e','itf','pdf417','data_matrix'
-      ]});
-      scanLoop();
-    } else {
-      document.getElementById('scannerStatus').textContent =
-        '⚠️ Detecção automática indisponível neste navegador. Digite o código manualmente na busca.';
-    }
-  } catch (err) {
-    let msg = '❌ Não foi possível acessar a câmera.';
-    if (err.name === 'NotAllowedError') msg = '❌ Permissão negada. Permita o acesso nas configurações do dispositivo.';
-    else if (err.name === 'NotFoundError') msg = '❌ Câmera não encontrada neste dispositivo.';
-    document.getElementById('scannerStatus').textContent = msg;
-    showToast(msg, true);
-  }
-}
-
-function scanLoop() {
-  const video = document.getElementById('scannerVideo');
-  if (!barcodeDetector || !scannerStream || video.readyState < 2) {
-    scannerAnimFrame = requestAnimationFrame(scanLoop); return;
-  }
-  barcodeDetector.detect(video).then(codes => {
-    if (codes.length > 0) {
-      const code = codes[0].rawValue;
-      if (code !== lastScannedCode) {
-        lastScannedCode = code;
-        document.getElementById('scannerResultVal').textContent = code;
-        document.getElementById('scannerResultBox').style.display = 'block';
-        document.getElementById('btnUseCode').disabled = false;
-        document.getElementById('scannerStatus').textContent = '✅ Código detectado!';
-        if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
-      }
-    }
-  }).catch(() => {}).finally(() => {
-    if (scannerStream) scannerAnimFrame = requestAnimationFrame(scanLoop);
-  });
-}
-
-function restartScanner() {
-  lastScannedCode = '';
-  document.getElementById('scannerResultBox').style.display = 'none';
-  document.getElementById('btnUseCode').disabled = true;
-  document.getElementById('scannerStatus').textContent = 'Aponte para um código de barras ou QR Code';
-}
-
-function useScannedCode() {
-  if (!lastScannedCode) return;
-  closeScanner();
-  goTo('inventory');
-  document.getElementById('searchInput').value = lastScannedCode;
-  doSearch();
-  showToast(`🔍 Buscando: "${lastScannedCode}"`);
-}
-
-function closeScanner() {
-  stopCamera();
-  document.getElementById('scannerModal').classList.remove('open');
-}
-
-function stopCamera() {
-  if (scannerAnimFrame) { cancelAnimationFrame(scannerAnimFrame); scannerAnimFrame = null; }
-  if (scannerStream) { scannerStream.getTracks().forEach(t => t.stop()); scannerStream = null; }
-  const video = document.getElementById('scannerVideo');
-  if (video) video.srcObject = null;
-}
-
-// ── REPORTS ───────────────────────────────────────────────────────────────────
-let reportData = [];
-const REPORT_DISPLAY_COLS = ['equipamento','modelo','fabricante','setor','situação','situacao','moderado'];
-
-function initReportsScreen() {
-  const grid = document.getElementById('reportsFilterGrid');
-  Array.from(grid.querySelectorAll('.dynamic-filter')).forEach(el => el.remove());
-  const dynamicCols = headers.filter(h => REPORT_DISPLAY_COLS.includes(h.trim().toLowerCase()));
-  dynamicCols.forEach(col => {
-    const vals = getUniqueValues(col);
-    if (!vals.length) return;
-    const div = document.createElement('div');
-    div.className = 'reports-filter-item dynamic-filter';
-    div.innerHTML = `<label>${esc(col)}</label>
-      <select class="reports-filter-select" id="rFilter_${escA(col)}">
-        <option value="">Todos</option>
-        ${vals.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('')}
-      </select>`;
-    grid.appendChild(div);
-  });
-  document.getElementById('reportsSyncLabel').textContent =
-    document.getElementById('lastSync').textContent;
-  applyReportFilter();
-}
-
-function applyReportFilter() {
-  const statusF = document.getElementById('rFilterStatus').value;
-  const searchF = document.getElementById('rFilterSearch').value.trim().toLowerCase();
-  let filtered = data.filter(row => {
-    const ms = !searchF || headers.some(h => (row[h] || '').toLowerCase().includes(searchF));
-    const mf = statusF === 'all' ||
-      (statusF === 'locked' && row._locked) ||
-      (!row._locked && statusF === status(row));
-    return ms && mf;
-  });
-  headers.forEach(col => {
-    const el = document.getElementById(`rFilter_${escA(col)}`);
-    if (el && el.value) filtered = filtered.filter(row => (row[col] || '').trim() === el.value);
-  });
-  reportData = filtered;
-  renderReportTable();
-  renderReportSummary();
-}
-
-function renderReportSummary() {
-  const total = reportData.length;
-  const locked = reportData.filter(r => r._locked).length;
-  const active = reportData.filter(r => !r._locked && status(r) === 'ok').length;
-  const low = reportData.filter(r => !r._locked && status(r) === 'low').length;
-  const out = reportData.filter(r => !r._locked && status(r) === 'out').length;
-  document.getElementById('reportsSummary').innerHTML = `
-    <div class="reports-kpi"><span class="reports-kpi-val">${total}</span><span class="reports-kpi-lbl">TOTAL</span></div>
-    <div class="reports-kpi"><span class="reports-kpi-val" style="color:var(--accent)">${active}</span><span class="reports-kpi-lbl">ATIVO</span></div>
-    <div class="reports-kpi"><span class="reports-kpi-val" style="color:#ffc107">${low}</span><span class="reports-kpi-lbl">BAIXO ESTOQUE</span></div>
-    <div class="reports-kpi"><span class="reports-kpi-val" style="color:var(--warn)">${out}</span><span class="reports-kpi-lbl">SEM ESTOQUE</span></div>
-    <div class="reports-kpi"><span class="reports-kpi-val" style="color:var(--muted)">${locked}</span><span class="reports-kpi-lbl">CONSOLIDADOS</span></div>`;
-}
-
-function renderReportTable() {
-  const visHeaders = headers.filter(h => REPORT_DISPLAY_COLS.includes(h.trim().toLowerCase()));
-  const showHeaders = visHeaders.length > 0 ? visHeaders : headers.slice(0, 5);
-  document.getElementById('reportsCount').textContent = reportData.length;
-  document.getElementById('reportsHead').innerHTML =
-    '<th>Status</th>' + showHeaders.map(h => `<th>${esc(h)}</th>`).join('');
-  const tbody = document.getElementById('reportsBody');
-  const empty = document.getElementById('reportsEmpty');
-  if (!reportData.length) {
-    tbody.innerHTML = ''; empty.style.display = '';
-    document.querySelector('.reports-table').style.display = 'none'; return;
-  }
-  document.querySelector('.reports-table').style.display = '';
-  empty.style.display = 'none';
-  tbody.innerHTML = reportData.map(row => `
-    <tr>
-      <td>${badge(row)}</td>
-      ${showHeaders.map(h => `<td>${esc(row[h] || '—')}</td>`).join('')}
-    </tr>`).join('');
-}
-
-function clearReportFilter() {
-  document.getElementById('rFilterStatus').value = 'all';
-  document.getElementById('rFilterSearch').value = '';
-  headers.forEach(col => { const el = document.getElementById(`rFilter_${escA(col)}`); if (el) el.value = ''; });
-  applyReportFilter();
-}
-
-function printReport() {
-  if (!reportData.length) { showToast('⚠️ Nenhum dado para imprimir.', true); return; }
-  const visHeaders = headers.filter(h => REPORT_DISPLAY_COLS.includes(h.trim().toLowerCase()));
-  const showHeaders = visHeaders.length > 0 ? visHeaders : headers.slice(0, 5);
-  const now = new Date().toLocaleString('pt-BR');
-  const session = getSession();
-  document.getElementById('printArea').innerHTML = `
-    <div class="print-header">
-      <div class="print-title">INV//CTRL — Relatório de Inventário</div>
-      <div class="print-sub">Gerado em: ${now} · Por: ${session?.name || '—'} · Total: ${reportData.length} itens</div>
-    </div>
-    <table>
-      <thead><tr><th>Status</th>${showHeaders.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
-      <tbody>${reportData.map(row=>`<tr>
-        <td>${row._locked?'Consolidado':status(row)==='out'?'Sem estoque':status(row)==='low'?'Baixo estoque':'ATIVO'}</td>
-        ${showHeaders.map(h=>`<td>${esc(row[h]||'—')}</td>`).join('')}
-      </tr>`).join('')}</tbody>
-    </table>`;
-  window.print();
-}
-
-// ── ADMIN NOTIFICATIONS ON PUBLISH ────────────────────────────────────────────
-function notifyAdminPublish(count, userName) {
-  try {
-    const existing = JSON.parse(localStorage.getItem('invctr_notifications') || '[]');
-    existing.unshift({
-      id: Date.now(),
-      msg: `📤 ${userName} publicou ${count} alteração(ões) na planilha.`,
-      time: new Date().toLocaleString('pt-BR'),
-      read: false
-    });
-    localStorage.setItem('invctr_notifications', JSON.stringify(existing.slice(0, 20)));
-    // Trigger cross-tab update
-    localStorage.setItem('invctr_notify_ping', Date.now().toString());
-    setTimeout(() => localStorage.removeItem('invctr_notify_ping'), 100);
-  } catch(e) {}
-}
-
-function getUnreadNotifications() {
-  try { return JSON.parse(localStorage.getItem('invctr_notifications') || '[]').filter(n => !n.read); }
-  catch { return []; }
-}
-
-function markAllNotificationsRead() {
-  try {
-    const all = JSON.parse(localStorage.getItem('invctr_notifications') || '[]');
-    all.forEach(n => n.read = true);
-    localStorage.setItem('invctr_notifications', JSON.stringify(all));
-    updateNotifBadge();
-  } catch {}
-}
-
-function updateNotifBadge() {
-  const badge = document.getElementById('notifBadge');
-  if (!badge) return;
-  const count = getUnreadNotifications().length;
-  badge.textContent = count;
-  badge.style.display = count > 0 ? 'inline-flex' : 'none';
-}
-
-function toggleNotifPanel() {
-  const panel = document.getElementById('notifPanel');
-  if (!panel) return;
-  const open = panel.style.display !== 'none';
-  if (open) { panel.style.display = 'none'; return; }
-  let all = [];
-  try { all = JSON.parse(localStorage.getItem('invctr_notifications') || '[]'); } catch {}
-  panel.innerHTML = `
-    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-      <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);letter-spacing:1px;">NOTIFICAÇÕES</span>
-      <button onclick="markAllNotificationsRead()" style="font-size:0.68rem;font-family:var(--font-mono);color:var(--muted);background:none;border:none;cursor:pointer;">Marcar lidas</button>
-    </div>
-    <div style="max-height:280px;overflow-y:auto;">
-      ${all.length ? all.map(n => `
-        <div style="padding:11px 16px;border-bottom:1px solid var(--border);${!n.read?'background:rgba(0,229,160,0.04)':''}">
-          <div style="font-size:0.82rem;color:${n.read?'var(--muted)':'var(--text)'};">${n.msg}</div>
-          <div style="font-size:0.68rem;color:var(--muted);font-family:var(--font-mono);margin-top:3px;">${n.time}</div>
-        </div>`).join('')
-      : '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.8rem;">Sem notificações</div>'}
-    </div>`;
-  panel.style.display = 'block';
-  markAllNotificationsRead();
-}
-
-// Cross-tab listener for admin notifications
-window.addEventListener('storage', (e) => {
-  if (e.key === 'invctr_notify_ping') {
-    const session = getSession();
-    if (session && session.admin) {
-      updateNotifBadge();
-      const unread = getUnreadNotifications();
-      if (unread.length) showToast(`🔔 ${unread[0].msg}`);
-    }
-  }
-});
 
 function openAdminBlock() {
   document.getElementById('adminBlockModal').classList.add('open');
@@ -2788,57 +2167,52 @@ function closeAdminBlock() {
   document.getElementById('adminBlockModal').classList.remove('open');
 }
 function addRow() {
-  if (!headers.length) { showToast('⚠️ Sincronize ou carregue um arquivo primeiro.', true); return; }
-  const obj = { _id: nextId++, _locked: false, _qCol: data[0]?._qCol || null, _sheetRow: null };
-  headers.forEach(h => { obj[h] = ''; });
+  if (!headers.length) { showToast('⚠️ Sincronize primeiro', true); return; }
+  const obj = { _id: nextId++, _locked: false, _qCol: data[0]?._qCol||null };
+  headers.forEach(h => { obj[h]=''; });
   data.unshift(obj);
   setFilter('all', document.querySelector('.filter-tab'));
   render();
-  showToast('➕ Novo item adicionado — preencha e clique em 💾 para salvar na planilha.');
+  showToast('➕ Novo item adicionado');
 }
 
 async function saveRow(id) {
   const row = data.find(r => r._id === id);
-  if (!row) return;
+  if (!row || !row._sheetRow) return showToast('⚠️ Linha sem referência na planilha.', true);
 
   setLoad(true, 'Salvando linha...');
   try {
-    const sheetName = await getMainSheetName();
-    const rowValues = headers.map(h => row[h] ?? '');
+    const token = await getToken();
+    const metaRes = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (!metaRes.ok) throw new Error('Erro ao acessar planilha');
+    const meta = await metaRes.json();
+    const sheetName = meta.sheets?.[0]?.properties?.title || 'Sheet1';
 
-    if (row._sheetRow) {
-      // Linha existente → PUT na linha específica
-      const range = `${sheetName}!A${row._sheetRow}:${colLetter(headers.length)}${row._sheetRow}`;
-      await sheetsAPI(
-        `/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,
-        {
-          method: 'PUT',
-          body: JSON.stringify({ range, majorDimension: 'ROWS', values: [rowValues] })
-        }
-      );
-    } else {
-      // Novo item sem _sheetRow → APPEND ao final da planilha
-      const appendRange = `${sheetName}!A:${colLetter(headers.length)}`;
-      const result = await sheetsAPI(
-        `/values/${encodeURIComponent(appendRange)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ majorDimension: 'ROWS', values: [rowValues] })
-        }
-      );
-      // Captura o número da linha criada para futuras edições
-      const updatedRange = result.updates?.updatedRange || '';
-      const match = updatedRange.match(/(\d+)$/);
-      if (match) row._sheetRow = parseInt(match[1], 10);
+    const rowValues = headers.map(h => row[h] || '');
+    const range = `${sheetName}!A${row._sheetRow}:${colLetter(headers.length)}${row._sheetRow}`;
+
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ range, majorDimension: 'ROWS', values: [rowValues] })
+      }
+    );
+    if (!res.ok) {
+      const e = await res.json();
+      throw new Error(`Erro (${res.status}): ${e.error?.message || 'desconhecido'}`);
     }
-
     pendingChanges.delete(id);
     updatePublishBtn();
     render();
-    showToast('✅ Linha salva na planilha!');
+    showToast(`✅ Linha salva na planilha!`);
   } catch(e) {
-    showToast('❌ Erro ao salvar: ' + e.message, true);
-    console.error('saveRow error:', e);
+    showToast('❌ ' + e.message, true);
+    console.error(e);
   } finally {
     setLoad(false);
   }
@@ -2868,7 +2242,8 @@ function goTo(screen) {
   document.getElementById('navScreen').classList.remove('active');
   document.getElementById('inventoryScreen').style.display = 'none';
   document.getElementById('chartScreen').classList.remove('active');
-  document.getElementById('reportsScreen').classList.remove('active');
+  const _rs = document.getElementById('reportsScreen');
+  if (_rs) _rs.classList.remove('active');
 
   if (screen === 'nav') {
     document.getElementById('navScreen').classList.add('active');
@@ -2879,8 +2254,8 @@ function goTo(screen) {
     document.getElementById('chartScreen').classList.add('active');
     renderCharts();
   } else if (screen === 'reports') {
-    document.getElementById('reportsScreen').classList.add('active');
-    initReportsScreen();
+    const rs = document.getElementById('reportsScreen');
+    if (rs) { rs.classList.add('active'); initReportsScreen(); }
   }
 }
 
@@ -3002,6 +2377,269 @@ function renderCharts() {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+
+
+// ── CONFIRM MODAL ─────────────────────────────────────────────────────────────
+let _confirmCb = null;
+function openConfirm(msg, icon, title, yesLabel, cb) {
+  document.getElementById('confirmMsg').innerHTML = msg;
+  document.getElementById('confirmIcon').textContent = icon;
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmYesBtn').textContent = yesLabel;
+  _confirmCb = cb;
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.remove('open');
+  _confirmCb = null;
+}
+document.getElementById('confirmYesBtn').addEventListener('click', function() {
+  if (_confirmCb) _confirmCb();
+  closeConfirm();
+});
+
+// ── BARCODE SCANNER ───────────────────────────────────────────────────────────
+var _scanStream = null, _scanDetector = null, _scanFrame = null, _lastCode = '';
+
+async function openScanner() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast('❌ Câmera não suportada neste dispositivo.', true); return;
+  }
+  _lastCode = '';
+  document.getElementById('scannerResultBox').style.display = 'none';
+  document.getElementById('btnScanUse').disabled = true;
+  document.getElementById('scannerStatus').textContent = 'Solicitando permissão de câmera...';
+  document.getElementById('scannerModal').classList.add('open');
+  try {
+    _scanStream = await navigator.mediaDevices.getUserMedia(
+      { video: { facingMode: { ideal: 'environment' } } }
+    );
+    var vid = document.getElementById('scannerVideo');
+    vid.srcObject = _scanStream;
+    await vid.play();
+    document.getElementById('scannerStatus').textContent = 'Aponte para um código de barras ou QR Code';
+    if ('BarcodeDetector' in window) {
+      _scanDetector = new BarcodeDetector({ formats: [
+        'code_128','code_39','ean_13','ean_8','qr_code','upc_a','upc_e','itf','pdf417'
+      ]});
+      _scanLoop();
+    } else {
+      document.getElementById('scannerStatus').textContent =
+        '⚠️ Detecção automática indisponível neste navegador. Digite o código na busca.';
+    }
+  } catch(err) {
+    var msg = err.name === 'NotAllowedError'
+      ? '❌ Permissão de câmera negada.'
+      : err.name === 'NotFoundError'
+        ? '❌ Câmera não encontrada.'
+        : '❌ Não foi possível acessar a câmera.';
+    document.getElementById('scannerStatus').textContent = msg;
+    showToast(msg, true);
+  }
+}
+function _scanLoop() {
+  var vid = document.getElementById('scannerVideo');
+  if (!_scanDetector || !_scanStream || vid.readyState < 2) {
+    _scanFrame = requestAnimationFrame(_scanLoop); return;
+  }
+  _scanDetector.detect(vid).then(function(codes) {
+    if (codes.length > 0 && codes[0].rawValue !== _lastCode) {
+      _lastCode = codes[0].rawValue;
+      document.getElementById('scannerResultVal').textContent = _lastCode;
+      document.getElementById('scannerResultBox').style.display = 'block';
+      document.getElementById('btnScanUse').disabled = false;
+      document.getElementById('scannerStatus').textContent = '✅ Código detectado!';
+      if (navigator.vibrate) navigator.vibrate([80,40,80]);
+    }
+  }).catch(function(){}).finally(function() {
+    if (_scanStream) _scanFrame = requestAnimationFrame(_scanLoop);
+  });
+}
+function restartScanner() {
+  _lastCode = '';
+  document.getElementById('scannerResultBox').style.display = 'none';
+  document.getElementById('btnScanUse').disabled = true;
+  document.getElementById('scannerStatus').textContent = 'Aponte para um código de barras ou QR Code';
+}
+function useScannedCode() {
+  if (!_lastCode) return;
+  closeScanner();
+  goTo('inventory');
+  document.getElementById('searchInput').value = _lastCode;
+  doSearch();
+  showToast('🔍 Buscando: "' + _lastCode + '"');
+}
+function closeScanner() {
+  _stopCamera();
+  document.getElementById('scannerModal').classList.remove('open');
+}
+function _stopCamera() {
+  if (_scanFrame) { cancelAnimationFrame(_scanFrame); _scanFrame = null; }
+  if (_scanStream) { _scanStream.getTracks().forEach(function(t){t.stop();}); _scanStream = null; }
+  var v = document.getElementById('scannerVideo');
+  if (v) v.srcObject = null;
+}
+
+// ── REPORTS ───────────────────────────────────────────────────────────────────
+var _rptData = [];
+var RPT_COLS = ['equipamento','modelo','fabricante','setor','situação','situacao','moderado'];
+
+function initReportsScreen() {
+  var grid = document.getElementById('rptFilterGrid');
+  Array.from(grid.querySelectorAll('.rpt-dyn')).forEach(function(el){el.remove();});
+  headers.filter(function(h){return RPT_COLS.includes(h.trim().toLowerCase());}).forEach(function(col){
+    var vals = getUniqueValues(col);
+    if (!vals.length) return;
+    var d = document.createElement('div');
+    d.className = 'rpt-dyn';
+    d.innerHTML = '<label>' + esc(col) + '</label>' +
+      '<select class="rpt-sel" id="rf_' + escA(col) + '">' +
+      '<option value="">Todos</option>' +
+      vals.map(function(v){return '<option value="'+esc(v)+'">'+esc(v)+'</option>';}).join('') +
+      '</select>';
+    grid.appendChild(d);
+  });
+  document.getElementById('rptSyncLbl').textContent = document.getElementById('lastSync').textContent;
+  applyRptFilter();
+}
+function applyRptFilter() {
+  var sf = document.getElementById('rFilterStatus').value;
+  var qf = document.getElementById('rFilterSearch').value.trim().toLowerCase();
+  var filtered = data.filter(function(row) {
+    var ms = !qf || headers.some(function(h){return (row[h]||'').toLowerCase().includes(qf);});
+    var mf = sf==='all' || (sf==='locked'&&row._locked) || (!row._locked&&sf===status(row));
+    return ms && mf;
+  });
+  headers.forEach(function(col){
+    var el = document.getElementById('rf_' + escA(col));
+    if (el && el.value) filtered = filtered.filter(function(r){return (r[col]||'').trim()===el.value;});
+  });
+  _rptData = filtered;
+  _renderRptTable(); _renderRptKpis();
+}
+function _renderRptKpis() {
+  var t = _rptData.length;
+  document.getElementById('rptKpis').innerHTML =
+    '<div class="rpt-kpi"><span class="rpt-kpi-val">'+t+'</span><span class="rpt-kpi-lbl">TOTAL</span></div>' +
+    '<div class="rpt-kpi"><span class="rpt-kpi-val" style="color:var(--accent)">' +
+      _rptData.filter(function(r){return !r._locked&&status(r)==='ok';}).length +
+    '</span><span class="rpt-kpi-lbl">ATIVO</span></div>' +
+    '<div class="rpt-kpi"><span class="rpt-kpi-val" style="color:#ffc107">' +
+      _rptData.filter(function(r){return !r._locked&&status(r)==='low';}).length +
+    '</span><span class="rpt-kpi-lbl">BAIXO ESTOQUE</span></div>' +
+    '<div class="rpt-kpi"><span class="rpt-kpi-val" style="color:var(--warn)">' +
+      _rptData.filter(function(r){return !r._locked&&status(r)==='out';}).length +
+    '</span><span class="rpt-kpi-lbl">SEM ESTOQUE</span></div>' +
+    '<div class="rpt-kpi"><span class="rpt-kpi-val" style="color:var(--muted)">' +
+      _rptData.filter(function(r){return r._locked;}).length +
+    '</span><span class="rpt-kpi-lbl">CONSOLIDADOS</span></div>';
+}
+function _renderRptTable() {
+  var vis = headers.filter(function(h){return RPT_COLS.includes(h.trim().toLowerCase());});
+  var show = vis.length ? vis : headers.slice(0,5);
+  document.getElementById('rptCount').textContent = _rptData.length;
+  document.getElementById('rptHead').innerHTML = '<th>Status</th>' +
+    show.map(function(h){return '<th>'+esc(h)+'</th>';}).join('');
+  var empty = document.getElementById('rptEmpty');
+  var tbl = document.querySelector('.rpt-table');
+  if (!_rptData.length) {
+    document.getElementById('rptBody').innerHTML = '';
+    empty.style.display = ''; tbl.style.display = 'none'; return;
+  }
+  tbl.style.display = ''; empty.style.display = 'none';
+  document.getElementById('rptBody').innerHTML = _rptData.map(function(row){
+    return '<tr><td>'+badge(row)+'</td>'+
+      show.map(function(h){return '<td>'+esc(row[h]||'—')+'</td>';}).join('')+'</tr>';
+  }).join('');
+}
+function clearRptFilter() {
+  document.getElementById('rFilterStatus').value = 'all';
+  document.getElementById('rFilterSearch').value = '';
+  headers.forEach(function(col){
+    var el = document.getElementById('rf_'+escA(col));
+    if (el) el.value = '';
+  });
+  applyRptFilter();
+}
+function printRpt() {
+  if (!_rptData.length) { showToast('⚠️ Nenhum dado para imprimir.', true); return; }
+  var vis = headers.filter(function(h){return RPT_COLS.includes(h.trim().toLowerCase());});
+  var show = vis.length ? vis : headers.slice(0,5);
+  var ses = getSession();
+  document.getElementById('printArea').innerHTML =
+    '<div class="print-title">INV//CTRL — Relatório de Inventário</div>' +
+    '<div class="print-sub">Gerado em: ' + new Date().toLocaleString('pt-BR') +
+    ' · Por: ' + (ses ? ses.name : '—') + ' · Total: ' + _rptData.length + ' itens</div>' +
+    '<table><thead><tr><th>Status</th>' +
+    show.map(function(h){return '<th>'+esc(h)+'</th>';}).join('') + '</tr></thead><tbody>' +
+    _rptData.map(function(row){
+      var st = row._locked?'Consolidado':status(row)==='out'?'Sem estoque':status(row)==='low'?'Baixo estoque':'ATIVO';
+      return '<tr><td>'+st+'</td>'+show.map(function(h){return '<td>'+esc(row[h]||'—')+'</td>';}).join('')+'</tr>';
+    }).join('') + '</tbody></table>';
+  window.print();
+}
+
+// ── NOTIFICAÇÕES PARA ADMIN ───────────────────────────────────────────────────
+function notifyAdminPublish(count, userName) {
+  try {
+    var all = JSON.parse(localStorage.getItem('invctr_notifs') || '[]');
+    all.unshift({ id: Date.now(), msg: '📤 ' + userName + ' publicou ' + count + ' alteração(ões) na planilha.', time: new Date().toLocaleString('pt-BR'), read: false });
+    localStorage.setItem('invctr_notifs', JSON.stringify(all.slice(0,20)));
+    localStorage.setItem('invctr_ping', Date.now().toString());
+    setTimeout(function(){ localStorage.removeItem('invctr_ping'); }, 200);
+  } catch(e) {}
+}
+function updateNotifBadge() {
+  var badge = document.getElementById('notifBadge');
+  if (!badge) return;
+  try {
+    var n = JSON.parse(localStorage.getItem('invctr_notifs')||'[]').filter(function(x){return !x.read;}).length;
+    badge.textContent = n;
+    badge.style.display = n > 0 ? 'inline-flex' : 'none';
+  } catch(e) {}
+}
+function toggleNotifPanel() {
+  var panel = document.getElementById('notifPanel');
+  if (!panel) return;
+  if (panel.style.display !== 'none') { panel.style.display = 'none'; return; }
+  var all = [];
+  try { all = JSON.parse(localStorage.getItem('invctr_notifs')||'[]'); } catch(e) {}
+  panel.innerHTML =
+    '<div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">' +
+      '<span style="font-family:var(--font-mono);font-size:.75rem;color:var(--accent);">NOTIFICAÇÕES</span>' +
+      '<button onclick="markNotifsRead()" style="font-size:.68rem;font-family:var(--font-mono);color:var(--muted);background:none;border:none;cursor:pointer;">Marcar lidas</button>' +
+    '</div>' +
+    '<div style="max-height:280px;overflow-y:auto;">' +
+    (all.length ? all.map(function(n){
+      return '<div style="padding:11px 16px;border-bottom:1px solid var(--border);' + (!n.read?'background:rgba(0,229,160,.04)':'') + '">' +
+        '<div style="font-size:.82rem;color:'+(n.read?'var(--muted)':'var(--text)')+';">'+n.msg+'</div>' +
+        '<div style="font-size:.68rem;color:var(--muted);font-family:var(--font-mono);margin-top:3px;">'+n.time+'</div></div>';
+    }).join('') : '<div style="padding:24px;text-align:center;color:var(--muted);font-size:.8rem;">Sem notificações</div>') +
+    '</div>';
+  panel.style.display = 'block';
+  markNotifsRead();
+}
+function markNotifsRead() {
+  try {
+    var all = JSON.parse(localStorage.getItem('invctr_notifs')||'[]');
+    all.forEach(function(n){n.read=true;});
+    localStorage.setItem('invctr_notifs', JSON.stringify(all));
+    updateNotifBadge();
+  } catch(e) {}
+}
+window.addEventListener('storage', function(e) {
+  if (e.key === 'invctr_ping') {
+    var s = getSession();
+    if (s && s.admin) {
+      updateNotifBadge();
+      try {
+        var unread = JSON.parse(localStorage.getItem('invctr_notifs')||'[]').filter(function(x){return !x.read;});
+        if (unread.length) showToast('🔔 ' + unread[0].msg);
+      } catch(e) {}
+    }
+  }
+});
+
 </script>
 
 <!-- ── ITEM DRAWER ───────────────────────────────────────────────────────── -->
