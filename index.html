@@ -907,6 +907,7 @@
       <input class="auth-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
     </div>
     <button class="btn-auth" onclick="doLogin()">ENTRAR →</button>
+    <div id="authConnStatus" style="margin-top:14px;text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);display:none;"></div>
   </div>
 </div>
 
@@ -1286,7 +1287,9 @@ function saveSession(s) { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); 
 
 function authErr(msg) {
   const el = document.getElementById('authErr');
-  el.textContent = msg; el.classList.toggle('show', !!msg);
+  el.innerHTML = msg ? msg.replace(/
+/g,'<br>') : '';
+  el.classList.toggle('show', !!msg);
 }
 function adminErr(id, msg) {
   const el = document.getElementById(id);
@@ -1296,45 +1299,52 @@ function adminErr(id, msg) {
 // ── USERS SHEET HELPERS ───────────────────────────────────────────────────────
 // Colunas: usuario | nome | hash | admin
 async function loadUsersFromSheet() {
+  // Tenta carregar da planilha; em caso de falha retorna fallback sem travar o login
   try {
-    // Verifica se a aba Usuários existe
     const meta = await sheetsAPI('');
-    const userSheet = meta.sheets?.find(s => s.properties.title === USERS_SHEET_NAME);
+    const allSheets = meta.sheets?.map(s => s.properties.title) || [];
+    const userSheet = allSheets.find(t => t === USERS_SHEET_NAME);
 
     if (!userSheet) {
-      await createUsersSheet();
+      // Aba não existe — cria silenciosamente e retorna admin padrão
+      try { await createUsersSheet(); } catch(e2) { console.warn('createUsersSheet:', e2.message); }
       usersCache = buildDefaultUsers();
       return usersCache;
     }
 
-    const json = await sheetsAPI(
-      `/values/${encodeURIComponent(USERS_SHEET_NAME)}!A1:D200`
-    );
+    const json = await sheetsAPI(`/values/${encodeURIComponent(USERS_SHEET_NAME)}!A1:D200`);
     const rows = json.values || [];
 
     if (rows.length < 2) {
-      await writeUsersToSheet(buildDefaultUsers());
+      try { await writeUsersToSheet(buildDefaultUsers()); } catch(e2) {}
       usersCache = buildDefaultUsers();
       return usersCache;
     }
 
     const users = {};
     rows.slice(1).forEach(r => {
-      if (!r[0]) return;
-      users[r[0]] = { name: r[1] || '', hash: r[2] || '', admin: r[3] === 'true' };
+      if (r[0] && String(r[0]).trim()) {
+        users[r[0].trim()] = {
+          name:  r[1] || '',
+          hash:  r[2] || '',
+          admin: r[3] === 'true'
+        };
+      }
     });
 
-    // Garante que o admin padrão sempre existe
+    // Garante que o admin padrão sempre existe localmente
     if (!users[DEFAULT_ADMIN.user]) {
       users[DEFAULT_ADMIN.user] = { name: DEFAULT_ADMIN.name, hash: DEFAULT_ADMIN.hash, admin: true };
-      await writeUsersToSheet(users);
+      try { await writeUsersToSheet(users); } catch(e2) {}
     }
 
     usersCache = users;
     return users;
+
   } catch(e) {
-    console.error('Erro ao carregar usuários:', e);
-    usersCache = buildDefaultUsers();
+    console.error('loadUsersFromSheet error:', e.message);
+    // Fallback: devolve cache em memória ou admin padrão — nunca trava o login
+    if (!usersCache) usersCache = buildDefaultUsers();
     return usersCache;
   }
 }
@@ -1385,19 +1395,44 @@ async function doLogin() {
 
   authErr('');
   const btn = document.querySelector('.btn-auth');
-  btn.textContent = 'Aguarde...'; btn.disabled = true;
+  btn.textContent = 'Aguardando...'; btn.disabled = true;
 
+  const statusEl = document.getElementById('authConnStatus');
+  const showStatus = (msg, color='var(--muted)') => {
+    if (statusEl) { statusEl.style.display=''; statusEl.style.color=color; statusEl.textContent=msg; }
+  };
+
+  // 1. Tenta carregar usuários da planilha
+  let users = null;
+  let sheetOk = false;
+  showStatus('🔄 Conectando ao Google Sheets...');
   try {
-    const users = await loadUsersFromSheet();
-    if (!users[user]) return authErr('Usuário não encontrado.');
-    if (users[user].hash !== btoa(pass)) return authErr('Senha incorreta.');
-    saveSession({ user, name: users[user].name, admin: !!users[user].admin });
-    showApp(users[user].name, !!users[user].admin);
+    users = await loadUsersFromSheet();
+    sheetOk = true;
+    showStatus('✅ Conectado', 'var(--accent)');
   } catch(e) {
-    authErr('Erro ao conectar. Tente novamente.');
-  } finally {
-    btn.textContent = 'ENTRAR →'; btn.disabled = false;
+    console.warn('loadUsersFromSheet falhou, usando fallback:', e.message);
+    showStatus('⚠️ Sem acesso à planilha — usando dados locais', '#ffc107');
+    users = usersCache || buildDefaultUsers();
   }
+
+  // 2. Valida as credenciais
+  if (!users[user]) {
+    btn.textContent = 'ENTRAR →'; btn.disabled = false;
+    statusEl.style.display = 'none';
+    return authErr('Usuário não encontrado.' + (!sheetOk ? ' (planilha inacessível — verifique conexão)' : ''));
+  }
+  if (users[user].hash !== btoa(pass)) {
+    btn.textContent = 'ENTRAR →'; btn.disabled = false;
+    statusEl.style.display = 'none';
+    return authErr('Senha incorreta.');
+  }
+
+  // 3. Login OK
+  statusEl.style.display = 'none';
+  saveSession({ user, name: users[user].name, admin: !!users[user].admin });
+  showApp(users[user].name, !!users[user].admin);
+  btn.textContent = 'ENTRAR →'; btn.disabled = false;
 }
 
 function showApp(name, isAdmin) {
@@ -1633,20 +1668,40 @@ let sheetRowMap = [];
 async function sheetsAPI(path, options = {}) {
   const token = await getToken();
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}${path}`;
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      ...(options.headers || {})
-    }
-  });
+
+  let res;
+  try {
+    res = await fetch(url, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      }
+    });
+  } catch(netErr) {
+    throw new Error('Sem conexão com a internet: ' + netErr.message);
+  }
+
   if (!res.ok) {
     let msg = `HTTP ${res.status}`;
-    try { const e = await res.clone().json(); msg = e.error?.message || msg; } catch(_) {}
+    try {
+      const clone = res.clone();
+      const e = await clone.json();
+      msg = e.error?.message || e.error?.status || msg;
+      // Enriquece mensagens comuns
+      if (res.status === 401) msg = 'Não autorizado (401) — verifique a Service Account e a chave privada';
+      if (res.status === 403) msg = 'Sem permissão (403) — compartilhe a planilha com ' + SA.email;
+      if (res.status === 404) msg = 'Planilha não encontrada (404) — verifique o SHEET_ID';
+    } catch(_) {}
     throw new Error(msg);
   }
-  return res.json();
+
+  try {
+    return await res.json();
+  } catch(e) {
+    throw new Error('Resposta inválida da API Google Sheets (não é JSON)');
+  }
 }
 
 // Retorna o nome da primeira aba, usando cache para evitar chamadas repetidas.
