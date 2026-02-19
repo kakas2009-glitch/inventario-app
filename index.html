@@ -679,6 +679,213 @@
     font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
   }
   .btn-admin-block-ok:hover { filter: brightness(1.15); }
+
+  /* ── CONFIRM MODAL ───────────────────────────────────────────────────────── */
+  #confirmModal {
+    display: none; position: fixed; inset: 0; z-index: 1200;
+    background: rgba(13,15,20,0.88); align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  #confirmModal.open { display: flex; }
+  .confirm-card {
+    background: var(--surface); border: 1px solid rgba(255,107,53,0.35);
+    border-radius: 16px; padding: 36px 32px; max-width: 400px; width: 100%;
+    text-align: center; box-shadow: 0 0 40px rgba(255,107,53,0.08);
+  }
+  .confirm-icon { font-size: 2.8rem; margin-bottom: 14px; display: block; }
+  .confirm-title {
+    font-family: var(--font-mono); font-size: 0.95rem; color: var(--warn);
+    letter-spacing: 2px; margin-bottom: 10px;
+  }
+  .confirm-msg { font-size: 0.84rem; color: var(--muted); line-height: 1.75; margin-bottom: 28px; }
+  .confirm-msg strong { color: var(--text); }
+  .confirm-btns { display: flex; gap: 12px; justify-content: center; }
+  .btn-confirm-yes {
+    background: var(--warn); color: #fff; border: none; border-radius: 9px;
+    padding: 11px 32px; font-family: var(--font-mono); font-size: 0.82rem;
+    font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
+  }
+  .btn-confirm-yes:hover { filter: brightness(1.15); }
+  .btn-confirm-no {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    color: var(--muted); border-radius: 9px; padding: 11px 32px;
+    font-family: var(--font-mono); font-size: 0.82rem; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 1px;
+  }
+  .btn-confirm-no:hover { color: var(--text); border-color: var(--text); }
+
+  /* ── BARCODE SCANNER MODAL ───────────────────────────────────────────────── */
+  #scannerModal {
+    display: none; position: fixed; inset: 0; z-index: 1200;
+    background: rgba(13,15,20,0.95); align-items: center; justify-content: center;
+    flex-direction: column; gap: 20px; padding: 20px;
+  }
+  #scannerModal.open { display: flex; }
+  .scanner-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; width: 100%; max-width: 480px; overflow: hidden;
+  }
+  .scanner-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .scanner-title { font-family: var(--font-mono); color: var(--accent); font-size: 0.85rem; letter-spacing: 2px; }
+  .scanner-close {
+    background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.25);
+    color: var(--warn); width: 30px; height: 30px; border-radius: 7px;
+    cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;
+  }
+  .scanner-video-wrap {
+    position: relative; background: #000; width: 100%; aspect-ratio: 4/3; overflow: hidden;
+  }
+  #scannerVideo { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .scanner-crosshair {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .scanner-crosshair::before {
+    content: ''; display: block; width: 70%; height: 38%;
+    border: 2px solid var(--accent); border-radius: 8px;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+  }
+  .scanner-crosshair-line {
+    position: absolute; left: 15%; right: 15%; height: 2px;
+    background: var(--accent); opacity: 0.7;
+    animation: scanLine 1.8s ease-in-out infinite;
+  }
+  @keyframes scanLine {
+    0%,100% { top: 31%; } 50% { top: 63%; }
+  }
+  .scanner-result {
+    padding: 14px 20px; border-top: 1px solid var(--border);
+    font-family: var(--font-mono); font-size: 0.82rem;
+  }
+  .scanner-result-label { color: var(--muted); font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 5px; }
+  .scanner-result-value { color: var(--accent); font-size: 0.95rem; font-weight: 700; word-break: break-all; }
+  .scanner-actions { display: flex; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--border); }
+  .btn-scanner-use {
+    flex: 1; background: var(--accent); color: #0d0f14; border: none;
+    border-radius: 9px; padding: 11px; font-family: var(--font-mono);
+    font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+  }
+  .btn-scanner-use:hover { background: #00ffb3; }
+  .btn-scanner-use:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-scanner-retry {
+    background: rgba(0,119,255,0.1); border: 1px solid rgba(0,119,255,0.25);
+    color: var(--accent2); border-radius: 9px; padding: 11px 18px;
+    font-family: var(--font-mono); font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-scanner-retry:hover { background: rgba(0,119,255,0.2); }
+  .scanner-status {
+    padding: 10px 20px; text-align: center;
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);
+  }
+
+  /* ── REPORTS SCREEN ──────────────────────────────────────────────────────── */
+  #reportsScreen { display: none; min-height: 100vh; background: var(--bg); padding-bottom: 60px; }
+  #reportsScreen.active { display: block; }
+  .reports-header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 16px 28px; display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .reports-body { padding: 28px; max-width: 960px; margin: 0 auto; }
+  .reports-filters {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 24px; margin-bottom: 24px;
+  }
+  .reports-filter-title {
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .reports-filter-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 12px;
+  }
+  .reports-filter-item label {
+    display: block; font-size: 0.7rem; font-family: var(--font-mono);
+    color: var(--muted); margin-bottom: 5px; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .reports-filter-select, .reports-filter-input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font-main); font-size: 0.85rem;
+    padding: 8px 11px; border-radius: 8px; outline: none; transition: border-color 0.2s;
+    cursor: pointer;
+  }
+  .reports-filter-select:focus, .reports-filter-input:focus { border-color: var(--accent); }
+  .reports-filter-select option { background: var(--surface2); }
+  .reports-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .btn-reports-apply {
+    background: var(--accent); color: #0d0f14; border: none; border-radius: 8px;
+    padding: 9px 20px; font-family: var(--font-mono); font-size: 0.8rem;
+    font-weight: 700; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .btn-reports-apply:hover { background: #00ffb3; }
+  .btn-reports-print {
+    background: rgba(0,119,255,0.1); border: 1px solid rgba(0,119,255,0.3);
+    color: var(--accent2); border-radius: 8px; padding: 9px 20px;
+    font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 7px;
+  }
+  .btn-reports-print:hover { background: rgba(0,119,255,0.2); }
+  .btn-reports-clear {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    border-radius: 8px; padding: 9px 20px; font-family: var(--font-mono); font-size: 0.8rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-reports-clear:hover { color: var(--text); border-color: var(--text); }
+
+  .reports-summary {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 12px;
+    margin-bottom: 24px;
+  }
+  .reports-kpi {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 16px; text-align: center;
+  }
+  .reports-kpi-val {
+    font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700;
+    color: var(--accent); display: block; margin-bottom: 4px;
+  }
+  .reports-kpi-lbl { font-size: 0.7rem; color: var(--muted); font-family: var(--font-mono); }
+
+  .reports-table-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+  }
+  .reports-table-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);
+  }
+  .reports-table-header span { color: var(--accent); font-weight: 700; }
+  .reports-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .reports-table th {
+    text-align: left; padding: 9px 12px; color: var(--muted);
+    font-size: 0.68rem; font-family: var(--font-mono); letter-spacing: 1px;
+    text-transform: uppercase; border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .reports-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .reports-table tr:last-child td { border-bottom: none; }
+  .reports-table tr:hover td { background: var(--surface2); }
+
+  /* Print styles */
+  @media print {
+    body > *:not(#printArea) { display: none !important; }
+    #printArea {
+      display: block !important; position: fixed; inset: 0;
+      background: #fff; color: #000; padding: 20px; font-size: 12px;
+    }
+    #printArea table { width: 100%; border-collapse: collapse; }
+    #printArea th, #printArea td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+    #printArea th { background: #f0f0f0; font-weight: bold; }
+    #printArea .print-header { margin-bottom: 16px; }
+    #printArea .print-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+    #printArea .print-sub { font-size: 11px; color: #555; }
+  }
+  #printArea { display: none; }
 </style>
 </head>
 <body>
@@ -784,6 +991,13 @@
       <div class="nav-card-title">GRÁFICOS</div>
       <div class="nav-card-desc">Visualize o percentual de itens Moderados em relação ao total.</div>
     </div>
+    <div class="nav-card" style="border-color:var(--border)" onclick="goTo('reports')"
+      onmouseenter="this.style.borderColor='#a855f7';this.style.boxShadow='0 8px 32px rgba(168,85,247,0.12)';this.style.transform='translateY(-4px)'"
+      onmouseleave="this.style.borderColor='var(--border)';this.style.boxShadow='';this.style.transform=''">
+      <span class="nav-card-icon">🗂️</span>
+      <div class="nav-card-title" style="color:#a855f7">RELATÓRIOS</div>
+      <div class="nav-card-desc">Filtre, visualize e imprima relatórios personalizados da planilha.</div>
+    </div>
   </div>
 </div>
 
@@ -822,6 +1036,25 @@
   <div class="user-badge">
     <span>👤 <strong id="headerUser"></strong></span>
     <button id="btnAdminPanel" onclick="openAdmin()" style="display:none;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);color:var(--accent);padding:4px 10px;border-radius:6px;font-size:0.72rem;font-weight:600;cursor:pointer;font-family:var(--font-mono);">⚙ Admin</button>
+    <!-- Notification bell — shown for admins only -->
+    <div id="notifWrap" style="display:none;position:relative;">
+      <button id="btnNotif" onclick="toggleNotifPanel()"
+        style="background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.25);color:var(--accent);
+               width:30px;height:30px;border-radius:6px;font-size:0.9rem;cursor:pointer;
+               display:flex;align-items:center;justify-content:center;position:relative;transition:all 0.2s;"
+        title="Notificações">
+        🔔
+        <span id="notifBadge"
+          style="display:none;position:absolute;top:-5px;right:-5px;background:var(--warn);color:#fff;
+                 border-radius:50%;width:16px;height:16px;font-size:0.6rem;font-weight:700;
+                 align-items:center;justify-content:center;font-family:var(--font-mono);">0</span>
+      </button>
+      <div id="notifPanel"
+        style="display:none;position:absolute;right:0;top:38px;width:300px;
+               background:var(--surface);border:1px solid var(--border);border-radius:12px;
+               z-index:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden;">
+      </div>
+    </div>
     <button class="btn-logout" onclick="doLogout()">Sair</button>
   </div>
 </header>
@@ -871,6 +1104,13 @@
     </svg>
     Buscar
   </button>
+  <button class="btn" style="background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);color:var(--accent)" onclick="openScanner()" title="Ler código de barras">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+    Câmera
+  </button>
   <button class="btn btn-add" onclick="addRow()">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -908,7 +1148,124 @@
 
 </div><!-- /inventoryScreen -->
 
-<div class="loading-overlay" id="loadOverlay">
+<!-- ── REPORTS SCREEN ─────────────────────────────────────────────────────── -->
+<div id="reportsScreen">
+  <div class="reports-header">
+    <button class="btn-back" onclick="goTo('nav')">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Menu
+    </button>
+    <div style="font-family:var(--font-mono);font-size:0.85rem;color:#a855f7;letter-spacing:2px;">RELATÓRIOS</div>
+    <div style="margin-left:auto;font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)" id="reportsSyncLabel"></div>
+  </div>
+  <div class="reports-body">
+    <div class="reports-filters">
+      <div class="reports-filter-title">⚙ Filtros do relatório</div>
+      <div class="reports-filter-grid" id="reportsFilterGrid">
+        <div class="reports-filter-item">
+          <label>Status</label>
+          <select class="reports-filter-select" id="rFilterStatus">
+            <option value="all">Todos</option>
+            <option value="ok">ATIVO</option>
+            <option value="low">Baixo estoque</option>
+            <option value="out">Sem estoque</option>
+            <option value="locked">Consolidados</option>
+          </select>
+        </div>
+        <div class="reports-filter-item">
+          <label>Busca geral</label>
+          <input class="reports-filter-input" id="rFilterSearch" type="text" placeholder="Qualquer campo...">
+        </div>
+      </div>
+      <div class="reports-actions">
+        <button class="btn-reports-apply" onclick="applyReportFilter()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          Aplicar filtros
+        </button>
+        <button class="btn-reports-print" onclick="printReport()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+          Imprimir relatório
+        </button>
+        <button class="btn-reports-clear" onclick="clearReportFilter()">Limpar filtros</button>
+      </div>
+    </div>
+
+    <div class="reports-summary" id="reportsSummary"></div>
+
+    <div class="reports-table-wrap">
+      <div class="reports-table-header">
+        <div>Resultados: <span id="reportsCount">0</span> itens</div>
+        <div id="reportsActiveFilters" style="color:var(--muted);font-size:0.7rem;"></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="reports-table" id="reportsTable">
+          <thead><tr id="reportsHead"></tr></thead>
+          <tbody id="reportsBody"></tbody>
+        </table>
+      </div>
+      <div id="reportsEmpty" style="display:none;text-align:center;padding:50px 20px;color:var(--muted);">
+        <div style="font-size:2rem;margin-bottom:12px;">🗂️</div>
+        <div style="font-family:var(--font-mono);font-size:0.85rem;">Nenhum resultado encontrado</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM MODAL ─────────────────────────────────────────────────────── -->
+<div id="confirmModal">
+  <div class="confirm-card">
+    <span class="confirm-icon">🔒</span>
+    <div class="confirm-title">CONSOLIDAR ITEM</div>
+    <div class="confirm-msg" id="confirmMsg">
+      Tem certeza que deseja consolidar este item?<br>
+      <strong>Esta ação não pode ser desfeita por usuários comuns.</strong>
+    </div>
+    <div class="confirm-btns">
+      <button class="btn-confirm-yes" id="confirmYesBtn">Sim, consolidar</button>
+      <button class="btn-confirm-no" onclick="closeConfirm()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCANNER MODAL ─────────────────────────────────────────────────────── -->
+<div id="scannerModal">
+  <div class="scanner-card">
+    <div class="scanner-header">
+      <span class="scanner-title">📷 LEITOR DE CÓDIGO DE BARRAS</span>
+      <button class="scanner-close" onclick="closeScanner()">✕</button>
+    </div>
+    <div class="scanner-video-wrap">
+      <video id="scannerVideo" playsinline autoplay muted></video>
+      <div class="scanner-crosshair">
+        <div class="scanner-crosshair-line"></div>
+      </div>
+    </div>
+    <div class="scanner-status" id="scannerStatus">Aponte a câmera para o código de barras</div>
+    <div class="scanner-result" id="scannerResultBox" style="display:none">
+      <div class="scanner-result-label">CÓDIGO DETECTADO</div>
+      <div class="scanner-result-value" id="scannerResultVal"></div>
+    </div>
+    <div class="scanner-actions">
+      <button class="btn-scanner-use" id="btnUseCode" disabled onclick="useScannedCode()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        Usar código para buscar
+      </button>
+      <button class="btn-scanner-retry" onclick="restartScanner()">↺ Novo scan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PRINT AREA ─────────────────────────────────────────────────────────── -->
+<div id="printArea"></div>
   <div class="spinner"></div>
   <div class="loading-text" id="loadText">Conectando...</div>
 </div>
@@ -1060,6 +1417,10 @@ function showApp(name, isAdmin) {
   document.getElementById('headerUser').textContent = name;
   document.getElementById('navUserName').textContent = name;
   document.getElementById('btnAdminPanel').style.display = isAdmin ? '' : 'none';
+  // Show notification bell only for admins
+  const notifWrap = document.getElementById('notifWrap');
+  if (notifWrap) notifWrap.style.display = isAdmin ? '' : 'none';
+  if (isAdmin) updateNotifBadge();
   goTo('nav');
   setTimeout(() => { syncSheet().then(() => updateNavSync()); }, 300);
 }
@@ -1488,6 +1849,8 @@ async function publishChanges() {
     const count = pendingChanges.size;
     pendingChanges.clear();
     updatePublishBtn();
+    const session = getSession();
+    notifyAdminPublish(count, session?.name || 'Usuário');
     showToast(`✅ ${count} linha(s) publicada(s) na planilha!`);
   } catch(e) {
     showToast('❌ ' + e.message, true);
@@ -1934,40 +2297,343 @@ function getModeradoCol() {
   return headers.find(h => h.trim().toLowerCase() === 'moderado') || null;
 }
 
-function lock(id) {
-  const r = data.find(r=>r._id===id);
-  if (!r) return;
-  r._locked = true;
-  // Write "SIM" in Moderado column
-  const mCol = getModeradoCol();
-  if (mCol) {
-    r[mCol] = 'SIM';
-    if (r._sheetRow) pendingChanges.add(r._id);
-    updatePublishBtn();
-  }
-  showToast(`✅ "${r[headers[0]]||'Item'}" consolidado`);
-  render();
+// ── CONFIRM MODAL ─────────────────────────────────────────────────────────────
+let confirmCallback = null;
+
+function openConfirm(msg, icon, title, yesLabel, cb) {
+  document.getElementById('confirmMsg').innerHTML = msg;
+  document.querySelector('.confirm-icon').textContent = icon;
+  document.querySelector('.confirm-title').textContent = title;
+  document.getElementById('confirmYesBtn').textContent = yesLabel;
+  confirmCallback = cb;
+  document.getElementById('confirmModal').classList.add('open');
 }
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.remove('open');
+  confirmCallback = null;
+}
+document.getElementById('confirmYesBtn').addEventListener('click', () => {
+  if (confirmCallback) confirmCallback();
+  closeConfirm();
+});
+
+function lock(id) {
+  const r = data.find(r => r._id === id);
+  if (!r) return;
+  const itemName = r[headers[0]] || 'este item';
+  openConfirm(
+    `Tem certeza que deseja consolidar <strong>"${esc(itemName)}"</strong>?<br><br>
+     Após consolidado, somente um <strong>Administrador</strong> poderá desfazer esta ação.`,
+    '🔒', 'CONSOLIDAR ITEM', 'Sim, consolidar',
+    () => {
+      r._locked = true;
+      const mCol = getModeradoCol();
+      if (mCol) {
+        r[mCol] = 'SIM';
+        if (r._sheetRow) pendingChanges.add(r._id);
+        updatePublishBtn();
+      }
+      showToast(`✅ "${itemName}" consolidado`);
+      render();
+      if (document.getElementById('itemDrawer').classList.contains('open')) openDrawer(id);
+    }
+  );
+}
+
 function unlock(id) {
-  // Only admins can unlock
   const session = getSession();
-  if (!session || !session.admin) {
-    openAdminBlock();
-    return;
-  }
-  const r = data.find(r=>r._id===id);
+  if (!session || !session.admin) { openAdminBlock(); return; }
+  const r = data.find(r => r._id === id);
   if (!r) return;
   r._locked = false;
-  // Clear SIM from Moderado column on unlock
   const mCol = getModeradoCol();
   if (mCol && r[mCol] === 'SIM') {
     r[mCol] = '';
     if (r._sheetRow) pendingChanges.add(r._id);
     updatePublishBtn();
   }
-  showToast(`🔓 "${r[headers[0]]||'Item'}" desbloqueado`);
+  showToast(`🔓 "${r[headers[0]] || 'Item'}" desbloqueado`);
   render();
 }
+
+// ── BARCODE SCANNER ───────────────────────────────────────────────────────────
+let scannerStream = null;
+let barcodeDetector = null;
+let scannerAnimFrame = null;
+let lastScannedCode = '';
+
+async function openScanner() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast('❌ Câmera não suportada neste dispositivo.', true); return;
+  }
+  document.getElementById('scannerModal').classList.add('open');
+  lastScannedCode = '';
+  document.getElementById('scannerResultBox').style.display = 'none';
+  document.getElementById('btnUseCode').disabled = true;
+  document.getElementById('scannerStatus').textContent = 'Solicitando permissão de câmera...';
+  await startCamera();
+}
+
+async function startCamera() {
+  try {
+    stopCamera();
+    const constraints = {
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+    };
+    scannerStream = await navigator.mediaDevices.getUserMedia(constraints);
+    const video = document.getElementById('scannerVideo');
+    video.srcObject = scannerStream;
+    await video.play();
+    document.getElementById('scannerStatus').textContent = 'Aponte para um código de barras ou QR Code';
+    if ('BarcodeDetector' in window) {
+      barcodeDetector = new BarcodeDetector({ formats: [
+        'code_128','code_39','ean_13','ean_8','qr_code','upc_a','upc_e','itf','pdf417','data_matrix'
+      ]});
+      scanLoop();
+    } else {
+      document.getElementById('scannerStatus').textContent =
+        '⚠️ Detecção automática indisponível neste navegador. Digite o código manualmente na busca.';
+    }
+  } catch (err) {
+    let msg = '❌ Não foi possível acessar a câmera.';
+    if (err.name === 'NotAllowedError') msg = '❌ Permissão negada. Permita o acesso nas configurações do dispositivo.';
+    else if (err.name === 'NotFoundError') msg = '❌ Câmera não encontrada neste dispositivo.';
+    document.getElementById('scannerStatus').textContent = msg;
+    showToast(msg, true);
+  }
+}
+
+function scanLoop() {
+  const video = document.getElementById('scannerVideo');
+  if (!barcodeDetector || !scannerStream || video.readyState < 2) {
+    scannerAnimFrame = requestAnimationFrame(scanLoop); return;
+  }
+  barcodeDetector.detect(video).then(codes => {
+    if (codes.length > 0) {
+      const code = codes[0].rawValue;
+      if (code !== lastScannedCode) {
+        lastScannedCode = code;
+        document.getElementById('scannerResultVal').textContent = code;
+        document.getElementById('scannerResultBox').style.display = 'block';
+        document.getElementById('btnUseCode').disabled = false;
+        document.getElementById('scannerStatus').textContent = '✅ Código detectado!';
+        if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+      }
+    }
+  }).catch(() => {}).finally(() => {
+    if (scannerStream) scannerAnimFrame = requestAnimationFrame(scanLoop);
+  });
+}
+
+function restartScanner() {
+  lastScannedCode = '';
+  document.getElementById('scannerResultBox').style.display = 'none';
+  document.getElementById('btnUseCode').disabled = true;
+  document.getElementById('scannerStatus').textContent = 'Aponte para um código de barras ou QR Code';
+}
+
+function useScannedCode() {
+  if (!lastScannedCode) return;
+  closeScanner();
+  goTo('inventory');
+  document.getElementById('searchInput').value = lastScannedCode;
+  doSearch();
+  showToast(`🔍 Buscando: "${lastScannedCode}"`);
+}
+
+function closeScanner() {
+  stopCamera();
+  document.getElementById('scannerModal').classList.remove('open');
+}
+
+function stopCamera() {
+  if (scannerAnimFrame) { cancelAnimationFrame(scannerAnimFrame); scannerAnimFrame = null; }
+  if (scannerStream) { scannerStream.getTracks().forEach(t => t.stop()); scannerStream = null; }
+  const video = document.getElementById('scannerVideo');
+  if (video) video.srcObject = null;
+}
+
+// ── REPORTS ───────────────────────────────────────────────────────────────────
+let reportData = [];
+const REPORT_DISPLAY_COLS = ['equipamento','modelo','fabricante','setor','situação','situacao','moderado'];
+
+function initReportsScreen() {
+  const grid = document.getElementById('reportsFilterGrid');
+  Array.from(grid.querySelectorAll('.dynamic-filter')).forEach(el => el.remove());
+  const dynamicCols = headers.filter(h => REPORT_DISPLAY_COLS.includes(h.trim().toLowerCase()));
+  dynamicCols.forEach(col => {
+    const vals = getUniqueValues(col);
+    if (!vals.length) return;
+    const div = document.createElement('div');
+    div.className = 'reports-filter-item dynamic-filter';
+    div.innerHTML = `<label>${esc(col)}</label>
+      <select class="reports-filter-select" id="rFilter_${escA(col)}">
+        <option value="">Todos</option>
+        ${vals.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('')}
+      </select>`;
+    grid.appendChild(div);
+  });
+  document.getElementById('reportsSyncLabel').textContent =
+    document.getElementById('lastSync').textContent;
+  applyReportFilter();
+}
+
+function applyReportFilter() {
+  const statusF = document.getElementById('rFilterStatus').value;
+  const searchF = document.getElementById('rFilterSearch').value.trim().toLowerCase();
+  let filtered = data.filter(row => {
+    const ms = !searchF || headers.some(h => (row[h] || '').toLowerCase().includes(searchF));
+    const mf = statusF === 'all' ||
+      (statusF === 'locked' && row._locked) ||
+      (!row._locked && statusF === status(row));
+    return ms && mf;
+  });
+  headers.forEach(col => {
+    const el = document.getElementById(`rFilter_${escA(col)}`);
+    if (el && el.value) filtered = filtered.filter(row => (row[col] || '').trim() === el.value);
+  });
+  reportData = filtered;
+  renderReportTable();
+  renderReportSummary();
+}
+
+function renderReportSummary() {
+  const total = reportData.length;
+  const locked = reportData.filter(r => r._locked).length;
+  const active = reportData.filter(r => !r._locked && status(r) === 'ok').length;
+  const low = reportData.filter(r => !r._locked && status(r) === 'low').length;
+  const out = reportData.filter(r => !r._locked && status(r) === 'out').length;
+  document.getElementById('reportsSummary').innerHTML = `
+    <div class="reports-kpi"><span class="reports-kpi-val">${total}</span><span class="reports-kpi-lbl">TOTAL</span></div>
+    <div class="reports-kpi"><span class="reports-kpi-val" style="color:var(--accent)">${active}</span><span class="reports-kpi-lbl">ATIVO</span></div>
+    <div class="reports-kpi"><span class="reports-kpi-val" style="color:#ffc107">${low}</span><span class="reports-kpi-lbl">BAIXO ESTOQUE</span></div>
+    <div class="reports-kpi"><span class="reports-kpi-val" style="color:var(--warn)">${out}</span><span class="reports-kpi-lbl">SEM ESTOQUE</span></div>
+    <div class="reports-kpi"><span class="reports-kpi-val" style="color:var(--muted)">${locked}</span><span class="reports-kpi-lbl">CONSOLIDADOS</span></div>`;
+}
+
+function renderReportTable() {
+  const visHeaders = headers.filter(h => REPORT_DISPLAY_COLS.includes(h.trim().toLowerCase()));
+  const showHeaders = visHeaders.length > 0 ? visHeaders : headers.slice(0, 5);
+  document.getElementById('reportsCount').textContent = reportData.length;
+  document.getElementById('reportsHead').innerHTML =
+    '<th>Status</th>' + showHeaders.map(h => `<th>${esc(h)}</th>`).join('');
+  const tbody = document.getElementById('reportsBody');
+  const empty = document.getElementById('reportsEmpty');
+  if (!reportData.length) {
+    tbody.innerHTML = ''; empty.style.display = '';
+    document.querySelector('.reports-table').style.display = 'none'; return;
+  }
+  document.querySelector('.reports-table').style.display = '';
+  empty.style.display = 'none';
+  tbody.innerHTML = reportData.map(row => `
+    <tr>
+      <td>${badge(row)}</td>
+      ${showHeaders.map(h => `<td>${esc(row[h] || '—')}</td>`).join('')}
+    </tr>`).join('');
+}
+
+function clearReportFilter() {
+  document.getElementById('rFilterStatus').value = 'all';
+  document.getElementById('rFilterSearch').value = '';
+  headers.forEach(col => { const el = document.getElementById(`rFilter_${escA(col)}`); if (el) el.value = ''; });
+  applyReportFilter();
+}
+
+function printReport() {
+  if (!reportData.length) { showToast('⚠️ Nenhum dado para imprimir.', true); return; }
+  const visHeaders = headers.filter(h => REPORT_DISPLAY_COLS.includes(h.trim().toLowerCase()));
+  const showHeaders = visHeaders.length > 0 ? visHeaders : headers.slice(0, 5);
+  const now = new Date().toLocaleString('pt-BR');
+  const session = getSession();
+  document.getElementById('printArea').innerHTML = `
+    <div class="print-header">
+      <div class="print-title">INV//CTRL — Relatório de Inventário</div>
+      <div class="print-sub">Gerado em: ${now} · Por: ${session?.name || '—'} · Total: ${reportData.length} itens</div>
+    </div>
+    <table>
+      <thead><tr><th>Status</th>${showHeaders.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
+      <tbody>${reportData.map(row=>`<tr>
+        <td>${row._locked?'Consolidado':status(row)==='out'?'Sem estoque':status(row)==='low'?'Baixo estoque':'ATIVO'}</td>
+        ${showHeaders.map(h=>`<td>${esc(row[h]||'—')}</td>`).join('')}
+      </tr>`).join('')}</tbody>
+    </table>`;
+  window.print();
+}
+
+// ── ADMIN NOTIFICATIONS ON PUBLISH ────────────────────────────────────────────
+function notifyAdminPublish(count, userName) {
+  try {
+    const existing = JSON.parse(localStorage.getItem('invctr_notifications') || '[]');
+    existing.unshift({
+      id: Date.now(),
+      msg: `📤 ${userName} publicou ${count} alteração(ões) na planilha.`,
+      time: new Date().toLocaleString('pt-BR'),
+      read: false
+    });
+    localStorage.setItem('invctr_notifications', JSON.stringify(existing.slice(0, 20)));
+    // Trigger cross-tab update
+    localStorage.setItem('invctr_notify_ping', Date.now().toString());
+    setTimeout(() => localStorage.removeItem('invctr_notify_ping'), 100);
+  } catch(e) {}
+}
+
+function getUnreadNotifications() {
+  try { return JSON.parse(localStorage.getItem('invctr_notifications') || '[]').filter(n => !n.read); }
+  catch { return []; }
+}
+
+function markAllNotificationsRead() {
+  try {
+    const all = JSON.parse(localStorage.getItem('invctr_notifications') || '[]');
+    all.forEach(n => n.read = true);
+    localStorage.setItem('invctr_notifications', JSON.stringify(all));
+    updateNotifBadge();
+  } catch {}
+}
+
+function updateNotifBadge() {
+  const badge = document.getElementById('notifBadge');
+  if (!badge) return;
+  const count = getUnreadNotifications().length;
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'inline-flex' : 'none';
+}
+
+function toggleNotifPanel() {
+  const panel = document.getElementById('notifPanel');
+  if (!panel) return;
+  const open = panel.style.display !== 'none';
+  if (open) { panel.style.display = 'none'; return; }
+  let all = [];
+  try { all = JSON.parse(localStorage.getItem('invctr_notifications') || '[]'); } catch {}
+  panel.innerHTML = `
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);letter-spacing:1px;">NOTIFICAÇÕES</span>
+      <button onclick="markAllNotificationsRead()" style="font-size:0.68rem;font-family:var(--font-mono);color:var(--muted);background:none;border:none;cursor:pointer;">Marcar lidas</button>
+    </div>
+    <div style="max-height:280px;overflow-y:auto;">
+      ${all.length ? all.map(n => `
+        <div style="padding:11px 16px;border-bottom:1px solid var(--border);${!n.read?'background:rgba(0,229,160,0.04)':''}">
+          <div style="font-size:0.82rem;color:${n.read?'var(--muted)':'var(--text)'};">${n.msg}</div>
+          <div style="font-size:0.68rem;color:var(--muted);font-family:var(--font-mono);margin-top:3px;">${n.time}</div>
+        </div>`).join('')
+      : '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.8rem;">Sem notificações</div>'}
+    </div>`;
+  panel.style.display = 'block';
+  markAllNotificationsRead();
+}
+
+// Cross-tab listener for admin notifications
+window.addEventListener('storage', (e) => {
+  if (e.key === 'invctr_notify_ping') {
+    const session = getSession();
+    if (session && session.admin) {
+      updateNotifBadge();
+      const unread = getUnreadNotifications();
+      if (unread.length) showToast(`🔔 ${unread[0].msg}`);
+    }
+  }
+});
 
 function openAdminBlock() {
   document.getElementById('adminBlockModal').classList.add('open');
@@ -2051,6 +2717,7 @@ function goTo(screen) {
   document.getElementById('navScreen').classList.remove('active');
   document.getElementById('inventoryScreen').style.display = 'none';
   document.getElementById('chartScreen').classList.remove('active');
+  document.getElementById('reportsScreen').classList.remove('active');
 
   if (screen === 'nav') {
     document.getElementById('navScreen').classList.add('active');
@@ -2060,6 +2727,9 @@ function goTo(screen) {
   } else if (screen === 'charts') {
     document.getElementById('chartScreen').classList.add('active');
     renderCharts();
+  } else if (screen === 'reports') {
+    document.getElementById('reportsScreen').classList.add('active');
+    initReportsScreen();
   }
 }
 
