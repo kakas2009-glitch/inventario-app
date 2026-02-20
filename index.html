@@ -331,10 +331,10 @@
 
   .nav-cards {
     display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
-    max-width: 700px; width: 100%;
+    max-width: 1100px; width: 100%;
   }
   .nav-card {
-    flex: 1; min-width: 260px; max-width: 300px;
+    flex: 1; min-width: 200px; max-width: 240px;
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 20px; padding: 36px 28px; cursor: pointer;
     transition: all 0.25s; text-align: center; position: relative; overflow: hidden;
@@ -751,6 +751,156 @@
   /* ── PRINT ─────────────────────────────────────────── */
   @media print{body>*:not(#printArea){display:none!important}#printArea{display:block!important;position:fixed;inset:0;background:#fff;color:#000;padding:20px;font-size:12px}#printArea table{width:100%;border-collapse:collapse}#printArea th,#printArea td{border:1px solid #ccc;padding:6px 10px;text-align:left}#printArea th{background:#f0f0f0;font-weight:bold}.print-title{font-size:18px;font-weight:bold;margin-bottom:4px}.print-sub{font-size:11px;color:#555;margin-bottom:16px}}
   #printArea{display:none}
+
+  /* ── ORDENS DE SERVIÇO SCREEN ─────────────────────── */
+  #ordensScreen{display:none;min-height:100vh;background:var(--bg);padding-bottom:60px}
+  #ordensScreen.active{display:block}
+  .os-header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+  .os-body{padding:24px 28px;max-width:1200px;margin:0 auto}
+  .os-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-bottom:28px}
+  .os-kpi{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 18px;text-align:center}
+  .os-kpi-val{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;display:block;margin-bottom:4px}
+  .os-kpi-lbl{font-size:.68rem;color:var(--muted);font-family:var(--font-mono);letter-spacing:1px}
+  .os-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px}
+  .os-table-hdr{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .os-table{width:100%;border-collapse:collapse;font-size:.83rem}
+  .os-table th{text-align:left;padding:9px 12px;color:var(--muted);font-size:.68rem;font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);white-space:nowrap}
+  .os-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+  .os-table tr:last-child td{border-bottom:none}
+  .os-table tr:hover td{background:var(--surface2)}
+  .os-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:600;font-family:var(--font-mono)}
+  .os-aberta{background:rgba(0,229,160,.1);color:var(--accent)}
+  .os-andamento{background:rgba(245,158,11,.1);color:#f59e0b}
+  .os-concluida{background:rgba(0,119,255,.1);color:var(--accent2)}
+  .os-cancelada{background:rgba(255,107,53,.1);color:var(--warn)}
+  .btn-os-new{background:#f59e0b;color:#0d0f14;border:none;border-radius:8px;padding:9px 18px;font-family:var(--font-mono);font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
+  .btn-os-new:hover{background:#fbbf24}
+  .btn-os-act{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:#f59e0b;width:28px;height:28px;border-radius:6px;font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+  .btn-os-act:hover{background:rgba(245,158,11,.25)}
+
+  /* OS Modal */
+  #osModal{display:none;position:fixed;inset:0;z-index:1100;background:rgba(13,15,20,.92);align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+  #osModal.open{display:flex}
+  .os-modal-card{background:var(--surface);border:1px solid rgba(245,158,11,.3);border-radius:18px;width:100%;max-width:700px;margin:auto}
+  .os-modal-hdr{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .os-modal-title{font-family:var(--font-mono);color:#f59e0b;font-size:.9rem;letter-spacing:2px}
+  .os-modal-body{padding:22px}
+  .os-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:520px){.os-form-grid{grid-template-columns:1fr}}
+  .os-field{margin-bottom:0}
+  .os-field label{display:block;font-size:.7rem;font-family:var(--font-mono);color:var(--muted);margin-bottom:5px;letter-spacing:1px;text-transform:uppercase}
+  .os-input,.os-select,.os-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font-main);font-size:.88rem;padding:9px 12px;border-radius:8px;outline:none;transition:border-color .2s}
+  .os-input:focus,.os-select:focus,.os-textarea:focus{border-color:#f59e0b}
+  .os-select{cursor:pointer}.os-select option{background:var(--surface2)}
+  .os-textarea{resize:vertical;min-height:80px;line-height:1.5}
+  .os-modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+  .btn-os-save{background:#f59e0b;color:#0d0f14;border:none;border-radius:9px;padding:10px 24px;font-family:var(--font-mono);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s}
+  .btn-os-save:hover{background:#fbbf24}
+  .btn-os-cancel{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);border-radius:9px;padding:10px 24px;font-family:var(--font-mono);font-size:.82rem;cursor:pointer;transition:all .2s}
+  .btn-os-cancel:hover{color:var(--text)}
+  .os-mat-list{background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:8px}
+  .os-mat-row{display:grid;grid-template-columns:1fr 80px 80px 36px;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border)}
+  .os-mat-row:last-child{border-bottom:none}
+  .os-mat-hdr{background:var(--surface);font-family:var(--font-mono);font-size:.66rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+  .btn-os-add-mat{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);color:#06b6d4;border-radius:7px;padding:7px 14px;font-family:var(--font-mono);font-size:.76rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+  .btn-os-add-mat:hover{background:rgba(6,182,212,.2)}
+  .btn-os-del-mat{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);color:var(--warn);width:28px;height:28px;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+
+  /* OS Detail Drawer */
+  #osDetailDrawer{position:fixed;inset:0;z-index:800;display:flex;justify-content:flex-end;pointer-events:none}
+  #osDetailDrawer.open{pointer-events:all}
+  #osDetailDrawer .drawer-backdrop{position:absolute;inset:0;background:rgba(13,15,20,0);transition:background .3s}
+  #osDetailDrawer.open .drawer-backdrop{background:rgba(13,15,20,.75)}
+  #osDetailDrawer .drawer-panel{position:relative;width:100%;max-width:480px;background:var(--surface);border-left:1px solid var(--border);height:100%;overflow-y:auto;transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+  #osDetailDrawer.open .drawer-panel{transform:translateX(0)}
+  .os-detail-section{margin-bottom:20px}
+  .os-detail-section-title{font-family:var(--font-mono);font-size:.68rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .os-detail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid rgba(42,48,80,.5)}
+  .os-detail-row:last-child{border-bottom:none}
+  .os-detail-lbl{font-size:.72rem;color:var(--muted);font-family:var(--font-mono)}
+  .os-detail-val{font-size:.84rem;color:var(--text);text-align:right;max-width:60%}
+  .os-status-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:.78rem;padding:5px 9px;border-radius:6px;cursor:pointer;outline:none}
+  .os-status-select:focus{border-color:#f59e0b}
+
+  /* ── ESTOQUE SCREEN ────────────────────────────────── */
+  #estoqueScreen{display:none;min-height:100vh;background:var(--bg);padding-bottom:60px}
+  #estoqueScreen.active{display:block}
+  .est-header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+  .est-body{padding:24px 28px;max-width:1200px;margin:0 auto}
+  .est-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px;width:fit-content}
+  .est-tab{padding:9px 20px;font-family:var(--font-mono);font-size:.78rem;background:transparent;border:none;color:var(--muted);cursor:pointer;transition:all .2s;border-right:1px solid var(--border)}
+  .est-tab:last-child{border-right:none}
+  .est-tab.active{background:var(--surface2);color:#06b6d4}
+  .est-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px;margin-bottom:28px}
+  .est-kpi{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 18px;text-align:center}
+  .est-kpi-val{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;color:#06b6d4;display:block;margin-bottom:4px}
+  .est-kpi-lbl{font-size:.68rem;color:var(--muted);font-family:var(--font-mono);letter-spacing:1px}
+  .est-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px}
+  .est-table-hdr{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .est-table{width:100%;border-collapse:collapse;font-size:.83rem}
+  .est-table th{text-align:left;padding:9px 12px;color:var(--muted);font-size:.68rem;font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2);white-space:nowrap}
+  .est-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+  .est-table tr:last-child td{border-bottom:none}
+  .est-table tr:hover td{background:var(--surface2)}
+  .btn-est-new{background:#06b6d4;color:#0d0f14;border:none;border-radius:8px;padding:9px 18px;font-family:var(--font-mono);font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
+  .btn-est-new:hover{background:#22d3ee}
+  .est-saldo-ok{color:var(--accent)}
+  .est-saldo-low{color:#ffc107}
+  .est-saldo-zero{color:var(--warn)}
+
+  /* NF Modal */
+  #nfModal{display:none;position:fixed;inset:0;z-index:1100;background:rgba(13,15,20,.92);align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+  #nfModal.open{display:flex}
+  .nf-modal-card{background:var(--surface);border:1px solid rgba(6,182,212,.3);border-radius:18px;width:100%;max-width:680px;margin:auto}
+  .nf-modal-hdr{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .nf-modal-title{font-family:var(--font-mono);color:#06b6d4;font-size:.9rem;letter-spacing:2px}
+  .nf-modal-body{padding:22px}
+  .nf-scan-area{background:var(--surface2);border:2px dashed var(--border);border-radius:12px;padding:20px;margin-bottom:20px;text-align:center;cursor:pointer;transition:all .2s}
+  .nf-scan-area:hover{border-color:#06b6d4;background:rgba(6,182,212,.04)}
+  .nf-scan-area.scanning{border-color:#06b6d4;animation:pulse .8s infinite}
+  .nf-scan-icon{font-size:2.5rem;margin-bottom:10px;display:block}
+  .nf-scan-lbl{font-family:var(--font-mono);font-size:.78rem;color:var(--muted)}
+  .nf-data-card{background:rgba(6,182,212,.04);border:1px solid rgba(6,182,212,.2);border-radius:10px;padding:16px;margin-bottom:18px;display:none}
+  .nf-data-card.show{display:block}
+  .nf-data-row{display:flex;justify-content:space-between;padding:5px 0;font-size:.82rem;border-bottom:1px solid rgba(42,48,80,.5)}
+  .nf-data-row:last-child{border-bottom:none}
+  .nf-data-lbl{color:var(--muted);font-family:var(--font-mono);font-size:.7rem}
+  .nf-data-val{color:var(--text);font-weight:600}
+  .nf-itens-wrap{margin-bottom:18px}
+  .nf-item-row{display:grid;grid-template-columns:1fr 80px 90px 36px;gap:8px;align-items:center;padding:7px 10px;border-bottom:1px solid var(--border);background:var(--surface2);border-radius:0}
+  .nf-item-row:first-child{border-radius:8px 8px 0 0}
+  .nf-item-row:last-child{border-bottom:none;border-radius:0 0 8px 8px}
+  .nf-item-hdr{background:var(--surface)!important;font-family:var(--font-mono);font-size:.66rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+  .nf-input{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:.82rem;padding:5px 8px;border-radius:6px;outline:none}
+  .nf-input:focus{border-color:#06b6d4}
+  .nf-modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+  .btn-nf-save{background:#06b6d4;color:#0d0f14;border:none;border-radius:9px;padding:10px 24px;font-family:var(--font-mono);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s}
+  .btn-nf-save:hover{background:#22d3ee}
+  .btn-nf-scan{background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3);color:#06b6d4;border-radius:9px;padding:10px 18px;font-family:var(--font-mono);font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
+  .btn-nf-scan:hover{background:rgba(6,182,212,.2)}
+
+  /* NF Scanner */
+  #nfScannerModal{display:none;position:fixed;inset:0;z-index:1300;background:rgba(13,15,20,.97);align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:20px}
+  #nfScannerModal.open{display:flex}
+  .nfscan-instruction{font-family:var(--font-mono);font-size:.75rem;color:var(--muted);text-align:center;max-width:380px}
+  .nfscan-manual{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;width:100%;max-width:480px}
+  .nfscan-manual-title{font-family:var(--font-mono);font-size:.7rem;color:var(--muted);margin-bottom:10px;letter-spacing:1px}
+  .nfscan-input-wrap{display:flex;gap:8px}
+  .nfscan-inp{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:.82rem;padding:9px 12px;border-radius:8px;outline:none}
+  .nfscan-inp:focus{border-color:#06b6d4}
+  .btn-nfscan-go{background:#06b6d4;color:#0d0f14;border:none;border-radius:8px;padding:9px 16px;font-family:var(--font-mono);font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
+  .btn-nfscan-go:hover{background:#22d3ee}
+  .btn-nfscan-close{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);color:var(--warn);border-radius:9px;padding:9px 20px;font-family:var(--font-mono);font-size:.8rem;cursor:pointer}
+
+  /* Equipment search autocomplete */
+  .equip-search-wrap{position:relative}
+  .equip-results{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid #f59e0b;border-radius:8px;z-index:2000;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5);margin-top:3px;max-height:220px;overflow-y:auto}
+  .equip-result-item{padding:10px 13px;font-size:.82rem;cursor:pointer;color:var(--text);border-bottom:1px solid var(--border);transition:background .12s}
+  .equip-result-item:last-child{border-bottom:none}
+  .equip-result-item:hover{background:var(--surface2);color:#f59e0b}
+  .equip-result-tag{font-family:var(--font-mono);font-size:.68rem;color:var(--muted);margin-top:2px}
+  .equip-result-sel{background:rgba(245,158,11,.08);border-left:3px solid #f59e0b}
+  .equip-no-results{padding:12px 13px;font-family:var(--font-mono);font-size:.72rem;color:var(--muted);text-align:center}
 </style>
 </head>
 <body>
@@ -862,6 +1012,20 @@
       <span class="nav-card-icon">🗂️</span>
       <div class="nav-card-title" style="color:#a855f7">RELATÓRIOS</div>
       <div class="nav-card-desc">Filtre, visualize e imprima relatórios personalizados da planilha.</div>
+    </div>
+    <div class="nav-card" style="border-color:var(--border)" onclick="goTo('ordens')"
+      onmouseenter="this.style.borderColor='#f59e0b';this.style.boxShadow='0 8px 32px rgba(245,158,11,0.12)';this.style.transform='translateY(-4px)'"
+      onmouseleave="this.style.borderColor='var(--border)';this.style.boxShadow='';this.style.transform=''">
+      <span class="nav-card-icon">🔧</span>
+      <div class="nav-card-title" style="color:#f59e0b">ORDENS DE SERVIÇO</div>
+      <div class="nav-card-desc">Gerencie ordens de serviço integradas ao CMMS SAP com controle de materiais.</div>
+    </div>
+    <div class="nav-card" style="border-color:var(--border)" onclick="goTo('estoque')"
+      onmouseenter="this.style.borderColor='#06b6d4';this.style.boxShadow='0 8px 32px rgba(6,182,212,0.12)';this.style.transform='translateY(-4px)'"
+      onmouseleave="this.style.borderColor='var(--border)';this.style.boxShadow='';this.style.transform=''">
+      <span class="nav-card-icon">🏪</span>
+      <div class="nav-card-title" style="color:#06b6d4">ESTOQUE</div>
+      <div class="nav-card-desc">Controle entradas por NF-e com câmera, saldos e movimentações vinculadas às OSs.</div>
     </div>
   </div>
 </div>
@@ -1085,6 +1249,381 @@
 
 <!-- ── PRINT AREA ── -->
 <div id="printArea"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     ORDENS DE SERVIÇO SCREEN
+══════════════════════════════════════════════════════ -->
+<div id="ordensScreen">
+  <div class="os-header">
+    <button class="btn-back" onclick="goTo('nav')">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Menu
+    </button>
+    <div style="font-family:var(--font-mono);font-size:.85rem;color:#f59e0b;letter-spacing:2px;">🔧 ORDENS DE SERVIÇO</div>
+    <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;align-items:center">
+      <div class="search-wrap" style="min-width:180px;">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" id="osSearchInput" type="text" placeholder="Buscar OS..." oninput="renderOrdens()">
+      </div>
+      <select id="osFilterStatus" onchange="renderOrdens()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:.76rem;padding:8px 10px;border-radius:8px;cursor:pointer;outline:none;">
+        <option value="">Todos os status</option>
+        <option value="Aberta">Aberta</option>
+        <option value="Em Andamento">Em Andamento</option>
+        <option value="Concluída">Concluída</option>
+        <option value="Cancelada">Cancelada</option>
+      </select>
+      <button class="btn-os-new" onclick="openOsModal()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nova OS
+      </button>
+    </div>
+  </div>
+  <div class="os-body">
+    <div class="os-kpis" id="osKpis"></div>
+    <div class="os-table-wrap" id="osTableWrap" style="display:none">
+      <div class="os-table-hdr">
+        <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--muted);">Ordens de Serviço · <span id="osCount" style="color:#f59e0b;font-weight:700;">0</span> registros</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="os-table">
+          <thead><tr>
+            <th>Ações</th><th>N° OS / SAP</th><th>Tipo</th><th>Equipamento</th><th>Setor</th>
+            <th>Responsável</th><th>Prioridade</th><th>Status</th><th>Data Abertura</th><th>Prazo</th>
+          </tr></thead>
+          <tbody id="osBody"></tbody>
+        </table>
+      </div>
+      <div id="osEmpty" style="text-align:center;padding:50px;color:var(--muted);display:none;">
+        <div style="font-size:2rem;margin-bottom:12px;">🔧</div>
+        <div style="font-family:var(--font-mono);font-size:.85rem;">Nenhuma OS encontrada</div>
+        <div style="font-size:.78rem;margin-top:6px;">Clique em "Nova OS" para criar a primeira</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OS Modal (criar/editar) -->
+<div id="osModal">
+  <div class="os-modal-card">
+    <div class="os-modal-hdr">
+      <span class="os-modal-title" id="osModalTitle">🔧 NOVA ORDEM DE SERVIÇO</span>
+      <button onclick="closeOsModal()" style="background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);color:var(--warn);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <div class="os-modal-body">
+      <div style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:14px 16px;margin-bottom:18px;font-family:var(--font-mono);font-size:.72rem;color:var(--muted);">
+        💡 Baseado no padrão CMMS SAP PM — Preencha os campos conforme a notificação/ordem SAP
+      </div>
+      <div class="os-form-grid">
+        <div class="os-field">
+          <label>N° OS <span style="color:#f59e0b;font-size:.65rem;background:rgba(245,158,11,.12);padding:1px 6px;border-radius:8px;font-family:var(--font-mono);">AUTO</span></label>
+          <input class="os-input" id="osNumSap" type="text" readonly style="cursor:default;opacity:.7;font-family:var(--font-mono);color:#f59e0b;" placeholder="Gerado automaticamente">
+        </div>
+        <div class="os-field">
+          <label>Tipo de Ordem</label>
+          <select class="os-select" id="osTipo">
+            <option>PM01 - Manutenção Corretiva</option>
+            <option>PM02 - Manutenção Preventiva</option>
+            <option>PM03 - Manutenção Preditiva</option>
+            <option>PM04 - Manutenção de Melhoria</option>
+            <option>PM05 - Inspeção</option>
+          </select>
+        </div>
+        <div class="os-field" style="position:relative">
+          <label>Equipamento / TAG <span style="color:var(--accent2);font-size:.62rem;font-family:var(--font-mono);">busca no inventário</span></label>
+          <div class="equip-search-wrap">
+            <input class="os-input" id="osEquipamento" type="text"
+              placeholder="Digite TAG, modelo, nº de série ou descrição..."
+              autocomplete="off" spellcheck="false"
+              oninput="searchEquipamento(this.value)"
+              onfocus="if(this.value.length>0) searchEquipamento(this.value)"
+              onblur="setTimeout(closeEquipResults, 220)">
+            <div class="equip-results" id="equipResults" style="display:none"></div>
+          </div>
+          <div id="osEquipHint" style="font-family:var(--font-mono);font-size:.66rem;color:var(--accent2);margin-top:4px;min-height:14px;"></div>
+        </div>
+        <div class="os-field">
+          <label>Setor / Centro de Custo</label>
+          <input class="os-input" id="osSetor" type="text" placeholder="Ex: Utilidades / CC-1025">
+        </div>
+        <div class="os-field">
+          <label>Responsável Técnico</label>
+          <input class="os-input" id="osResponsavel" type="text" placeholder="Nome do técnico">
+        </div>
+        <div class="os-field">
+          <label>Prioridade</label>
+          <select class="os-select" id="osPrioridade">
+            <option>1 - Muito Alta</option>
+            <option>2 - Alta</option>
+            <option selected>3 - Média</option>
+            <option>4 - Baixa</option>
+          </select>
+        </div>
+        <div class="os-field">
+          <label>Data de Abertura</label>
+          <input class="os-input" id="osDataAbertura" type="date">
+        </div>
+        <div class="os-field">
+          <label>Prazo de Conclusão</label>
+          <input class="os-input" id="osDataPrazo" type="date">
+        </div>
+        <div class="os-field">
+          <label>Status</label>
+          <select class="os-select" id="osStatus">
+            <option>Aberta</option>
+            <option>Em Andamento</option>
+            <option>Concluída</option>
+            <option>Cancelada</option>
+          </select>
+        </div>
+        <div class="os-field">
+          <label>Centro de Trabalho</label>
+          <input class="os-input" id="osCentroTrabalho" type="text" placeholder="Ex: MANUT-EL">
+        </div>
+      </div>
+      <div class="os-field" style="margin-top:14px;">
+        <label>Descrição / Sintoma</label>
+        <textarea class="os-textarea" id="osDescricao" rows="3" placeholder="Descreva o problema ou serviço a realizar..."></textarea>
+      </div>
+
+      <!-- Materiais -->
+      <div style="margin-top:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-family:var(--font-mono);font-size:.72rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">📦 Materiais / Peças Utilizadas</span>
+          <button class="btn-os-add-mat" onclick="addOsMatRow()">+ Adicionar</button>
+        </div>
+        <div class="os-mat-list" id="osMatList">
+          <div class="os-mat-row os-mat-hdr">
+            <span>Descrição do material</span><span>Qtd</span><span>Und</span><span></span>
+          </div>
+        </div>
+        <div id="osMatEmpty" style="font-family:var(--font-mono);font-size:.72rem;color:var(--muted);padding:10px 0;text-align:center;">Nenhum material adicionado</div>
+      </div>
+    </div>
+    <div class="os-modal-footer">
+      <button class="btn-os-cancel" onclick="closeOsModal()">Cancelar</button>
+      <button class="btn-os-save" onclick="saveOs()">💾 Salvar OS</button>
+    </div>
+  </div>
+</div>
+
+<!-- OS Detail Drawer -->
+<div id="osDetailDrawer">
+  <div class="drawer-backdrop" onclick="closeOsDetail()"></div>
+  <div class="drawer-panel">
+    <div class="drawer-top">
+      <span class="drawer-title" style="color:#f59e0b">DETALHES DA OS</span>
+      <button class="drawer-close" onclick="closeOsDetail()">✕</button>
+    </div>
+    <div class="drawer-body" id="osDetailBody"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     ESTOQUE SCREEN
+══════════════════════════════════════════════════════ -->
+<div id="estoqueScreen">
+  <div class="est-header">
+    <button class="btn-back" onclick="goTo('nav')">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Menu
+    </button>
+    <div style="font-family:var(--font-mono);font-size:.85rem;color:#06b6d4;letter-spacing:2px;">🏪 ESTOQUE</div>
+    <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;align-items:center">
+      <div class="search-wrap" style="min-width:180px;">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" id="estSearchInput" type="text" placeholder="Buscar produto..." oninput="renderEstoque()">
+      </div>
+      <button class="btn-est-new" onclick="openNfModal()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Entrada NF-e
+      </button>
+    </div>
+  </div>
+  <div class="est-body">
+    <!-- Abas -->
+    <div class="est-tabs">
+      <button class="est-tab active" onclick="setEstTab('saldos',this)">📦 Saldos</button>
+      <button class="est-tab" onclick="setEstTab('entradas',this)">📥 Entradas NF</button>
+      <button class="est-tab" onclick="setEstTab('movimentos',this)">📋 Movimentos</button>
+    </div>
+
+    <!-- KPIs -->
+    <div class="est-kpis" id="estKpis"></div>
+
+    <!-- Aba Saldos -->
+    <div id="estTabSaldos">
+      <div class="est-table-wrap">
+        <div class="est-table-hdr">
+          <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--muted);">Saldo por Produto · <span id="estSaldoCount" style="color:#06b6d4;font-weight:700;">0</span></span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="est-table">
+            <thead><tr><th>Código</th><th>Descrição</th><th>Unidade</th><th>Saldo Atual</th><th>Mín. Seg.</th><th>Última Entrada</th><th>Ações</th></tr></thead>
+            <tbody id="estSaldoBody"></tbody>
+          </table>
+        </div>
+        <div id="estSaldoEmpty" style="text-align:center;padding:50px;color:var(--muted);display:none;">
+          <div style="font-size:2rem;margin-bottom:12px;">📦</div>
+          <div style="font-family:var(--font-mono);font-size:.85rem;">Nenhum produto em estoque</div>
+          <div style="font-size:.78rem;margin-top:6px;">Registre uma entrada de NF para começar</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aba Entradas -->
+    <div id="estTabEntradas" style="display:none">
+      <div class="est-table-wrap">
+        <div class="est-table-hdr">
+          <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--muted);">Notas Fiscais Registradas · <span id="estNfCount" style="color:#06b6d4;font-weight:700;">0</span></span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="est-table">
+            <thead><tr><th>N° NF</th><th>Série</th><th>Fornecedor</th><th>CNPJ</th><th>Valor Total</th><th>Data Emissão</th><th>Itens</th><th>Status</th></tr></thead>
+            <tbody id="estNfBody"></tbody>
+          </table>
+        </div>
+        <div id="estNfEmpty" style="text-align:center;padding:50px;color:var(--muted);display:none;">
+          <div style="font-size:2rem;margin-bottom:12px;">📥</div>
+          <div style="font-family:var(--font-mono);font-size:.85rem;">Nenhuma nota fiscal registrada</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aba Movimentos -->
+    <div id="estTabMovimentos" style="display:none">
+      <div class="est-table-wrap">
+        <div class="est-table-hdr">
+          <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--muted);">Movimentos · <span id="estMovCount" style="color:#06b6d4;font-weight:700;">0</span></span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="est-table">
+            <thead><tr><th>Data/Hora</th><th>Tipo</th><th>Produto</th><th>Qtd</th><th>Referência</th><th>Usuário</th></tr></thead>
+            <tbody id="estMovBody"></tbody>
+          </table>
+        </div>
+        <div id="estMovEmpty" style="text-align:center;padding:50px;color:var(--muted);display:none;">
+          <div style="font-size:2rem;margin-bottom:12px;">📋</div>
+          <div style="font-family:var(--font-mono);font-size:.85rem;">Nenhum movimento registrado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NF Modal -->
+<div id="nfModal">
+  <div class="nf-modal-card">
+    <div class="nf-modal-hdr">
+      <span class="nf-modal-title">📥 NOVA ENTRADA DE NF-e</span>
+      <button onclick="closeNfModal()" style="background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);color:var(--warn);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <div class="nf-modal-body">
+      <!-- Scanner/Câmera area -->
+      <div style="margin-bottom:16px;">
+        <div style="font-family:var(--font-mono);font-size:.7rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Leitura de Código de Barras / QR Code NF-e</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-nf-scan" onclick="openNfScanner()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Usar câmera
+          </button>
+          <button class="btn-nf-scan" onclick="document.getElementById('nfChaveInput').focus()">
+            ⌨️ Digitar chave
+          </button>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <input class="os-input" id="nfChaveInput" type="text" placeholder="Chave de acesso NF-e (44 dígitos)" maxlength="44" style="flex:1;font-family:var(--font-mono);font-size:.78rem;" oninput="this.value=this.value.replace(/\D/g,'')">
+          <button onclick="consultarNfe()" style="background:#06b6d4;color:#0d0f14;border:none;border-radius:8px;padding:9px 16px;font-family:var(--font-mono);font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s" id="btnConsultarNfe">Consultar</button>
+        </div>
+        <div id="nfConsultaStatus" style="margin-top:8px;font-family:var(--font-mono);font-size:.72rem;color:var(--muted);"></div>
+      </div>
+
+      <!-- Dados NF retornados -->
+      <div class="nf-data-card" id="nfDataCard">
+        <div style="font-family:var(--font-mono);font-size:.7rem;color:#06b6d4;letter-spacing:1px;margin-bottom:10px;">✅ DADOS DA NOTA FISCAL</div>
+        <div class="nf-data-row"><span class="nf-data-lbl">N° / Série</span><span class="nf-data-val" id="nfNumero">—</span></div>
+        <div class="nf-data-row"><span class="nf-data-lbl">Emitente</span><span class="nf-data-val" id="nfEmitente">—</span></div>
+        <div class="nf-data-row"><span class="nf-data-lbl">CNPJ Emitente</span><span class="nf-data-val" id="nfCnpj">—</span></div>
+        <div class="nf-data-row"><span class="nf-data-lbl">Data Emissão</span><span class="nf-data-val" id="nfData">—</span></div>
+        <div class="nf-data-row"><span class="nf-data-lbl">Valor Total</span><span class="nf-data-val" id="nfValor">—</span></div>
+        <div class="nf-data-row"><span class="nf-data-lbl">Chave de Acesso</span><span class="nf-data-val" id="nfChaveDisplay" style="font-size:.65rem;word-break:break-all;max-width:none;text-align:right;">—</span></div>
+      </div>
+
+      <!-- Itens da NF -->
+      <div class="nf-itens-wrap">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-family:var(--font-mono);font-size:.72rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">📦 Itens da Nota Fiscal</span>
+          <button class="btn-os-add-mat" onclick="addNfItem()">+ Adicionar item</button>
+        </div>
+        <div>
+          <div class="nf-item-row nf-item-hdr" style="grid-template-columns:1fr 70px 60px 80px 36px"><span>Descrição</span><span>Qtd</span><span>Und</span><span>R$ Unit.</span><span></span></div>
+          <div id="nfItemsList"></div>
+        </div>
+        <div id="nfItemsEmpty" style="font-family:var(--font-mono);font-size:.72rem;color:var(--muted);text-align:center;padding:12px;">Adicione os itens da nota fiscal</div>
+      </div>
+
+      <!-- Dados manuais -->
+      <div style="margin-top:4px;">
+        <div class="os-form-grid">
+          <div class="os-field">
+            <label>N° da Nota Fiscal</label>
+            <input class="os-input" id="nfNumeroManual" type="text" placeholder="Ex: 123456">
+          </div>
+          <div class="os-field">
+            <label>Série</label>
+            <input class="os-input" id="nfSerie" type="text" placeholder="Ex: 001" maxlength="3">
+          </div>
+          <div class="os-field">
+            <label>Fornecedor</label>
+            <input class="os-input" id="nfFornecedor" type="text" placeholder="Nome do fornecedor">
+          </div>
+          <div class="os-field">
+            <label>Data de Emissão</label>
+            <input class="os-input" id="nfDataEmissao" type="date">
+          </div>
+        </div>
+        <div class="os-field" style="margin-top:12px;">
+          <label>Observações</label>
+          <textarea class="os-textarea" id="nfObs" rows="2" placeholder="Observações da entrada..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="nf-modal-footer">
+      <button class="btn-os-cancel" onclick="closeNfModal()">Cancelar</button>
+      <button class="btn-nf-save" onclick="saveNfEntrada()">✅ Registrar Entrada</button>
+    </div>
+  </div>
+</div>
+
+<!-- NF Scanner Modal -->
+<div id="nfScannerModal">
+  <div class="scanner-card">
+    <div class="scanner-header">
+      <span class="scanner-title">📷 LEITOR NF-e</span>
+      <button class="scanner-close" onclick="closeNfScanner()">✕</button>
+    </div>
+    <div class="scanner-video-wrap">
+      <video id="nfScannerVideo" playsinline autoplay muted></video>
+      <div class="scanner-crosshair"><div class="scanner-line"></div></div>
+    </div>
+    <div class="scanner-status" id="nfScannerStatus">Aponte para o QR Code ou código de barras da NF-e</div>
+    <div class="scanner-result" id="nfScannerResultBox" style="display:none">
+      <div class="scanner-result-lbl">CHAVE DETECTADA</div>
+      <div class="scanner-result-val" id="nfScannerResultVal"></div>
+    </div>
+    <div class="scanner-actions">
+      <button class="btn-scan-use" id="btnNfScanUse" disabled onclick="useNfScan()">✅ Usar chave</button>
+      <button class="btn-scan-retry" onclick="restartNfScanner()">↺ Novo scan</button>
+    </div>
+  </div>
+  <div class="nfscan-manual">
+    <div class="nfscan-manual-title">OU INSIRA A CHAVE MANUALMENTE</div>
+    <div class="nfscan-input-wrap">
+      <input class="nfscan-inp" id="nfScanManualKey" type="text" placeholder="44 dígitos..." maxlength="44" oninput="this.value=this.value.replace(/\D/g,'')">
+      <button class="btn-nfscan-go" onclick="useNfManualKey()">Usar</button>
+    </div>
+  </div>
+  <button class="btn-nfscan-close" onclick="closeNfScanner()">✕ Fechar câmera</button>
+</div>
 
 <div class="loading-overlay" id="loadOverlay">
   <div class="spinner"></div>
@@ -2244,6 +2783,10 @@ function goTo(screen) {
   document.getElementById('chartScreen').classList.remove('active');
   const _rs = document.getElementById('reportsScreen');
   if (_rs) _rs.classList.remove('active');
+  const _os = document.getElementById('ordensScreen');
+  if (_os) _os.classList.remove('active');
+  const _est = document.getElementById('estoqueScreen');
+  if (_est) _est.classList.remove('active');
 
   if (screen === 'nav') {
     document.getElementById('navScreen').classList.add('active');
@@ -2256,6 +2799,10 @@ function goTo(screen) {
   } else if (screen === 'reports') {
     const rs = document.getElementById('reportsScreen');
     if (rs) { rs.classList.add('active'); initReportsScreen(); }
+  } else if (screen === 'ordens') {
+    if (_os) { _os.classList.add('active'); renderOrdens(); }
+  } else if (screen === 'estoque') {
+    if (_est) { _est.classList.add('active'); renderEstoque(); }
   }
 }
 
@@ -2639,6 +3186,883 @@ window.addEventListener('storage', function(e) {
     }
   }
 });
+
+// ══════════════════════════════════════════════════════════════════
+// MÓDULO: ORDENS DE SERVIÇO (CMMS SAP)
+// ══════════════════════════════════════════════════════════════════
+const OS_STORAGE_KEY = 'invctr_ordens';
+let ordensData = [];
+let osEditId = null;
+let osMatRows = [];
+
+function loadOrdens() {
+  try { ordensData = JSON.parse(localStorage.getItem(OS_STORAGE_KEY) || '[]'); } catch(e) { ordensData = []; }
+}
+function saveOrdens() {
+  localStorage.setItem(OS_STORAGE_KEY, JSON.stringify(ordensData));
+}
+
+function osBadge(status) {
+  const map = {
+    'Aberta': '<span class="os-badge os-aberta">● Aberta</span>',
+    'Em Andamento': '<span class="os-badge os-andamento">● Em Andamento</span>',
+    'Concluída': '<span class="os-badge os-concluida">✔ Concluída</span>',
+    'Cancelada': '<span class="os-badge os-cancelada">✕ Cancelada</span>'
+  };
+  return map[status] || `<span class="os-badge">${esc(status)}</span>`;
+}
+
+function renderOrdens() {
+  loadOrdens();
+  const q = (document.getElementById('osSearchInput')?.value || '').toLowerCase().trim();
+  const sf = document.getElementById('osFilterStatus')?.value || '';
+  const hasFilter = q.length > 0 || sf.length > 0;
+
+  // KPIs always visible
+  const total = ordensData.length;
+  const abertas = ordensData.filter(o=>o.status==='Aberta').length;
+  const andamento = ordensData.filter(o=>o.status==='Em Andamento').length;
+  const concluidas = ordensData.filter(o=>o.status==='Concluída').length;
+  const vencidas = ordensData.filter(o=>o.prazo && o.status!=='Concluída' && o.status!=='Cancelada' && new Date(o.prazo) < new Date()).length;
+  document.getElementById('osKpis').innerHTML = [
+    ['Total OS', total, 'var(--text)'],
+    ['Abertas', abertas, 'var(--accent)'],
+    ['Em Andamento', andamento, '#f59e0b'],
+    ['Concluídas', concluidas, 'var(--accent2)'],
+    ['Vencidas', vencidas, 'var(--warn)']
+  ].map(([l,v,c]) => `<div class="os-kpi"><span class="os-kpi-val" style="color:${c}">${v}</span><span class="os-kpi-lbl">${l}</span></div>`).join('');
+
+  const body = document.getElementById('osBody');
+  const empty = document.getElementById('osEmpty');
+  const tableWrap = document.getElementById('osTableWrap');
+
+  // If no filter active: hide table, show hint
+  if (!hasFilter) {
+    body.innerHTML = '';
+    document.getElementById('osCount').textContent = '—';
+    tableWrap.style.display = 'none';
+    empty.style.display = '';
+    empty.innerHTML = `
+      <div style="font-size:2rem;margin-bottom:12px;">🔍</div>
+      <div style="font-family:var(--font-mono);font-size:.85rem;color:var(--text);">Use os filtros para localizar OSs</div>
+      <div style="font-size:.78rem;margin-top:8px;color:var(--muted);">Busque por N°, equipamento, responsável ou filtre pelo status acima.</div>`;
+    return;
+  }
+
+  tableWrap.style.display = '';
+
+  let filtered = ordensData.filter(o => {
+    const ms = !q || [o.numSap,o.tipo,o.equipamento,o.setor,o.responsavel,o.descricao].some(f => (f||'').toLowerCase().includes(q));
+    const mf = !sf || o.status === sf;
+    return ms && mf;
+  });
+
+  document.getElementById('osCount').textContent = filtered.length;
+
+  if (!filtered.length) {
+    body.innerHTML = '';
+    empty.style.display = '';
+    empty.innerHTML = `
+      <div style="font-size:2rem;margin-bottom:12px;">🔧</div>
+      <div style="font-family:var(--font-mono);font-size:.85rem;">Nenhuma OS encontrada</div>
+      <div style="font-size:.78rem;margin-top:6px;color:var(--muted);">Tente outros termos ou filtros</div>`;
+    return;
+  }
+
+  empty.style.display = 'none';
+  body.innerHTML = filtered.map(o => `
+    <tr>
+      <td>
+        <div class="action-btns">
+          <button class="btn-os-act" onclick="openOsDetail('${o.id}')" title="Ver detalhes">👁</button>
+          <button class="btn-os-act" onclick="editOs('${o.id}')" title="Editar">✏️</button>
+          <button class="btn-os-act" onclick="deleteOs('${o.id}')" title="Excluir" style="color:var(--warn);border-color:rgba(255,107,53,.25);">🗑</button>
+        </div>
+      </td>
+      <td style="font-family:var(--font-mono);font-size:.8rem;color:#f59e0b">${esc(o.numSap||'—')}</td>
+      <td style="font-size:.78rem;color:var(--muted)">${esc((o.tipo||'').split(' - ')[0])}</td>
+      <td><strong>${esc(o.equipamento||'—')}</strong></td>
+      <td>${esc(o.setor||'—')}</td>
+      <td>${esc(o.responsavel||'—')}</td>
+      <td><span style="font-family:var(--font-mono);font-size:.75rem;color:${o.prioridade&&o.prioridade.startsWith('1')?'var(--warn)':o.prioridade&&o.prioridade.startsWith('2')?'#f59e0b':'var(--muted)'}">${esc(o.prioridade||'—')}</span></td>
+      <td>${osBadge(o.status)}</td>
+      <td style="font-family:var(--font-mono);font-size:.76rem">${o.dataAbertura||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:.76rem;color:${o.prazo&&o.status!=='Concluída'&&new Date(o.prazo)<new Date()?'var(--warn)':'var(--muted)'}">${o.prazo||'—'}</td>
+    </tr>`).join('');
+}
+
+function gerarNumOS() {
+  // Gera número sequencial baseado nos existentes + timestamp parcial
+  loadOrdens();
+  const prefix = 'OS';
+  const year = new Date().getFullYear().toString().slice(-2);
+  const existing = ordensData.map(o => {
+    const m = (o.numSap || '').match(/^OS(\d+)$/);
+    return m ? parseInt(m[1]) : 0;
+  });
+  const nextSeq = existing.length ? Math.max(...existing) + 1 : 1;
+  return `OS${String(nextSeq).padStart(6,'0')}`;
+}
+
+function searchEquipamento(q) {
+  const box = document.getElementById('equipResults');
+  const term = (q || '').trim().toLowerCase();
+
+  if (term.length < 1) { box.style.display = 'none'; return; }
+
+  if (!data || !data.length) {
+    box.style.display = '';
+    box.innerHTML = '<div class="equip-no-results">⚠️ Nenhum inventário carregado.<br>Sincronize ou carregue um arquivo primeiro.</div>';
+    return;
+  }
+
+  // Busca em TODAS as colunas do inventário
+  const results = data.filter(row =>
+    headers.some(h => (row[h] || '').toLowerCase().includes(term))
+  ).slice(0, 15);
+
+  if (!results.length) {
+    box.style.display = '';
+    box.innerHTML = `<div class="equip-no-results">Nenhum item encontrado para "<strong>${esc(q)}</strong>"</div>`;
+    return;
+  }
+
+  // Identifica colunas mais relevantes para exibição no dropdown
+  const colPrimary   = headers.find(h => /equipamento|descri|nome|tag|item/i.test(h)) || headers[0];
+  const colTag       = headers.find(h => /^tag$/i.test(h)) || headers.find(h => /\btag\b/i.test(h));
+  const colSerie     = headers.find(h => /serie|serial|n.?serie|patrimonio|patrim/i.test(h));
+  const colModelo    = headers.find(h => /modelo|model/i.test(h));
+  const colFabric    = headers.find(h => /fabricante|fabric|marca/i.test(h));
+  const colSetor     = headers.find(h => /setor|area|local|departamento|cc|centro/i.test(h));
+
+  // Salva os resultados num mapa global para acessar no onclick
+  window._equipSearchResults = {};
+  results.forEach(row => { window._equipSearchResults[row._id] = row; });
+
+  box.style.display = '';
+  box.innerHTML = results.map(row => {
+    const primary = row[colPrimary] || row[headers[0]] || '—';
+    const tag     = colTag    ? row[colTag]    : '';
+    const serie   = colSerie  ? row[colSerie]  : '';
+    const modelo  = colModelo ? row[colModelo] : '';
+    const fabric  = colFabric ? row[colFabric] : '';
+    const setor   = colSetor  ? row[colSetor]  : '';
+
+    const sub = [tag && `TAG: ${tag}`, serie && `Série: ${serie}`, modelo, fabric, setor && `📍 ${setor}`]
+      .filter(Boolean).join(' · ');
+
+    return `<div class="equip-result-item" onclick="selectEquipamento(${row._id})">
+      <div style="font-weight:600">${esc(primary)}</div>
+      ${sub ? `<div class="equip-result-tag">${esc(sub)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function selectEquipamento(rowId) {
+  const row = window._equipSearchResults && window._equipSearchResults[rowId];
+  if (!row) return;
+
+  // Identifica colunas para preenchimento
+  const colPrimary = headers.find(h => /equipamento|descri|nome|tag|item/i.test(h)) || headers[0];
+  const colTag     = headers.find(h => /^tag$/i.test(h)) || headers.find(h => /\btag\b/i.test(h));
+  const colSerie   = headers.find(h => /serie|serial|n.?serie|patrimonio|patrim/i.test(h));
+  const colModelo  = headers.find(h => /modelo|model/i.test(h));
+  const colFabric  = headers.find(h => /fabricante|fabric|marca/i.test(h));
+  const colSetor   = headers.find(h => /setor|area|local|departamento|cc|centro/i.test(h));
+  const colResp    = headers.find(h => /responsavel|resp|tecnico/i.test(h));
+
+  // Monta label do equipamento: TAG + Nome, ou apenas Nome
+  const tag     = colTag   ? (row[colTag]   || '') : '';
+  const primary = row[colPrimary] || row[headers[0]] || '';
+  const serie   = colSerie ? (row[colSerie] || '') : '';
+  const modelo  = colModelo? (row[colModelo]|| '') : '';
+
+  // Campo equipamento: TAG + descrição/modelo (o mais completo possível)
+  let equipLabel = '';
+  if (tag)    equipLabel = tag;
+  if (primary && primary !== tag) equipLabel += (equipLabel ? ' — ' : '') + primary;
+  if (modelo && modelo !== primary) equipLabel += (equipLabel ? ' / ' : '') + modelo;
+  if (!equipLabel) equipLabel = primary || serie || '—';
+
+  document.getElementById('osEquipamento').value = equipLabel;
+
+  // Preenche Setor se disponível e vazio
+  if (colSetor && row[colSetor]) {
+    const el = document.getElementById('osSetor');
+    if (!el.value) el.value = row[colSetor];
+  }
+
+  // Preenche Responsável se disponível e vazio
+  if (colResp && row[colResp]) {
+    const el = document.getElementById('osResponsavel');
+    if (!el.value) el.value = row[colResp];
+  }
+
+  // Preenche Centro de Trabalho / Fabricante como dica
+  const colCentro = headers.find(h => /centro.trab|ct|ctrab/i.test(h));
+  if (colCentro && row[colCentro]) {
+    const el = document.getElementById('osCentroTrabalho');
+    if (!el.value) el.value = row[colCentro];
+  }
+
+  // Feedback visual: mostra tag/série abaixo do campo
+  let feedback = [];
+  if (tag)   feedback.push(`TAG: ${tag}`);
+  if (serie) feedback.push(`Série: ${serie}`);
+  if (colFabric && row[colFabric]) feedback.push(`Fabricante: ${row[colFabric]}`);
+  const hint = document.getElementById('osEquipHint');
+  if (hint) hint.textContent = feedback.join(' · ');
+
+  closeEquipResults();
+  window._equipSearchResults = {};
+}
+
+function closeEquipResults() {
+  const box = document.getElementById('equipResults');
+  if (box) box.style.display = 'none';
+}
+
+function openOsModal(id) {
+  osEditId = id || null;
+  osMatRows = [];
+  loadOrdens();
+  const o = id ? ordensData.find(x=>x.id===id) : null;
+
+  document.getElementById('osModalTitle').textContent = o ? '✏️ EDITAR ORDEM DE SERVIÇO' : '🔧 NOVA ORDEM DE SERVIÇO';
+  // Auto-generate OS number for new OS
+  document.getElementById('osNumSap').value = o?.numSap || gerarNumOS();
+  document.getElementById('osTipo').value = o?.tipo || 'PM01 - Manutenção Corretiva';
+  document.getElementById('osEquipamento').value = o?.equipamento || '';
+  const hint = document.getElementById('osEquipHint');
+  if (hint) hint.textContent = '';
+  document.getElementById('osSetor').value = o?.setor || '';
+  document.getElementById('osResponsavel').value = o?.responsavel || '';
+  document.getElementById('osPrioridade').value = o?.prioridade || '3 - Média';
+  document.getElementById('osDataAbertura').value = o?.dataAbertura || new Date().toISOString().slice(0,10);
+  document.getElementById('osDataPrazo').value = o?.prazo || '';
+  document.getElementById('osStatus').value = o?.status || 'Aberta';
+  document.getElementById('osCentroTrabalho').value = o?.centroTrabalho || '';
+  document.getElementById('osDescricao').value = o?.descricao || '';
+  closeEquipResults();
+
+  // Render materials
+  osMatRows = o?.materiais ? o.materiais.map(m => ({...m})) : [];
+  renderOsMatRows();
+
+  document.getElementById('osModal').classList.add('open');
+}
+
+function closeOsModal() { document.getElementById('osModal').classList.remove('open'); }
+
+function renderOsMatRows() {
+  const list = document.getElementById('osMatList');
+  const empty = document.getElementById('osMatEmpty');
+  if (!osMatRows.length) {
+    list.innerHTML = '<div class="os-mat-row os-mat-hdr"><span>Descrição do material</span><span>Qtd</span><span>Und</span><span></span></div>';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = '<div class="os-mat-row os-mat-hdr"><span>Descrição do material</span><span>Qtd</span><span>Und</span><span></span></div>' +
+    osMatRows.map((m,i) => `
+      <div class="os-mat-row">
+        <input class="nf-input" value="${esc(m.desc||'')}" oninput="osMatRows[${i}].desc=this.value" placeholder="Descrição">
+        <input class="nf-input" type="number" min="0" value="${m.qtd||''}" oninput="osMatRows[${i}].qtd=this.value" placeholder="0" style="text-align:right">
+        <input class="nf-input" value="${esc(m.und||'')}" oninput="osMatRows[${i}].und=this.value" placeholder="UN/PC/M">
+        <button class="btn-os-del-mat" onclick="osMatRows.splice(${i},1);renderOsMatRows()">✕</button>
+      </div>`).join('');
+}
+
+function addOsMatRow() {
+  osMatRows.push({desc:'',qtd:'',und:'UN'});
+  renderOsMatRows();
+}
+
+function saveOs() {
+  const numSap = document.getElementById('osNumSap').value.trim();
+  const equipamento = document.getElementById('osEquipamento').value.trim();
+  if (!equipamento) { showToast('⚠️ Informe o equipamento.', true); return; }
+
+  loadOrdens();
+  const session = getSession();
+  const o = {
+    id: osEditId || ('OS_' + Date.now()),
+    numSap, tipo: document.getElementById('osTipo').value,
+    equipamento, setor: document.getElementById('osSetor').value.trim(),
+    responsavel: document.getElementById('osResponsavel').value.trim(),
+    prioridade: document.getElementById('osPrioridade').value,
+    dataAbertura: document.getElementById('osDataAbertura').value,
+    prazo: document.getElementById('osDataPrazo').value,
+    status: document.getElementById('osStatus').value,
+    centroTrabalho: document.getElementById('osCentroTrabalho').value.trim(),
+    descricao: document.getElementById('osDescricao').value.trim(),
+    materiais: osMatRows.filter(m=>m.desc),
+    criadoPor: session?.name || '—',
+    criadoEm: osEditId ? (ordensData.find(x=>x.id===osEditId)?.criadoEm || new Date().toISOString()) : new Date().toISOString(),
+    atualizadoEm: new Date().toISOString()
+  };
+
+  if (osEditId) {
+    const idx = ordensData.findIndex(x=>x.id===osEditId);
+    if (idx >= 0) ordensData[idx] = o;
+  } else {
+    ordensData.unshift(o);
+  }
+
+  saveOrdens();
+  closeOsModal();
+  renderOrdens();
+  showToast(osEditId ? '✅ OS atualizada!' : '✅ OS criada com sucesso!');
+}
+
+function editOs(id) { openOsModal(id); }
+
+function deleteOs(id) {
+  loadOrdens();
+  const o = ordensData.find(x=>x.id===id);
+  if (!o) return;
+  openConfirm(
+    'Excluir a OS <strong>"' + esc(o.numSap||o.equipamento) + '"</strong>? Esta ação não pode ser desfeita.',
+    '🗑', 'EXCLUIR OS', 'Sim, excluir',
+    function() {
+      ordensData = ordensData.filter(x=>x.id!==id);
+      saveOrdens();
+      renderOrdens();
+      showToast('🗑 OS excluída.');
+    }
+  );
+}
+
+function openOsDetail(id) {
+  loadOrdens();
+  const o = ordensData.find(x=>x.id===id);
+  if (!o) return;
+  const body = document.getElementById('osDetailBody');
+  body.innerHTML = `
+    <div style="padding:0 0 16px;margin-bottom:16px;border-bottom:1px solid var(--border);">
+      ${osBadge(o.status)}
+      <div style="margin-top:8px;">
+        <span style="font-family:var(--font-mono);font-size:.7rem;color:var(--muted);">Alterar Status:</span><br>
+        <select class="os-status-select" style="margin-top:6px;" onchange="changeOsStatus('${o.id}',this.value)">
+          <option ${o.status==='Aberta'?'selected':''}>Aberta</option>
+          <option ${o.status==='Em Andamento'?'selected':''}>Em Andamento</option>
+          <option ${o.status==='Concluída'?'selected':''}>Concluída</option>
+          <option ${o.status==='Cancelada'?'selected':''}>Cancelada</option>
+        </select>
+      </div>
+    </div>
+    <div class="os-detail-section">
+      <div class="os-detail-section-title">📋 Identificação SAP</div>
+      ${detailRow('N° OS SAP', o.numSap)}
+      ${detailRow('Tipo', o.tipo)}
+      ${detailRow('Centro de Trabalho', o.centroTrabalho)}
+    </div>
+    <div class="os-detail-section">
+      <div class="os-detail-section-title">🔧 Equipamento</div>
+      ${detailRow('Equipamento / TAG', o.equipamento)}
+      ${detailRow('Setor / CC', o.setor)}
+      ${detailRow('Responsável', o.responsavel)}
+      ${detailRow('Prioridade', o.prioridade)}
+    </div>
+    <div class="os-detail-section">
+      <div class="os-detail-section-title">📅 Datas</div>
+      ${detailRow('Abertura', o.dataAbertura)}
+      ${detailRow('Prazo', o.prazo)}
+      ${detailRow('Última atualização', o.atualizadoEm ? new Date(o.atualizadoEm).toLocaleString('pt-BR') : '—')}
+    </div>
+    <div class="os-detail-section">
+      <div class="os-detail-section-title">📝 Descrição</div>
+      <div style="font-size:.84rem;color:var(--text);line-height:1.6;padding:8px 0;">${esc(o.descricao||'Não informada')}</div>
+    </div>
+    ${o.materiais && o.materiais.length ? `
+    <div class="os-detail-section">
+      <div class="os-detail-section-title">📦 Materiais</div>
+      ${o.materiais.map(m=>`<div class="os-detail-row"><span class="os-detail-lbl">${esc(m.desc)}</span><span class="os-detail-val">${esc(m.qtd)} ${esc(m.und)}</span></div>`).join('')}
+    </div>` : ''}
+    <div class="os-detail-section">
+      <div class="os-detail-section-title">👤 Rastreio</div>
+      ${detailRow('Criado por', o.criadoPor)}
+      ${detailRow('Criado em', o.criadoEm ? new Date(o.criadoEm).toLocaleString('pt-BR') : '—')}
+    </div>`;
+  document.getElementById('osDetailDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function detailRow(lbl, val) {
+  return `<div class="os-detail-row"><span class="os-detail-lbl">${lbl}</span><span class="os-detail-val">${esc(val||'—')}</span></div>`;
+}
+
+function closeOsDetail() {
+  document.getElementById('osDetailDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function changeOsStatus(id, status) {
+  loadOrdens();
+  const o = ordensData.find(x=>x.id===id);
+  if (o) { o.status = status; o.atualizadoEm = new Date().toISOString(); }
+  saveOrdens();
+  renderOrdens();
+  showToast('✅ Status atualizado: ' + status);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MÓDULO: ESTOQUE COMPLETO
+// ══════════════════════════════════════════════════════════════════
+const EST_NF_KEY = 'invctr_nf_entradas';
+const EST_SALDO_KEY = 'invctr_est_saldos';
+const EST_MOV_KEY = 'invctr_est_movimentos';
+
+let nfEntradas = [];
+let estSaldos = {};
+let estMovimentos = [];
+let nfItemsTemp = [];
+let nfScanStream = null;
+let nfScanInterval = null;
+let nfScannedKey = '';
+
+function loadEstoque() {
+  try { nfEntradas = JSON.parse(localStorage.getItem(EST_NF_KEY)||'[]'); } catch(e) { nfEntradas = []; }
+  try { estSaldos = JSON.parse(localStorage.getItem(EST_SALDO_KEY)||'{}'); } catch(e) { estSaldos = {}; }
+  try { estMovimentos = JSON.parse(localStorage.getItem(EST_MOV_KEY)||'[]'); } catch(e) { estMovimentos = []; }
+}
+function saveEstoque() {
+  localStorage.setItem(EST_NF_KEY, JSON.stringify(nfEntradas));
+  localStorage.setItem(EST_SALDO_KEY, JSON.stringify(estSaldos));
+  localStorage.setItem(EST_MOV_KEY, JSON.stringify(estMovimentos));
+}
+
+let estActiveTab = 'saldos';
+function setEstTab(tab, el) {
+  estActiveTab = tab;
+  document.querySelectorAll('.est-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('estTabSaldos').style.display = tab==='saldos' ? '' : 'none';
+  document.getElementById('estTabEntradas').style.display = tab==='entradas' ? '' : 'none';
+  document.getElementById('estTabMovimentos').style.display = tab==='movimentos' ? '' : 'none';
+  renderEstoque();
+}
+
+function renderEstoque() {
+  loadEstoque();
+  const q = (document.getElementById('estSearchInput')?.value||'').toLowerCase();
+
+  // KPIs
+  const totalItens = Object.keys(estSaldos).length;
+  const totalEntradas = nfEntradas.length;
+  const semEstoque = Object.values(estSaldos).filter(s=>s.saldo<=0).length;
+  const estoqueBaixo = Object.values(estSaldos).filter(s=>s.saldo>0&&s.minSeg>0&&s.saldo<=s.minSeg).length;
+  document.getElementById('estKpis').innerHTML = [
+    ['Produtos', totalItens, '#06b6d4'],
+    ['Notas Fiscais', totalEntradas, 'var(--accent2)'],
+    ['Sem Estoque', semEstoque, 'var(--warn)'],
+    ['Estoque Baixo', estoqueBaixo, '#ffc107'],
+    ['Movimentos', estMovimentos.length, 'var(--muted)']
+  ].map(([l,v,c])=>`<div class="est-kpi"><span class="est-kpi-val" style="color:${c}">${v}</span><span class="est-kpi-lbl">${l}</span></div>`).join('');
+
+  // Saldos
+  const saldosArr = Object.entries(estSaldos).filter(([k,s])=>!q||[k,s.descricao,s.unidade].some(f=>(f||'').toLowerCase().includes(q)));
+  document.getElementById('estSaldoCount').textContent = saldosArr.length;
+  const sb = document.getElementById('estSaldoBody');
+  const se = document.getElementById('estSaldoEmpty');
+  if (!saldosArr.length) { sb.innerHTML=''; se.style.display=''; }
+  else {
+    se.style.display = 'none';
+    sb.innerHTML = saldosArr.map(([cod,s])=>{
+      const cls = s.saldo<=0 ? 'est-saldo-zero' : (s.minSeg>0&&s.saldo<=s.minSeg ? 'est-saldo-low' : 'est-saldo-ok');
+      return `<tr>
+        <td style="font-family:var(--font-mono);font-size:.8rem;color:#06b6d4">${esc(cod)}</td>
+        <td>${esc(s.descricao||'—')}</td>
+        <td style="font-family:var(--font-mono);font-size:.76rem">${esc(s.unidade||'UN')}</td>
+        <td><strong class="${cls}" style="font-family:var(--font-mono)">${s.saldo||0}</strong></td>
+        <td style="font-family:var(--font-mono);font-size:.76rem;color:var(--muted)">${s.minSeg||0}</td>
+        <td style="font-family:var(--font-mono);font-size:.74rem;color:var(--muted)">${s.ultimaEntrada||'—'}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-os-act" onclick="lancarSaidaEstoque('${esc(cod)}')" title="Lançar saída" style="color:#ffc107;border-color:rgba(255,193,7,.25);">📤</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // NF Entradas
+  const nfFiltered = nfEntradas.filter(n=>!q||[n.numero,n.fornecedor,n.cnpj].some(f=>(f||'').toLowerCase().includes(q)));
+  document.getElementById('estNfCount').textContent = nfFiltered.length;
+  const nb = document.getElementById('estNfBody');
+  const ne = document.getElementById('estNfEmpty');
+  if (!nfFiltered.length) { nb.innerHTML=''; ne.style.display=''; }
+  else {
+    ne.style.display = 'none';
+    nb.innerHTML = nfFiltered.map(n=>`
+      <tr>
+        <td style="font-family:var(--font-mono);color:#06b6d4">${esc(n.numero||'—')}/${esc(n.serie||'—')}</td>
+        <td style="font-family:var(--font-mono);font-size:.76rem">${esc(n.serie||'—')}</td>
+        <td><strong>${esc(n.fornecedor||'—')}</strong></td>
+        <td style="font-family:var(--font-mono);font-size:.74rem">${esc(n.cnpj||'—')}</td>
+        <td style="font-family:var(--font-mono);color:var(--accent)">R$ ${Number(n.valorTotal||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+        <td style="font-family:var(--font-mono);font-size:.76rem">${n.dataEmissao||'—'}</td>
+        <td style="font-family:var(--font-mono);font-size:.76rem;color:var(--accent2)">${(n.itens||[]).length} iten(s)</td>
+        <td><span class="badge badge-ok" style="font-size:.66rem">Registrada</span></td>
+      </tr>`).join('');
+  }
+
+  // Movimentos
+  const mvFiltered = estMovimentos.filter(m=>!q||[m.produto,m.referencia,m.usuario].some(f=>(f||'').toLowerCase().includes(q)));
+  document.getElementById('estMovCount').textContent = mvFiltered.length;
+  const mb = document.getElementById('estMovBody');
+  const mve = document.getElementById('estMovEmpty');
+  if (!mvFiltered.length) { mb.innerHTML=''; mve.style.display=''; }
+  else {
+    mve.style.display = 'none';
+    mb.innerHTML = mvFiltered.slice().reverse().map(m=>`
+      <tr>
+        <td style="font-family:var(--font-mono);font-size:.74rem">${m.datahora||'—'}</td>
+        <td><span style="font-family:var(--font-mono);font-size:.72rem;padding:2px 8px;border-radius:10px;background:${m.tipo==='ENTRADA'?'rgba(0,229,160,.1)':'rgba(255,107,53,.1)'};color:${m.tipo==='ENTRADA'?'var(--accent)':'var(--warn)'}">${m.tipo}</span></td>
+        <td>${esc(m.produto||'—')}</td>
+        <td style="font-family:var(--font-mono);font-weight:700;color:${m.tipo==='ENTRADA'?'var(--accent)':'var(--warn)'}">${m.tipo==='ENTRADA'?'+':'−'}${m.qtd||0}</td>
+        <td style="font-size:.76rem;color:var(--muted)">${esc(m.referencia||'—')}</td>
+        <td style="font-size:.76rem;color:var(--muted)">${esc(m.usuario||'—')}</td>
+      </tr>`).join('');
+  }
+}
+
+// ── NF Modal ──────────────────────────────────────────────────────
+function openNfModal() {
+  nfItemsTemp = [];
+  nfScannedKey = '';
+  document.getElementById('nfChaveInput').value = '';
+  document.getElementById('nfConsultaStatus').textContent = '';
+  document.getElementById('nfDataCard').classList.remove('show');
+  ['nfNumero','nfEmitente','nfCnpj','nfData','nfValor','nfChaveDisplay'].forEach(id=>{document.getElementById(id).textContent='—';});
+  document.getElementById('nfNumeroManual').value = '';
+  document.getElementById('nfSerie').value = '';
+  document.getElementById('nfFornecedor').value = '';
+  document.getElementById('nfDataEmissao').value = new Date().toISOString().slice(0,10);
+  document.getElementById('nfObs').value = '';
+  renderNfItems();
+  document.getElementById('nfModal').classList.add('open');
+}
+function closeNfModal() { document.getElementById('nfModal').classList.remove('open'); }
+
+function renderNfItems() {
+  const list = document.getElementById('nfItemsList');
+  const empty = document.getElementById('nfItemsEmpty');
+  if (!nfItemsTemp.length) { list.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display = 'none';
+  list.innerHTML = nfItemsTemp.map((it,i)=>`
+    <div class="nf-item-row" style="grid-template-columns:1fr 70px 60px 80px 36px">
+      <input class="nf-input" value="${esc(it.descricao||'')}" oninput="nfItemsTemp[${i}].descricao=this.value" placeholder="Descrição do produto">
+      <input class="nf-input" type="number" min="0" step="0.01" value="${it.qtd||''}" oninput="nfItemsTemp[${i}].qtd=parseFloat(this.value)||0" placeholder="Qtd" style="text-align:right">
+      <input class="nf-input" value="${esc(it.unidade||'UN')}" oninput="nfItemsTemp[${i}].unidade=this.value" placeholder="UN">
+      <input class="nf-input" type="number" min="0" step="0.01" value="${it.valorUn||''}" oninput="nfItemsTemp[${i}].valorUn=parseFloat(this.value)||0" placeholder="R$ Un" style="text-align:right">
+      <button class="btn-os-del-mat" onclick="nfItemsTemp.splice(${i},1);renderNfItems()">✕</button>
+    </div>`).join('');
+}
+
+function addNfItem() {
+  nfItemsTemp.push({descricao:'',qtd:1,unidade:'UN',codigo:'',valorUn:0});
+  renderNfItems();
+}
+
+async function consultarNfe() {
+  const chave = document.getElementById('nfChaveInput').value.replace(/\D/g,'');
+  if (chave.length !== 44) { showToast('⚠️ Chave deve ter 44 dígitos.', true); return; }
+
+  const btn = document.getElementById('btnConsultarNfe');
+  btn.disabled = true;
+  document.getElementById('nfConsultaStatus').innerHTML =
+    '<span style="color:#f59e0b">🔄 Consultando dados da NF-e...</span>';
+
+  // 1) Extrai dados que estão codificados na própria chave (sempre disponível)
+  const dadosChave = extrairDadosChave(chave);
+
+  // 2) Tenta buscar dados reais via BrasilAPI (CNPJ do emitente)
+  let emitenteNome = '';
+  try {
+    const cnpjLimpo = dadosChave.cnpjRaw;
+    const r = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
+    if (r.ok) {
+      const j = await r.json();
+      emitenteNome = j.razao_social || j.nome_fantasia || '';
+    }
+  } catch(e) { /* CORS ou timeout — não bloqueia */ }
+
+  // 3) Tenta buscar XML/dados da NF-e via proxy CORS público
+  //    O QR Code NF-e aponta para a URL do portal estadual com a chave.
+  //    Usamos allorigins como proxy para tentar obter o DANFE/XML simplificado.
+  let itensEncontrados = [];
+  let valorTotal = 0;
+  let nfFound = false;
+  try {
+    const url = `https://www.nfe.fazenda.gov.br/portal/consultaRecaptcha.aspx?tipoConsulta=resumo&tipoConteudo=7PhJ+gAVw2g%3d&nfe=${chave}`;
+    // Tenta via allorigins.win (proxy CORS gratuito)
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const pr = await Promise.race([
+      fetch(proxyUrl),
+      new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 6000))
+    ]);
+    if (pr.ok) {
+      const pj = await pr.json();
+      const html = pj.contents || '';
+      // Tenta extrair valor total do HTML da página SEFAZ
+      const mValor = html.match(/Valor\s+Total\s*[:=]?\s*R?\$?\s*([\d.,]+)/i);
+      if (mValor) valorTotal = parseFloat(mValor[1].replace(/\./g,'').replace(',','.')) || 0;
+      // Tenta extrair itens de tabelas
+      const mItens = [...html.matchAll(/<tr[^>]*>[\s\S]*?<\/tr>/gi)];
+      // Extrai linhas de produto (heurística: linhas com números e descrições longas)
+      mItens.forEach(m => {
+        const row = m[0].replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+        const parts = row.split(/\s{2,}/);
+        if (parts.length >= 3) {
+          const desc = parts.find(p => p.length > 5 && isNaN(p.replace(',','.')));
+          const qtdStr = parts.find(p => /^\d+[,.]?\d*$/.test(p.trim()));
+          const qtd = qtdStr ? parseFloat(qtdStr.replace(',','.')) : 0;
+          if (desc && qtd > 0 && desc.length > 3) {
+            itensEncontrados.push({descricao: desc.trim(), qtd, unidade:'UN', codigo:'', valorUn:0});
+          }
+        }
+      });
+      if (itensEncontrados.length > 0) nfFound = true;
+    }
+  } catch(e) { /* proxy indisponível */ }
+
+  // 4) Preenche tela com o que conseguiu
+  preencherDadosChaveNaTela(chave, dadosChave, emitenteNome, valorTotal);
+
+  // 5) Se encontrou itens reais, popula a tabela; senão abre 1 linha vazia
+  if (itensEncontrados.length > 0) {
+    nfItemsTemp = itensEncontrados;
+    renderNfItems();
+    document.getElementById('nfConsultaStatus').innerHTML +=
+      ` <span style="color:var(--accent)">· ${itensEncontrados.length} iten(s) importados automaticamente.</span>`;
+  } else {
+    if (!nfItemsTemp.length) {
+      nfItemsTemp.push({descricao:'', qtd:1, unidade:'UN', codigo:'', valorUn:0});
+      renderNfItems();
+    }
+    document.getElementById('nfConsultaStatus').innerHTML +=
+      `<br><span style="color:var(--muted);font-size:.7rem;">ℹ️ O portal da SEFAZ não permite leitura automática dos itens por restrições de segurança (CAPTCHA/CORS). Preencha os itens manualmente ou consulte o DANFE impresso. &nbsp;<a href="https://www.nfe.fazenda.gov.br/portal/consultaRecaptcha.aspx?tipoConsulta=resumo&tipoConteudo=7PhJ+gAVw2g%3d" target="_blank" style="color:#06b6d4;">Abrir portal SEFAZ ↗</a></span>`;
+  }
+
+  btn.disabled = false;
+}
+
+function extrairDadosChave(chave) {
+  // Estrutura: cUF(2)+AAMM(4)+CNPJ(14)+mod(2)+serie(3)+nNF(9)+tpEmis(1)+cNF(8)+cDV(1)
+  const ufMap = {'11':'RO','12':'AC','13':'AM','14':'RR','15':'PA','16':'AP','17':'TO','21':'MA','22':'PI','23':'CE','24':'RN','25':'PB','26':'PE','27':'AL','28':'SE','29':'BA','31':'MG','32':'ES','33':'RJ','35':'SP','41':'PR','42':'SC','43':'RS','50':'MS','51':'MT','52':'GO','53':'DF'};
+  const cuf  = chave.substring(0,2);
+  const aamm = chave.substring(2,6);
+  const cnpj = chave.substring(6,20);
+  const serie= chave.substring(22,25);
+  const nnf  = chave.substring(25,34);
+  const ano  = '20' + aamm.substring(0,2);
+  const mes  = aamm.substring(2,4);
+  return {
+    uf: ufMap[cuf] || cuf,
+    cnpjRaw: cnpj,
+    cnpjFmt: cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,'$1.$2.$3/$4-$5'),
+    serie: parseInt(serie,10).toString(),
+    numero: parseInt(nnf,10).toString(),
+    ano, mes
+  };
+}
+
+function preencherDadosChaveNaTela(chave, d, emitenteNome, valorTotal) {
+  document.getElementById('nfNumero').textContent  = `${d.numero} / Série ${d.serie}`;
+  document.getElementById('nfEmitente').textContent = emitenteNome || `CNPJ emitente (UF: ${d.uf})`;
+  document.getElementById('nfCnpj').textContent    = d.cnpjFmt;
+  document.getElementById('nfData').textContent    = `${d.mes}/${d.ano}`;
+  document.getElementById('nfValor').textContent   = valorTotal > 0
+    ? `R$ ${valorTotal.toLocaleString('pt-BR',{minimumFractionDigits:2})}`
+    : 'Preencha manualmente';
+  document.getElementById('nfChaveDisplay').textContent = chave.replace(/(\d{4})/g,'$1 ').trim();
+  document.getElementById('nfDataCard').classList.add('show');
+
+  document.getElementById('nfNumeroManual').value  = d.numero;
+  document.getElementById('nfSerie').value         = d.serie;
+  document.getElementById('nfFornecedor').value    = emitenteNome || `Emitente CNPJ ${d.cnpjFmt}`;
+  document.getElementById('nfDataEmissao').value   = `${d.ano}-${d.mes}-01`;
+  nfScannedKey = chave;
+
+  document.getElementById('nfConsultaStatus').innerHTML =
+    `<span style="color:var(--accent)">✅ Dados extraídos${emitenteNome ? ' · Emitente identificado via CNPJ' : ' da chave NF-e'}. </span>`;
+}
+
+function preencherDadosDaChave(chave) {
+  // Mantido para compatibilidade com o scanner
+  const d = extrairDadosChave(chave);
+  preencherDadosChaveNaTela(chave, d, '', 0);
+  if (!nfItemsTemp.length) {
+    nfItemsTemp.push({descricao:'', qtd:1, unidade:'UN', codigo:'', valorUn:0});
+    renderNfItems();
+  }
+  document.getElementById('nfConsultaStatus').innerHTML +=
+    `<span style="color:var(--muted);font-size:.7rem;"> Adicione os itens abaixo. &nbsp;<a href="https://www.nfe.fazenda.gov.br/portal/consultaRecaptcha.aspx?tipoConsulta=resumo&tipoConteudo=7PhJ+gAVw2g%3d" target="_blank" style="color:#06b6d4;">Portal SEFAZ ↗</a></span>`;
+}
+
+function saveNfEntrada() {
+  const numero = document.getElementById('nfNumeroManual').value.trim();
+  const fornecedor = document.getElementById('nfFornecedor').value.trim();
+  if (!numero) { showToast('⚠️ Informe o número da NF.', true); return; }
+  const itensFiltrados = nfItemsTemp.filter(it => it.descricao && String(it.descricao).trim());
+  if (!itensFiltrados.length) { showToast('⚠️ Adicione ao menos um item com descrição.', true); return; }
+
+  // Confirmation modal
+  const totalQtd = itensFiltrados.reduce((s,it) => s + (parseFloat(it.qtd)||0), 0);
+  openConfirm(
+    `Confirmar entrada da <strong>NF ${esc(numero)}</strong>?<br><br>` +
+    `<span style="font-family:var(--font-mono);font-size:.78rem;color:var(--muted)">` +
+    `Fornecedor: <strong style="color:var(--text)">${esc(fornecedor||'Não informado')}</strong><br>` +
+    `Itens: <strong style="color:var(--accent)">${itensFiltrados.length}</strong> &nbsp;·&nbsp; ` +
+    `Qtd total: <strong style="color:var(--accent)">${totalQtd}</strong><br><br>` +
+    `Os saldos serão atualizados no estoque.</span>`,
+    '📥', 'REGISTRAR ENTRADA DE NF-e', 'Confirmar',
+    function() { _executarSaveNf(numero, fornecedor, itensFiltrados); }
+  );
+}
+
+function _executarSaveNf(numero, fornecedor, itensFiltrados) {
+  loadEstoque();
+  const session = getSession();
+  const nf = {
+    id: 'NF_' + Date.now(),
+    numero,
+    serie: document.getElementById('nfSerie').value.trim(),
+    fornecedor,
+    cnpj: (document.getElementById('nfCnpj')?.textContent !== '—' ? document.getElementById('nfCnpj').textContent : ''),
+    dataEmissao: document.getElementById('nfDataEmissao').value,
+    valorTotal: itensFiltrados.reduce((s,it) => s + ((parseFloat(it.qtd)||0)*(parseFloat(it.valorUn)||0)), 0),
+    chaveAcesso: nfScannedKey,
+    obs: document.getElementById('nfObs').value.trim(),
+    itens: itensFiltrados,
+    registradoPor: session?.name || '—',
+    registradoEm: new Date().toISOString()
+  };
+
+  // Atualiza saldos e movimentos
+  nf.itens.forEach(it => {
+    const cod = (it.codigo || it.descricao.substring(0,20).toUpperCase().replace(/\s+/g,'_'));
+    if (!estSaldos[cod]) {
+      estSaldos[cod] = {descricao: it.descricao, unidade: it.unidade||'UN', saldo: 0, minSeg: 0, ultimaEntrada: ''};
+    }
+    estSaldos[cod].saldo = (estSaldos[cod].saldo || 0) + (parseFloat(it.qtd) || 0);
+    estSaldos[cod].ultimaEntrada = new Date().toLocaleDateString('pt-BR');
+
+    estMovimentos.push({
+      datahora: new Date().toLocaleString('pt-BR'),
+      tipo: 'ENTRADA',
+      produto: it.descricao,
+      qtd: parseFloat(it.qtd)||0,
+      referencia: `NF ${numero}`,
+      usuario: session?.name || '—'
+    });
+  });
+
+  nfEntradas.unshift(nf);
+  saveEstoque();
+  closeNfModal();
+  renderEstoque();
+  showToast(`✅ NF ${numero} registrada! ${nf.itens.length} iten(s) adicionado(s) ao estoque.`);
+}
+
+function lancarSaidaEstoque(cod) {
+  loadEstoque();
+  const s = estSaldos[cod];
+  if (!s) return;
+  const qtd = parseFloat(prompt(`Saída de: ${s.descricao}\nSaldo atual: ${s.saldo} ${s.unidade}\n\nInforme a quantidade de saída:`) || '0');
+  if (isNaN(qtd) || qtd <= 0) return;
+  if (qtd > s.saldo) { showToast('⚠️ Quantidade maior que o saldo disponível.', true); return; }
+
+  const ref = prompt('Referência (ex: OS 4001234567):') || '';
+  const session = getSession();
+  estSaldos[cod].saldo -= qtd;
+  estMovimentos.push({
+    datahora: new Date().toLocaleString('pt-BR'),
+    tipo: 'SAÍDA',
+    produto: s.descricao,
+    qtd,
+    referencia: ref,
+    usuario: session?.name || '—'
+  });
+  saveEstoque();
+  renderEstoque();
+  showToast(`📤 Saída de ${qtd} ${s.unidade} de "${s.descricao}" registrada.`);
+}
+
+// ── NF Scanner ──────────────────────────────────────────────────
+async function openNfScanner() {
+  document.getElementById('nfScannerModal').classList.add('open');
+  nfScannedKey = '';
+  document.getElementById('nfScannerResultBox').style.display = 'none';
+  document.getElementById('btnNfScanUse').disabled = true;
+  document.getElementById('nfScannerStatus').textContent = 'Iniciando câmera...';
+  try {
+    nfScanStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    document.getElementById('nfScannerVideo').srcObject = nfScanStream;
+    document.getElementById('nfScannerStatus').textContent = 'Aponte para o QR Code / código de barras da NF-e';
+
+    // Usar BarcodeDetector API se disponível
+    if ('BarcodeDetector' in window) {
+      const bd = new BarcodeDetector({formats:['qr_code','code_128','code_39','ean_13','ean_8']});
+      const video = document.getElementById('nfScannerVideo');
+      nfScanInterval = setInterval(async () => {
+        try {
+          const codes = await bd.detect(video);
+          if (codes.length) {
+            const raw = codes[0].rawValue.replace(/\D/g,'');
+            if (raw.length === 44) {
+              nfScannedKey = raw;
+              document.getElementById('nfScannerResultVal').textContent = raw;
+              document.getElementById('nfScannerResultBox').style.display = '';
+              document.getElementById('btnNfScanUse').disabled = false;
+              document.getElementById('nfScannerStatus').textContent = '✅ Chave NF-e detectada!';
+              clearInterval(nfScanInterval);
+            }
+          }
+        } catch(e){}
+      }, 400);
+    } else {
+      document.getElementById('nfScannerStatus').textContent = 'Câmera ativa. Se não detectar automaticamente, use a digitação manual abaixo.';
+    }
+  } catch(e) {
+    document.getElementById('nfScannerStatus').textContent = '❌ Sem acesso à câmera. Use a digitação manual.';
+  }
+}
+
+function restartNfScanner() {
+  nfScannedKey = '';
+  document.getElementById('nfScannerResultBox').style.display = 'none';
+  document.getElementById('btnNfScanUse').disabled = true;
+  document.getElementById('nfScannerStatus').textContent = 'Aponte para o QR Code / código de barras da NF-e';
+  if (nfScanInterval) { clearInterval(nfScanInterval); nfScanInterval = null; }
+}
+
+function closeNfScanner() {
+  document.getElementById('nfScannerModal').classList.remove('open');
+  if (nfScanInterval) { clearInterval(nfScanInterval); nfScanInterval = null; }
+  if (nfScanStream) { nfScanStream.getTracks().forEach(t=>t.stop()); nfScanStream = null; }
+}
+
+function useNfScan() {
+  if (!nfScannedKey) return;
+  closeNfScanner();
+  document.getElementById('nfChaveInput').value = nfScannedKey;
+  preencherDadosDaChave(nfScannedKey);
+}
+
+function useNfManualKey() {
+  const key = document.getElementById('nfScanManualKey').value.replace(/\D/g,'');
+  if (key.length !== 44) { showToast('⚠️ Chave deve ter 44 dígitos.', true); return; }
+  nfScannedKey = key;
+  closeNfScanner();
+  document.getElementById('nfChaveInput').value = key;
+  preencherDadosDaChave(key);
+}
+
+// Inicializar dados ao carregar
+loadOrdens();
+loadEstoque();
 
 </script>
 
